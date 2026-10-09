@@ -975,7 +975,7 @@ $('g-go').onclick=function(){
 var rt;$('reset').onclick=function(){var b=this;
  if(!b.dataset.sure){b.dataset.sure='1';b.querySelector('b').textContent=L('Klikni opet da obrišeš sve','Tap again to delete everything');rt=setTimeout(function(){delete b.dataset.sure;b.querySelector('b').textContent=L('Resetuj sve','Reset everything')},4000);return}
  clearTimeout(rt);delete b.dataset.sure;b.querySelector('b').textContent=L('Resetuj sve','Reset everything');
- S={cur:'EUR',start:0,exp:[],cats:[],goal:null};step=0;lastScr='';save();$('s-amt').value='';$('s-inc').value='';$('n-inc').value='';$('g-inc').value='';$('plan').innerHTML='';$('w-out').innerHTML='';$('i-out').innerHTML='';tab(0);render();toast('Sve obrisano. Nov početak 🥀')};
+ S={cur:'EUR',start:0,exp:[],cats:[],goal:null,fold:{}};step=0;lastScr='';save();$('s-amt').value='';$('s-inc').value='';$('n-inc').value='';$('g-inc').value='';$('plan').innerHTML='';$('w-out').innerHTML='';$('i-out').innerHTML='';tab(0);render();toast('Sve obrisano. Nov početak 🥀')};
 function tab(n){$('app').setAttribute('data-tab',n);document.querySelectorAll('#nav button').forEach(function(b,i){b.classList.toggle('on',i===n);b.setAttribute('aria-current',i===n?'page':'false')});if(n===1)lnRender();window.scrollTo(0,0);if(ptab!==null&&n!==ptab)animIn([].slice.call(document.querySelectorAll('#app section.t'+n)),n>ptab?'anim-l':'anim-r',60);ptab=n}
 document.querySelectorAll('#nav button').forEach(function(b,i){b.onclick=function(){tab(i)}});
 tab(0);render();
@@ -993,9 +993,9 @@ $('e-go').onclick=function(){if(mode!=='i')return eGo0.apply(this,arguments);
  $('a-amt').value=$('e-amt').value;$('a-note').value=$('e-note').value;aCur=eCur;$('a-go').onclick();
  if(!$('a-note').value){$('e-amt').value='';$('e-note').value='';qa('#i-chips .chip').forEach(function(x){x.classList.remove('on')});setMode('o')}};
 function foldInit(){S.fold=S.fold||{};qa('section[data-fold]').forEach(function(sec){var k=sec.getAttribute('data-fold'),h=sec.querySelector('h2');
- var op=k in S.fold?S.fold[k]:(k==='goal'?!S.goal:sec.hasAttribute('data-open'));sec.classList.toggle('open',op);
+ var op=S.fold&&k in S.fold?S.fold[k]:(k==='goal'?!S.goal:sec.hasAttribute('data-open'));sec.classList.toggle('open',op);
  h.setAttribute('role','button');h.setAttribute('tabindex','0');h.setAttribute('aria-expanded',op);
- function tg(){var o=!sec.classList.contains('open');sec.classList.toggle('open',o);h.setAttribute('aria-expanded',o);S.fold[k]=o;save();if(o){animIn([].slice.call(sec.children).filter(function(c){return c!==h}),'anim-in',40);if(k==='line')lnRender()}}
+ function tg(){var o=!sec.classList.contains('open');sec.classList.toggle('open',o);h.setAttribute('aria-expanded',o);(S.fold=S.fold||{})[k]=o;save();if(o){animIn([].slice.call(sec.children).filter(function(c){return c!==h}),'anim-in',40);if(k==='line')lnRender()}}
  h.onclick=tg;h.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}}})}
 foldInit();
 window.__lk={wasteInfo:wasteInfo,streak:streak,lvlInfo:lvlInfo,dayAllow:dayAllow,tierOf:tierOf};window.unsub=unsub;window.delExp=delExp;
