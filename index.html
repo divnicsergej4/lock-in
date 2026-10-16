@@ -502,6 +502,14 @@ button.wkb{flex:0 0 auto;width:auto;margin:0}
 .rdb{width:42px;height:42px;flex:none;border-radius:12px;border:1px solid var(--line);background:rgba(127,127,127,.06);display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
 .rdb b{font-size:1rem}.rdb small{font-size:.6rem;color:var(--mute);margin-left:1px;align-self:flex-start;margin-top:9px}
 .rtx{flex:1;min-width:0;display:flex;flex-direction:column}.rtx b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prob{margin-left:8px;font-size:.68rem;font-weight:800;padding:3px 8px;border-radius:999px;background:#f5c84b;color:#1a1000;letter-spacing:.02em}
+:root section.pro{background:linear-gradient(160deg,#2a2209,#0d1812 70%);border-color:#5a4a16}
+:root[data-theme=light] section.pro{background:linear-gradient(160deg,#fff4d1,#fff 70%);border-color:#efd88f}
+.tmd{margin:12px 0 4px;padding:14px;border-radius:14px;background:rgba(127,127,127,.08)}
+.tmh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tav{display:flex}.tav i{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:.72rem;font-weight:800;color:#04140a;margin-left:-6px;border:2px solid var(--card)}
+.tmr{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.78rem;color:var(--mute)}
+#team-pro{background:#f5c84b;color:#1a1000}
 </style>
 </head>
 <body>
@@ -626,31 +634,37 @@ button.wkb{flex:0 0 auto;width:auto;margin:0}
 <button id="g-go">Napravi plan</button>
 <div id="plan" style="margin-top:12px"></div>
 </section>
+<section data-fold="team" data-open="1" class="fold pro t2"><h2>Zajednički cilj <span class="prob">Pro</span></h2>
+<div id="team-lock"><p class="small" data-en="Save together with friends or your partner: for a trip, a gift or a place. Everyone logs what they put in, and everyone sees how much is left.">Štedite zajedno sa drugarima ili partnerom: za putovanje, poklon ili stan. Svako upisuje koliko je uplatio, a svi vide koliko još fali.</p>
+<div class="tmd" aria-hidden="true"><div class="tmh"><b data-en="Summer trip to Greece">Letovanje u Grčkoj</b><span class="tav"><i style="background:#22e07a">S</i><i style="background:#5aa9f0">M</i><i style="background:#ff7eb6">A</i></span></div>
+<div class="bar"><div class="t"><span>1.240 / 2.000 €</span><b>62%</b></div><div class="b"><i style="width:62%"></i></div></div>
+<div class="tmr"><span data-en="Sergej put in 520 €">Sergej je uplatio 520 €</span><span data-en="Marko 400 €">Marko 400 €</span><span data-en="Ana 320 €">Ana 320 €</span></div></div>
+<button type="button" id="team-pro" data-en="Unlock with Pro">Otključaj sa Pro</button></div>
+<div id="team-body" class="hide2">
+<div class="row"><input id="sh-n" placeholder="Npr. putovanje" aria-label="Naziv cilja"><input id="sh-t" type="text" inputmode="decimal" autocomplete="off" placeholder="Cilj" aria-label="Iznos cilja"></div>
+<button id="sh-set" class="ghost">Postavi cilj</button>
+<div class="row" style="margin-top:8px"><input id="sh-w" placeholder="Ko uplaćuje" aria-label="Ko uplaćuje"><input id="sh-a" type="text" inputmode="decimal" autocomplete="off" placeholder="Iznos" aria-label="Iznos uplate"></div>
+<button id="sh-go">Uplati</button><div id="sh-out" style="margin-top:10px"></div>
+<p class="small">Čuva se samo na ovom telefonu. Deljenje uživo traži pravu aplikaciju.</p></div></section>
 <section data-fold="buy" class="fold amber t0"><h2><span class="hi">🤔</span>Mogu li to da kupim?</h2>
 <div class="row"><input id="w-n" placeholder="Gitara" aria-label="Šta kupuješ"><input id="w-p" type="text" inputmode="decimal" autocomplete="off" placeholder="Cena" aria-label="Cena"></div>
 <button id="w-go">Proveri</button><div id="w-out" style="margin-top:10px"></div></section>
 
 <section class="gone"><h2><span class="hi">🔮</span>Šta ako...</h2><label for="i-m">Smanjim potrošnju mesečno za</label><input id="i-m" type="text" inputmode="decimal" autocomplete="off" placeholder="30">
 <button id="i-go">Izračunaj</button><div id="i-out" style="margin-top:10px"></div></section>
-<section data-fold="subs" class="fold rose t1"><h2><span class="hi">🔁</span>Pretplate</h2><div id="subs"></div></section>
-<section data-fold="pat" class="fold t1"><h2><span class="hi">👀</span>Uočili smo</h2><div id="pat"></div></section>
-<section data-fold="rec" class="fold t3 teal"><h2><span class="hi">🔁</span>Ponavljajući unosi</h2>
+<section data-fold="rec" class="fold t1 teal"><h2><span class="hi">🔁</span>Ponavljajući unosi</h2>
 <p class="small" style="margin:-4px 0 8px">Kirija, računi, plata... upisuju se sami svakog meseca.</p>
 <div class="row"><select id="r-k" aria-label="Vrsta unosa"><option value="o">Trošak</option><option value="i">Prihod</option></select><input id="r-amt" type="text" inputmode="decimal" autocomplete="off" placeholder="Iznos" aria-label="Iznos"></div>
 <div class="row" style="margin-top:8px"><select id="r-cat" aria-label="Kategorija"></select><input id="r-day" type="text" inputmode="numeric" autocomplete="off" placeholder="Dan u mesecu (1-31)" aria-label="Dan u mesecu"></div>
 <input id="r-note" placeholder="Opis (obavezno), npr. kirija" autocomplete="off" aria-label="Opis" style="margin-top:8px">
 <button id="r-go">Dodaj ponavljajući unos</button><div id="r-list" style="margin-top:10px"></div></section>
+<section data-fold="subs" class="fold rose t1"><h2><span class="hi">🔁</span>Pretplate</h2><div id="subs"></div></section>
+<section data-fold="pat" class="fold t1"><h2><span class="hi">👀</span>Uočili smo</h2><div id="pat"></div></section>
 <section data-fold="rep" class="fold t3"><h2><span class="hi">🧾</span>Izveštaj meseca</h2><div id="rep"></div></section>
 <section class="gone"><h2><span class="hi">🤝</span>Dugovi i pozajmice</h2>
 <div class="row"><input id="d-who" placeholder="Ko" aria-label="Ko"><input id="d-amt" type="text" inputmode="decimal" autocomplete="off" placeholder="Iznos" aria-label="Iznos"></div>
 <select id="d-dir" aria-label="Smer" style="margin-top:8px"><option value="dug">Ja dugujem njemu</option><option value="potraz">On duguje meni</option></select>
 <button id="d-go">Dodaj</button><div id="d-out" style="margin-top:10px"></div></section>
-<section data-fold="team" class="fold teal t3"><h2><span class="hi">👥</span>Zajednički cilj</h2>
-<div class="row"><input id="sh-n" placeholder="Npr. putovanje" aria-label="Naziv cilja"><input id="sh-t" type="text" inputmode="decimal" autocomplete="off" placeholder="Cilj" aria-label="Iznos cilja"></div>
-<button id="sh-set" class="ghost">Postavi cilj</button>
-<div class="row" style="margin-top:8px"><input id="sh-w" placeholder="Ko uplaćuje" aria-label="Ko uplaćuje"><input id="sh-a" type="text" inputmode="decimal" autocomplete="off" placeholder="Iznos" aria-label="Iznos uplate"></div>
-<button id="sh-go">Uplati</button><div id="sh-out" style="margin-top:10px"></div>
-<p class="small">Čuva se samo na ovom telefonu. Deljenje uživo traži pravu aplikaciju.</p></section>
 <section data-fold="bk" class="fold outline t3"><h2><span class="hi">💾</span>Rezervna kopija</h2><p class="small">Napravi kopiju, kopiraj tekst i sačuvaj ga (npr. u beleške). Na drugom telefonu ga nalepi i pritisni Uvezi.</p><textarea id="bk" aria-label="Rezervna kopija" spellcheck="false"></textarea><div class="row"><button id="bk-out" class="ghost">Napravi kopiju</button><button id="bk-in" class="ghost">Uvezi</button></div></section>
 <section data-fold="set" class="fold t3"><h2><span class="hi">⚙️</span>Podešavanja</h2><div class="sgrp"><p class="sgl">Novac</p><div class="sbox"><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6.5" width="17" height="12" rx="2.5"/><path d="M3.5 10.5h17"/><path d="M15 15h2.5"/></svg></span><div class="stx"><b>Mesečna plata</b><span class="small">Za plan meseca i „Mogu li to da kupim?“</span></div></div><div class="sctl"><div class="row"><input id="n-inc" type="text" inputmode="decimal" autocomplete="off" placeholder="Ukupni prihod" aria-label="Ukupni mesečni prihod"><button id="n-go" style="margin-top:0;flex:0 0 auto;width:auto">Sačuvaj</button></div></div><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5h13l-3-3"/><path d="M19 15.5H6l3 3"/></svg></span><div class="stx"><b>Druga valuta</b><span class="small">Ako štediš i u drugoj valuti, npr. EUR i RSD</span></div></div><div class="sctl"><div class="row"><select id="st-cur2" aria-label="Druga valuta"></select><input id="st-amt2" type="text" inputmode="decimal" autocomplete="off" placeholder="Stanje" aria-label="Stanje u drugoj valuti"></div><button class="ghost" id="st-c2" style="width:100%">Sačuvaj drugu valutu</button></div></div></div><div class="sgrp"><p class="sgl">Izgled i jezik</p><div class="sbox"><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.5 2.4 3.7 5.2 3.7 8.5s-1.2 6.1-3.7 8.5c-2.5-2.4-3.7-5.2-3.7-8.5S9.5 5.9 12 3.5Z"/></svg></span><div class="stx"><b>Jezik</b></div><select id="lang2" aria-label="Jezik / Language"><option value="sr">Srpski</option><option value="en">English</option></select></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.3A7.8 7.8 0 1 1 9.7 4.5a6.2 6.2 0 0 0 9.8 9.8Z"/></svg></span><div class="stx"><b>Tema</b></div><select id="thm" aria-label="Tema"><option value="dark">Tamna</option><option value="light">Svetla</option></select></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c.9 3 4.9 5.1 4.9 9.7a4.9 4.9 0 0 1-9.8 0c0-2.3 1-3.9 2.2-5.1.3 1.7 1 2.7 2.2 3.2-.5-2.7-.4-5.3.5-7.8Z"/></svg></span><div class="stx"><b>Jačina poruka</b><span class="small">Koliko te aplikacija prozivа</span></div><select id="ro" aria-label="Intenzitet poruka"><option value="0">Blago</option><option value="1">Normalno</option><option value="2">Bez milosti</option></select></div></div></div><div class="sgrp"><p class="sgl">Podsetnik</p><div class="sbox"><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 16.5v-5a5.5 5.5 0 0 1 11 0v5l1.5 2h-14Z"/><path d="M10 20.5a2.3 2.3 0 0 0 4 0"/></svg></span><div class="stx"><b>Podseti me da upišem troškove</b><span class="small">Ako do tog vremena ništa ne upišeš</span></div><input type="checkbox" id="rm-on" class="sw" aria-label="Podseti me da upišem troškove"></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><div class="stx"><b>Vreme podsetnika</b></div><input id="rm-t" type="time" value="20:00" aria-label="Vreme podsetnika"></div></div></div><div class="sgrp"><p class="sgl">Pretplata</p><div class="sbox"><button id="pw-open" class="srow sbtn" type="button"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 2.4 5 5.4.7-4 3.7 1 5.4L12 16.2l-4.8 2.6 1-5.4-4-3.7 5.4-.7Z"/></svg></span><div class="stx"><b>Lock-in Pro</b><span class="small">Pogledaj planove (demo)</span></div><span class="sarr">›</span></button></div></div><div class="sgrp"><p class="sgl">Privatnost</p><div class="sbox"><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span><div class="stx"><b>Tvoji podaci su tvoji</b><span class="small"><span class="trk">Beležimo samo da li si koristio aplikaciju i kog dana, anonimno. Iznosi, opisi i kategorije ostaju samo na tvom telefonu.</span></span></div></div></div></div><div class="sgrp"><p class="sgl">Opasna zona</p><div class="sbox"><button class="srow sbtn danger2" id="reset" type="button"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10.2 10.5v5.5M13.8 10.5v5.5"/></svg></span><div class="stx"><b>Resetuj sve</b><span class="small">Briše sve podatke sa ovog telefona</span></div></button></div></div></section>
 <div id="scrim"></div>
@@ -659,7 +673,7 @@ button.wkb{flex:0 0 auto;width:auto;margin:0}
 <div id="pw" role="dialog" aria-label="Pretplata"><button class="pwx" id="pw-x" aria-label="Zatvori">✕</button><div class="pwin">
 <span class="demo-b">Demo</span>
 <p class="pwh" data-en="Unlock &lt;em&gt;Lock-in Pro&lt;/em&gt; 🔒">Otključaj <em>Lock-in Pro</em> 🔒</p>
-<ul class="pwf"><li>✅ <span data-en="Monthly plan: how much you can still spend">Plan meseca: koliko još smeš da potrošiš</span></li><li>✅ <span data-en="Streaks, challenges and roast messages">Streak, izazovi i roast poruke</span></li><li>✅ <span data-en="Charts, calendar and spending patterns">Grafikoni, kalendar i šabloni potrošnje</span></li><li>✅ <span data-en="No ads">Bez reklama</span></li></ul>
+<ul class="pwf"><li>✅ <span data-en="Shared goals with friends">Zajednički ciljevi sa drugarima</span></li><li>✅ <span data-en="Monthly plan: how much you can still spend">Plan meseca: koliko još smeš da potrošiš</span></li><li>✅ <span data-en="Streaks, challenges and roast messages">Streak, izazovi i roast poruke</span></li><li>✅ <span data-en="Charts, calendar and spending patterns">Grafikoni, kalendar i šabloni potrošnje</span></li><li>✅ <span data-en="No ads">Bez reklama</span></li></ul>
 <button class="plan" data-p="m"><span class="rd"></span><span class="nm"><span data-en="Monthly">Mesečno</span><small data-en="Cancel anytime">Otkaži bilo kad</small></span><span class="pr">$6.99<small data-en="/ month">/ mesec</small></span></button>
 <button class="plan on" data-p="y"><span class="bv" data-en="Save 46%">Uštedi 46%</span><span class="rd"></span><span class="nm"><span data-en="Yearly">Godišnje</span><small data-en="Only $3.75 a month">Samo $3.75 mesečno</small></span><span class="pr">$45<small data-en="/ year">/ godina</small></span></button>
 <button class="plan" data-p="l"><span class="rd"></span><span class="nm"><span data-en="Lifetime">Doživotno</span><small data-en="Pay once, yours forever">Plaćaš jednom, tvoje je zauvek</small></span><span class="pr">$69<small data-en="once">jednom</small></span></button>
@@ -799,7 +813,7 @@ function more(){
  $('rep').innerHTML=h;
  var D=S.debts||[],ow=0,ot=0;D.forEach(function(d){if(d.dir==='dug')ow+=d.amt;else ot+=d.amt});
  $('d-out').innerHTML=D.length?'<ul>'+D.map(function(d,i){return '<li><span>'+(d.dir==='dug'?L('Dugujem ','I owe ')+esc(d.who):L('Duguje mi '+esc(d.who),esc(d.who)+' owes me'))+' <b>'+fmt(d.amt)+'</b></span><button class="ghost" style="margin:0;padding:4px 9px" onclick="delDebt('+i+')">Vraćeno</button></li>'}).join('')+'</ul><p class="small">Ukupno dugujem '+fmt(ow)+', duguju mi '+fmt(ot)+' '+S.cur+'.</p>':'<p class="small">Nema dugova. Čisto.</p>';
- var T=S.team;
+ $('team-lock').classList.toggle('hide2',!!S.pro);$('team-body').classList.toggle('hide2',!S.pro);var T=S.team;
  if(T&&T.t>0){var sum=0,by={};T.c.forEach(function(c){sum+=c.amt;by[c.who]=(by[c.who]||0)+c.amt});var p=Math.min(100,Math.round(sum/T.t*100));
   $('sh-out').innerHTML='<b>'+esc(T.n)+'</b><div class="bar"><div class="t"><span>'+fmt(sum)+' / '+fmt(T.t)+' '+S.cur+'</span><b>'+p+'%</b></div><div class="b"><i style="width:'+p+'%"></i></div></div>'+Object.keys(by).map(function(k){return '<div class="small">'+esc(k)+': '+fmt(by[k])+'</div>'}).join('')}
  else $('sh-out').innerHTML='<p class="small">Postavi naziv i iznos zajedničkog cilja, pa beležite uplate.</p>';
@@ -931,7 +945,8 @@ function scrAnim(k){if(k==='s0')animIn(qa('#s-lang > :not(.globe)'),'anim-in',90
 function pw(o){$('pw').classList.toggle('open',o);if(o){$('pw').scrollTop=0;animIn(qa('#pw .pwf li, #pw .plan'),'anim-in',60,180)}}
 $('pw-x').onclick=function(){pw(false)};
 qa('#pw .plan').forEach(function(b){b.onclick=function(){qa('#pw .plan').forEach(function(x){x.classList.toggle('on',x===b)})}});
-$('pw-go').onclick=function(){pw(false);toast(S.lang==='en'?'Demo: payments are not connected yet':'Demo: plaćanje još nije povezano')};
+$('pw-go').onclick=function(){pw(false);S.pro=true;save();render();toast(L('Demo: Pro je otključan. Plaćanje još nije povezano.','Demo: Pro unlocked. Payments are not connected yet.'))};
+$('team-pro').onclick=function(){pw(true)};
 $('pw-open').onclick=function(){pw(true)};
 var tf='all';
 function txRender(){var L=[],h='',ld='';if(tf!=='in')S.exp.forEach(function(e,i){L.push({k:'o',i:i,a:e.amt,t:e.t,c:e.cat,n:e.note||'',au:e.auto,c2:e.c2,oa:e.oa})});if(tf!=='out')(S.ins||[]).forEach(function(e,i){L.push({k:'i',i:i,a:e.amt,t:e.t,c:e.type||'Prihod',n:e.note||'',au:e.auto,c2:e.c2,oa:e.oa})});
