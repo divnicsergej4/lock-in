@@ -616,6 +616,18 @@ button.wkb{flex:0 0 auto;width:auto;margin:0}
 <section data-fold="lim" class="fold outline t1"><h2><span class="hi">🚧</span>Limiti po kategorijama</h2><div class="row"><select id="l-cat" aria-label="Kategorija"></select><input id="l-amt" type="text" inputmode="decimal" autocomplete="off" placeholder="Limit mesečno" aria-label="Limit"></div><button id="l-go">Postavi limit</button><div id="l-out" style="margin-top:10px"></div></section>
 
 
+<section data-fold="team" data-open="1" class="fold pro t2"><h2>Zajednički cilj <span class="prob">Pro</span></h2>
+<div id="team-lock"><p class="small" data-en="Save together with friends or your partner: for a trip, a gift or a place. Everyone logs what they put in, and everyone sees how much is left.">Štedite zajedno sa drugarima ili partnerom: za putovanje, poklon ili stan. Svako upisuje koliko je uplatio, a svi vide koliko još fali.</p>
+<div class="tmd" aria-hidden="true"><div class="tmh"><b data-en="Summer trip to Greece">Letovanje u Grčkoj</b><span class="tav"><i style="background:#22e07a">S</i><i style="background:#5aa9f0">M</i><i style="background:#ff7eb6">A</i></span></div>
+<div class="bar"><div class="t"><span>1.240 / 2.000 €</span><b>62%</b></div><div class="b"><i style="width:62%"></i></div></div>
+<div class="tmr"><span data-en="Sergej put in 520 €">Sergej je uplatio 520 €</span><span data-en="Marko 400 €">Marko 400 €</span><span data-en="Ana 320 €">Ana 320 €</span></div></div>
+<button type="button" id="team-pro" data-en="Unlock with Pro">Otključaj sa Pro</button></div>
+<div id="team-body" class="hide2">
+<div class="row"><input id="sh-n" placeholder="Npr. putovanje" aria-label="Naziv cilja"><input id="sh-t" type="text" inputmode="decimal" autocomplete="off" placeholder="Cilj" aria-label="Iznos cilja"></div>
+<button id="sh-set" class="ghost">Postavi cilj</button>
+<div class="row" style="margin-top:8px"><input id="sh-w" placeholder="Ko uplaćuje" aria-label="Ko uplaćuje"><input id="sh-a" type="text" inputmode="decimal" autocomplete="off" placeholder="Iznos" aria-label="Iznos uplate"></div>
+<button id="sh-go">Uplati</button><div id="sh-out" style="margin-top:10px"></div>
+<p class="small">Čuva se samo na ovom telefonu. Deljenje uživo traži pravu aplikaciju.</p></div></section>
 <section data-fold="plan" data-open="1" class="fold t2 teal"><h2><span class="hi">🗓️</span>Plan meseca</h2>
 <p class="small" style="margin:-4px 0 8px">Unesi predviđene troškove (kirija, računi, hrana...) i koliko želiš da uštediš, pa vidiš koliko smeš da potrošiš.</p>
 <div class="row"><select id="p-cat" aria-label="Kategorija"></select><input id="p-amt" type="text" inputmode="decimal" autocomplete="off" placeholder="Iznos" aria-label="Predviđen iznos"></div>
@@ -634,18 +646,6 @@ button.wkb{flex:0 0 auto;width:auto;margin:0}
 <button id="g-go">Napravi plan</button>
 <div id="plan" style="margin-top:12px"></div>
 </section>
-<section data-fold="team" data-open="1" class="fold pro t2"><h2>Zajednički cilj <span class="prob">Pro</span></h2>
-<div id="team-lock"><p class="small" data-en="Save together with friends or your partner: for a trip, a gift or a place. Everyone logs what they put in, and everyone sees how much is left.">Štedite zajedno sa drugarima ili partnerom: za putovanje, poklon ili stan. Svako upisuje koliko je uplatio, a svi vide koliko još fali.</p>
-<div class="tmd" aria-hidden="true"><div class="tmh"><b data-en="Summer trip to Greece">Letovanje u Grčkoj</b><span class="tav"><i style="background:#22e07a">S</i><i style="background:#5aa9f0">M</i><i style="background:#ff7eb6">A</i></span></div>
-<div class="bar"><div class="t"><span>1.240 / 2.000 €</span><b>62%</b></div><div class="b"><i style="width:62%"></i></div></div>
-<div class="tmr"><span data-en="Sergej put in 520 €">Sergej je uplatio 520 €</span><span data-en="Marko 400 €">Marko 400 €</span><span data-en="Ana 320 €">Ana 320 €</span></div></div>
-<button type="button" id="team-pro" data-en="Unlock with Pro">Otključaj sa Pro</button></div>
-<div id="team-body" class="hide2">
-<div class="row"><input id="sh-n" placeholder="Npr. putovanje" aria-label="Naziv cilja"><input id="sh-t" type="text" inputmode="decimal" autocomplete="off" placeholder="Cilj" aria-label="Iznos cilja"></div>
-<button id="sh-set" class="ghost">Postavi cilj</button>
-<div class="row" style="margin-top:8px"><input id="sh-w" placeholder="Ko uplaćuje" aria-label="Ko uplaćuje"><input id="sh-a" type="text" inputmode="decimal" autocomplete="off" placeholder="Iznos" aria-label="Iznos uplate"></div>
-<button id="sh-go">Uplati</button><div id="sh-out" style="margin-top:10px"></div>
-<p class="small">Čuva se samo na ovom telefonu. Deljenje uživo traži pravu aplikaciju.</p></div></section>
 <section data-fold="buy" class="fold amber t0"><h2><span class="hi">🤔</span>Mogu li to da kupim?</h2>
 <div class="row"><input id="w-n" placeholder="Gitara" aria-label="Šta kupuješ"><input id="w-p" type="text" inputmode="decimal" autocomplete="off" placeholder="Cena" aria-label="Cena"></div>
 <button id="w-go">Proveri</button><div id="w-out" style="margin-top:10px"></div></section>
@@ -767,6 +767,7 @@ function incInfo(){var mi=getInc();$('spent').style.display=mi>0?'none':'';mi=ge
  $('n-out').textContent=mi>0?L('Ovog meseca potrošeno '+fmt(ms)+' od '+fmt(mi)+' '+S.cur+' ('+Math.round(ms/mi*100)+'%), ostaje '+fmt(Math.max(mi-ms,0))+'.','This month: '+fmt(ms)+' of '+fmt(mi)+' '+S.cur+' spent ('+Math.round(ms/mi*100)+'%), '+fmt(Math.max(mi-ms,0))+' left.'):'Upiši prihod da vidiš koliko ti ostaje do kraja meseca.'}
 function pace(){var g=S.goal;if(!g)return null;var rem=Math.max(g.t-(g.hv||0),0),dy=dys(),d=getInc()>0&&dy>=7?(getInc()-totalSpent()/dy*30)/30:rem/g.m/30;return{rem:rem,d:d,b:getInc()>0&&dy>=7?'po tvom stvarnom tempu':'po planu cilja'}}
 function unsub(i){S.exp[i].sub=false;save();extra()}
+window.unrec=function(i){var r=(S.rec||[])[i];if(!r)return;S.rec.splice(i,1);save();render();toast(L('Otkazano: '+r.note+'. Više se neće upisivati svakog meseca. Ne zaboravi da otkažeš i kod njih.','Cancelled: '+r.note+'. It won’t be logged every month anymore. Don’t forget to cancel it with them too.'))};
 function extra(){incInfo();more();lims();streakCard();todayCard();lnRender();dnRender();planRender();recRender();remChk();cur2Render();
  var g=S.goal,sE=(g?g.hv||0:0)*R[S.cur],inc=getInc(),st=streak(),pc=pace(),h='';
  var A=[['🥉 Prvih 100 € ušteđeno',sE>=100],['🥈 Prvih 1.000 € ušteđeno',sE>=1000],['🥇 Prvih 5.000 € ušteđeno',sE>=5000],['🔥 7 dana u budžetu',st>=7],['💀 30 dana bez kupovine odeće',catStreak('Odeća')>=30],['🏦 Rezerva od 3 mesečna prihoda',inc>0&&sE>=3*inc*R[S.cur]],['🎯 Cilj na 50%',!!g&&(g.hv||0)/g.t>=.5]];
@@ -780,8 +781,8 @@ function extra(){incInfo();more();lims();streakCard();todayCard();lnRender();dnR
  $('prog').innerHTML=h;
  var byc={},lim=Date.now()-30*864e5;S.exp.forEach(function(x){if(x.t>=lim&&isWant(x))byc[x.cat]=(byc[x.cat]||0)+x.amt});var tc=Object.keys(byc).sort(function(a,b){return byc[b]-byc[a]})[0],cs=tc?catStreak(tc):0;
  $('chal').innerHTML='<div class="ch"><span class="small">'+L('Izazov nedelje','Challenge of the week')+'</span>'+(tc?'<b>'+L('7 dana bez: ','7 days without: ')+em(tc)+' '+esc(tc)+'</b><span class="small">'+L('Tu ti odlazi najviše novca za želje. Tvoj niz: '+Math.min(cs,7)+' / 7 dana.','That’s where most of your fun money goes. Your run: '+Math.min(cs,7)+' / 7 days.')+(cs>=7?L(' Izazov završen! 🏆',' Challenge complete! 🏆'):'')+'</span>':'<span>'+L('Upiši par troškova za želje pa ću ti izabrati izazov.','Log a few fun expenses and I’ll pick a challenge for you.')+'</span>')+'</div>';
- var sb=[],tot=0;S.exp.forEach(function(x,i){if(x.sub){sb.push([x,i]);tot+=x.amt}});
- $('subs').innerHTML=sb.length?'<ul>'+sb.map(function(q){return '<li><span>'+esc(q[0].cat)+' '+fmt(q[0].amt)+'/mes</span><button class="ghost" style="margin:0" onclick="unsub('+q[1]+')">Ne koristim</button></li>'}).join('')+'</ul><p>Plaćaš '+fmt(tot)+' '+S.cur+' mesečno, a to je '+fmt(tot*12)+' godišnje. Koje od ovoga stvarno koristiš?</p>':'<p class="small">Označi trošak kao mesečnu pretplatu i pojaviće se ovde.</p>';
+ var sb=[],tot=0;S.exp.forEach(function(x,i){if(x.sub){sb.push({n:x.note||x.cat,c:x.cat,a:x.amt,b:'unsub('+i+')'});tot+=x.amt}});(S.rec||[]).forEach(function(r,i){if(r.k==='o'&&r.cat==='Pretplata'){sb.push({n:r.note,c:r.cat,a:r.amt,d:r.day,b:'unrec('+i+')'});tot+=r.amt}});sb.sort(function(x,y){return (x.d||99)-(y.d||99)});
+ $('subs').innerHTML=sb.length?'<ul>'+sb.map(function(q){return '<li><span><b data-nt>'+esc(q.n)+'</b> <span class="small">'+L(fmt(q.a)+' mesečno'+(q.d?', svakog '+q.d+'.':''),fmt(q.a)+' a month'+(q.d?', on the '+q.d+(['st','nd','rd'][((q.d+90)%100-10)%10-1]||'th'):''))+'</span></span><button class="ghost" style="margin:0" onclick="'+q.b+'">Ne koristim</button></li>'}).join('')+'</ul><p>Plaćaš '+fmt(tot)+' '+S.cur+' mesečno, a to je '+fmt(tot*12)+' godišnje. Koje od ovoga stvarno koristiš?</p>':'<p class="small">'+L('Dodaj ponavljajući unos sa kategorijom „Pretplata“ (iznad) ili označi trošak kao mesečnu pretplatu i pojaviće se ovde.','Add a recurring entry with the “Subscription” category (above) or mark an expense as a monthly subscription and it will show up here.')+'</p>';
  var dy=dys(),o=[];
  if(dy>=14){var sm=[0,0,0,0,0,0,0],oc=Math.floor(dy/7)+1,av=totalSpent()/dy,bi=0;S.exp.forEach(function(x){sm[new Date(x.t).getDay()]+=x.amt});sm.forEach(function(v,i){if(v>sm[bi])bi=i});
   if(sm[bi]/oc>av*1.3)o.push('Dan sa najvećom potrošnjom je '+DN[bi]+': oko '+fmt(sm[bi]/oc-av)+' '+S.cur+' više od prosečnog dana.')}
