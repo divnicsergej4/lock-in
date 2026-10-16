@@ -585,7 +585,7 @@ button.wkb{flex:0 0 auto;width:auto;margin:0}
 <details class="more"><summary>Više opcija</summary>
 
 <div class="row" style="margin-top:8px"><input id="c-new" placeholder="Nova kategorija" aria-label="Nova kategorija"><button class="ghost" id="c-add" style="flex:0 0 auto;margin:0">Dodaj</button></div>
-<label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input id="e-sub" type="checkbox" style="width:auto"> Mesečna pretplata</label><label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input id="e-yd" type="checkbox" style="width:auto"> Trošak je bio juče</label></details>
+<label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input id="e-sub" type="checkbox" style="width:auto"> Mesečna pretplata</label></details>
 <div class="gone"><div class="row"><div class="cs" id="a-cs" style="flex:0 0 auto"></div><select id="a-type" aria-label="Vrsta"><option value="">Vrsta...</option><option value="Plata">Plata</option><option value="Poklon">Poklon</option></select><input id="a-amt" type="text" inputmode="decimal" autocomplete="off" placeholder="Iznos" aria-label="Iznos"></div>
 <input id="a-note" placeholder="Opis (obavezno), npr. plata za oktobar" autocomplete="off" aria-label="Opis" style="margin-top:8px"><button id="a-go">Dodaj novac</button></div><button id="e-go">Zapiši trošak</button><div class="small" id="err" style="color:#ff7b7b"></div></section>
 
@@ -731,9 +731,9 @@ function tank(){var t0=tkStart(),T=day0(Date.now()),H=S.wkh&&S.wkh.length?S.wkh:
   D.push({t:t,k:k,chk:o.n>0||!!ck[k],tk:W>0?tk:null,W:W});t=dAdd(t,1)}
  return D}
 function neg(d){return !!d&&d.tk!=null&&d.tk<-.005}
-function streakInfo(){var D=tank(),z=D.length-1,n=0,i;if(z<0)return{n:0,td:{chk:false,tk:null,W:0},yd:null,tk:null,W:0};
- for(i=z;i>=0;i--){var d=D[i];if(neg(d))break;if(d.chk)n++;else if(i<z-1)break}
- var td=D[z],yd=z>0?D[z-1]:null;return{n:n,td:td,yd:yd&&!yd.chk&&!neg(yd)?yd:null,tk:td.tk,W:td.W}}
+function streakInfo(){var D=tank(),z=D.length-1,n=0,i;if(z<0)return{n:1,td:{chk:false,tk:null,W:0},tk:null,W:0};
+ for(i=z;i>=0;i--){var d=D[i];if(neg(d))break;if(i===z||d.chk)n++;else break}
+ var td=D[z];return{n:n,td:td,tk:td.tk,W:td.W}}
 function streak(){return streakInfo().n}
 function backIn(tk,W){return W>0?Math.max(1,Math.ceil(-tk/(W/7))):0}
 function catStreak(cat){var n=0,t=day0(Date.now()),t0=tkStart(),has={};S.exp.forEach(function(x){if(!x.auto&&x.cat===cat)has[day0(x.t)]=1});while(t>=t0&&n<400){if(has[t])break;n++;t=dAdd(t,-1)}return n}
@@ -840,16 +840,16 @@ function streakCard(){var si=streakInfo(),st=si.n,k=tierOf(st),T=TIERS[k],N=TIER
  $('streak').parentNode.style.setProperty('--tc',(isLight()?TCL:TCD)[T[1]]);
  $('sk-n').textContent=st;$('sk-l').textContent=L(dn(st)+' u budžetu',den(st)+' on budget');
  $('sk-t').textContent=L(T[2],T[3]);$('sk-b').style.width=Math.round((N?(st-T[0])/(N[0]-T[0]):1)*100)+'%';
- $('sk-m').textContent=ng?L('U minusu si za želje, pa plamen miruje.','You’re over your fun budget, so the flame is out.'):st===0?L('Upiši današnje troškove i plamen kreće.','Log today’s spending and the flame starts.'):N?L('Još '+(N[0]-st)+' '+dn(N[0]-st)+' do: '+N[2],(N[0]-st)+' more '+den(N[0]-st)+' to: '+N[3]):L('Godinu dana u budžetu. Legenda.','A whole year on budget. Legend.');
+ $('sk-m').textContent=ng?L('U minusu si za želje, pa plamen miruje.','You’re over your fun budget, so the flame is out.'):!si.td.chk?L('Upiši današnje troškove ili dodirni dugme ispod. Ako preskočiš dan, plamen se gasi.','Log today’s spending or tap the button below. Skip a day and the flame goes out.'):N?L('Još '+(N[0]-st)+' '+dn(N[0]-st)+' do: '+N[2],(N[0]-st)+' more '+den(N[0]-st)+' to: '+N[3]):L('Godinu dana u budžetu. Legenda.','A whole year on budget. Legend.');
  $('sk-tk').innerHTML=W>0?'<div class="tkb'+(ng?' neg':'')+'"><span>'+(ng?L('Minus za želje','Over your fun budget'):L('Slobodno za želje','Left for wants'))+'</span><b>'+(ng?'−':'')+fmt0(Math.abs(tk))+cu+'</b><small>'+(ng?L('Vraćaš se u plus za oko '+bi+' '+dn(bi)+' bez trošenja na želje.','Back in the green in about '+bi+' '+den(bi)+' without spending on wants.'):L('+'+fmt0(W/7)+cu+' svaki dan','+'+fmt0(W/7)+cu+' every day'))+'</small></div>':'<div class="tkb"><span>'+L('Postavi nedeljni budžet za želje i plamen će znati koliko smeš.','Set a weekly fun budget so the flame knows how much you can spend.')+'</span><button type="button" class="ghost" data-act="setb">'+L('Postavi','Set')+'</button></div>';
- var ck='';if(si.yd)ck+='<div class="ckb"><span>'+L('Juče nisi ništa upisao. Da li si nešto trošio?','You didn’t log anything yesterday. Did you spend anything?')+'</span><div class="row"><button type="button" class="ghost" data-act="yno">'+L('Nisam ništa','Nothing')+'</button><button type="button" class="ghost" data-act="ylog">'+L('Upiši za juče','Log for yesterday')+'</button></div></div>';
+ var ck='';
  if(!si.td.chk)ck+='<button type="button" class="ghost ckt" data-act="tno">'+L('Danas nisam ništa trošio','I didn’t spend anything today')+'</button>';
  $('sk-ck').innerHTML=ck;
  if(S.tierSeen==null){S.tierSeen=k;save()}else if(k>S.tierSeen){S.tierSeen=k;save();setTimeout(function(){toast(L('🔥 '+T[2]+'! '+st+' '+dn(st)+' u budžetu','🔥 '+T[3]+'! '+st+' '+den(st)+' on budget'));var f=$('flw');if(f){f.classList.remove('lvlup');void f.offsetWidth;f.classList.add('lvlup')}},700)}else if(k<S.tierSeen){S.tierSeen=k;save()}
  rulesRender()}
 var VICE=['Kafić','Brza hrana','Izlasci','Igrice','Odeća','Obuća'];
 function rulesRender(){var R=$('rules');
- if(!$('wk-in')){R.innerHTML='<p>'+L('Plamen raste za svaki dan kad upišeš troškove (ili dodirneš „Danas nisam ništa trošio“) i ne odeš u minus za želje.','The flame grows every day you log your spending (or tap “I didn’t spend anything today”) and stay within your fun budget.')+'</p><p>'+L('Ono što ne potrošiš ostaje ti za kasnije, pa možeš da uštediš i za nešto veće. Zaboravljen dan možeš da upišeš sutradan.','Whatever you don’t spend stays for later, so you can save up for something bigger. Forgot a day? You can log it the next day.')+'</p><label for="wk-in">'+L('Nedeljno za želje','Weekly fun budget')+' ('+esc(S.cur)+')</label><div class="row"><input id="wk-in" type="text" inputmode="decimal" autocomplete="off"><button type="button" id="wk-go" class="wkb">'+L('Sačuvaj','Save')+'</button></div><p class="small" id="wk-h"></p><p class="small nd-h">'+L('Potrebe ne diraju budžet za želje. Dodirni kategoriju da je prebaciš.','Needs don’t touch your fun budget. Tap a category to move it.')+'</p><span class="ndl">'+L('Potrebe','Needs')+'</span><div class="chips wrap" id="nd-n"></div><span class="ndl">'+L('Želje','Wants')+'</span><div class="chips wrap" id="nd-w"></div>';
+ if(!$('wk-in')){R.innerHTML='<p>'+L('Plamen raste za svaki dan kad upišeš troškove (ili dodirneš „Danas nisam ništa trošio“) i ne odeš u minus za želje.','The flame grows every day you log your spending (or tap “I didn’t spend anything today”) and stay within your fun budget.')+'</p><p>'+L('Ono što ne potrošiš ostaje ti za kasnije, pa možeš da uštediš i za nešto veće. Ako preskočiš dan, plamen se gasi i kreće ispočetka.','Whatever you don’t spend stays for later, so you can save up for something bigger. Skip a day and the flame goes out and starts over.')+'</p><label for="wk-in">'+L('Nedeljno za želje','Weekly fun budget')+' ('+esc(S.cur)+')</label><div class="row"><input id="wk-in" type="text" inputmode="decimal" autocomplete="off"><button type="button" id="wk-go" class="wkb">'+L('Sačuvaj','Save')+'</button></div><p class="small" id="wk-h"></p><p class="small nd-h">'+L('Potrebe ne diraju budžet za želje. Dodirni kategoriju da je prebaciš.','Needs don’t touch your fun budget. Tap a category to move it.')+'</p><span class="ndl">'+L('Potrebe','Needs')+'</span><div class="chips wrap" id="nd-n"></div><span class="ndl">'+L('Želje','Wants')+'</span><div class="chips wrap" id="nd-w"></div>';
   $('wk-go').onclick=wkSave;R.onclick=ndTap}
  var sg=wkSug(),wi=$('wk-in');wi.placeholder=sg>0?fmt(sg):'';if(document.activeElement!==wi)wi.value=S.wk>0?String(S.wk):'';
  $('wk-h').textContent=sg<=0&&getInc()>0?L('Cilj štednje ti je veći od onoga što ostane od prihoda, pa nemam predlog. Upiši iznos sam.','Your savings goal takes everything left of your income, so there’s no suggestion. Enter an amount yourself.'):sg>0?L('Predlog: '+fmt(sg)+' '+S.cur+', to je 40% onoga što ti ostane od prihoda posle štednje. Ostavi prazno da važi predlog.','Suggested: '+fmt(sg)+' '+S.cur+', 40% of what’s left of your income after savings. Leave it empty to use the suggestion.'):L('Upiši mesečni prihod u podešavanjima i predložiću ti iznos.','Add your monthly income in settings and I’ll suggest an amount.');
@@ -858,8 +858,7 @@ function wkSave(){var raw=String($('wk-in').value).trim(),v=num('wk-in');if(!raw
 function ndTap(e){var b=e.target.closest('[data-nd]');if(!b)return;var c=cats()[+b.getAttribute('data-nd')];if(!c)return;S.need=S.need||{};var nn=!isNeed(c);S.need[c]=nn;save();render();
  toast(nn?(VICE.indexOf(c)>=0?L(c+' kao potreba? Hrabro 🗿 Važi od sada.',c+' as a need? Bold 🗿 Applies from now on.'):L(c+' je sada potreba. Važi od sada.',c+' is now a need. Applies from now on.')):L(c+' sada ide u želje. Važi od sada.',c+' now counts as a want. Applies from now on.'))}
 $('streak').onclick=function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act'),t=Date.now();
- if(a==='tno'||a==='yno'){checkIn(a==='tno'?t:dAdd(day0(t),-1));render();var n=streak();toast(n>0?L('Zabeleženo. 🔥 '+n+' '+dn(n)+' u budžetu.','Logged. 🔥 '+n+' '+den(n)+' on budget.'):L('Zabeleženo.','Logged.'))}
- else if(a==='ylog'){var md=document.querySelector('#sheet details.more');if(md)md.open=true;$('e-yd').checked=true;$('e-amt').scrollIntoView({block:'center'});setTimeout(function(){$('e-amt').focus()},150);toast(L('Upiši trošak, biće zapisan za juče.','Log the expense, it will be saved for yesterday.'))}
+ if(a==='tno'){checkIn(t);render();var n=streak();toast(n>0?L('Zabeleženo. 🔥 '+n+' '+dn(n)+' u budžetu.','Logged. 🔥 '+n+' '+den(n)+' on budget.'):L('Zabeleženo.','Logged.'))}
  else if(a==='setb'){var dr=document.querySelector('details.rules');if(dr)dr.open=true;setTimeout(function(){$('wk-in').scrollIntoView({block:'center'});$('wk-in').focus()},50)}};
 function dayIO(y,m,d){var a=new Date(y,m,d).getTime(),b=new Date(y,m,d+1).getTime(),i=0,o=0;(S.ins||[]).forEach(function(x){if(x.t>=a&&x.t<b)i+=x.amt});S.exp.forEach(function(x){if(x.t>=a&&x.t<b)o+=x.amt});return{i:i,o:o}}
 function todayCard(){var n=new Date(),io=dayIO(n.getFullYear(),n.getMonth(),n.getDate());$('today').innerHTML=L('Danas potrošeno ','Spent today ')+'<b>'+fmt(io.o)+' '+S.cur+'</b>'+(io.i>0?L(', primljeno ',', received ')+'<b>'+fmt(io.i)+' '+S.cur+'</b>':'')}
@@ -1039,7 +1038,7 @@ $('e-go').onclick=function(){
  if(!(a>0)){$('err').textContent='Upiši iznos.';return}
  if(!c){$('err').textContent='Moraš da navedeš na šta je potrošeno.';return}
  if(!$('e-note').value.trim()){$('err').textContent='Upiši opis troška (npr. ručak sa drugom).';return}
- var st0=streak(),yd=$('e-yd').checked,nw=new Date(),tt=yd?new Date(nw.getFullYear(),nw.getMonth(),nw.getDate()-1,12).getTime():Date.now();S.exp.push({amt:eCur==='s'&&S.cur2?conv(a):a,oa:eCur==='s'&&S.cur2?a:undefined,c2:eCur==='s'&&S.cur2?1:undefined,cat:c,t:tt,w:isNeed(c)?0:1,sub:$('e-sub').checked,note:$('e-note').value.trim()});var xi=S.exp.length-1;$('e-note').value='';$('e-sub').checked=false;$('e-yd').checked=false;save();$('e-amt').value='';render();
+ var si0=streakInfo(),st0=si0.n,ck0=si0.td.chk,tt=Date.now();S.exp.push({amt:eCur==='s'&&S.cur2?conv(a):a,oa:eCur==='s'&&S.cur2?a:undefined,c2:eCur==='s'&&S.cur2?1:undefined,cat:c,t:tt,w:isNeed(c)?0:1,sub:$('e-sub').checked,note:$('e-note').value.trim()});var xi=S.exp.length-1;$('e-note').value='';$('e-sub').checked=false;save();$('e-amt').value='';render();
  var bal=curBal(),m;
  if(bal<0)m='u minusu si, brate. stani. 🥀🥀🥀';
  else if(a>(S.start+(S.added||0))*.1)m='to je preko 10% svega što imaš, jel si siguran 🥀';
@@ -1054,7 +1053,7 @@ $('e-go').onclick=function(){
   else ex=L('Za želje ostalo: '+fmt0(si.tk)+' '+S.cur,'Left for wants: '+fmt0(si.tk)+' '+S.cur)}
   else ex=L('Postavi budžet za želje na kartici sa plamenom.','Set a fun budget on the flame card.')}
  else if(cx)ex=L('✅ Potreba, budžet za želje ostaje isti.','✅ A need. Your fun budget stays the same.');
- if(si.n>st0)ex+=(ex?'\n':'')+L('🔥 '+si.n+' '+dn(si.n)+' u budžetu','🔥 '+si.n+' '+den(si.n)+' on budget');
+ if(!ck0&&si.n>0)ex+=(ex?'\n':'')+L('🔥 Dan upisan: '+si.n+' '+dn(si.n)+' u budžetu','🔥 Day logged: '+si.n+' '+den(si.n)+' on budget');
  sheet(false);toast(ex?m+'\n'+ex:m);track('log')
 };
 $('g-go').onclick=function(){
