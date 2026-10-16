@@ -814,7 +814,7 @@ function more(){
  $('rep').innerHTML=h;
  var D=S.debts||[],ow=0,ot=0;D.forEach(function(d){if(d.dir==='dug')ow+=d.amt;else ot+=d.amt});
  $('d-out').innerHTML=D.length?'<ul>'+D.map(function(d,i){return '<li><span>'+(d.dir==='dug'?L('Dugujem ','I owe ')+esc(d.who):L('Duguje mi '+esc(d.who),esc(d.who)+' owes me'))+' <b>'+fmt(d.amt)+'</b></span><button class="ghost" style="margin:0;padding:4px 9px" onclick="delDebt('+i+')">Vraćeno</button></li>'}).join('')+'</ul><p class="small">Ukupno dugujem '+fmt(ow)+', duguju mi '+fmt(ot)+' '+S.cur+'.</p>':'<p class="small">Nema dugova. Čisto.</p>';
- $('team-lock').classList.toggle('hide2',!!S.pro);$('team-body').classList.toggle('hide2',!S.pro);var T=S.team;
+ if(S.pro){delete S.pro;save()}$('team-lock').classList.remove('hide2');$('team-body').classList.add('hide2');var T=S.team;
  if(T&&T.t>0){var sum=0,by={};T.c.forEach(function(c){sum+=c.amt;by[c.who]=(by[c.who]||0)+c.amt});var p=Math.min(100,Math.round(sum/T.t*100));
   $('sh-out').innerHTML='<b>'+esc(T.n)+'</b><div class="bar"><div class="t"><span>'+fmt(sum)+' / '+fmt(T.t)+' '+S.cur+'</span><b>'+p+'%</b></div><div class="b"><i style="width:'+p+'%"></i></div></div>'+Object.keys(by).map(function(k){return '<div class="small">'+esc(k)+': '+fmt(by[k])+'</div>'}).join('')}
  else $('sh-out').innerHTML='<p class="small">Postavi naziv i iznos zajedničkog cilja, pa beležite uplate.</p>';
@@ -946,7 +946,7 @@ function scrAnim(k){if(k==='s0')animIn(qa('#s-lang > :not(.globe)'),'anim-in',90
 function pw(o){$('pw').classList.toggle('open',o);if(o){$('pw').scrollTop=0;animIn(qa('#pw .pwf li, #pw .plan'),'anim-in',60,180)}}
 $('pw-x').onclick=function(){pw(false)};
 qa('#pw .plan').forEach(function(b){b.onclick=function(){qa('#pw .plan').forEach(function(x){x.classList.toggle('on',x===b)})}});
-$('pw-go').onclick=function(){pw(false);S.pro=true;save();render();toast(L('Demo: Pro je otključan. Plaćanje još nije povezano.','Demo: Pro unlocked. Payments are not connected yet.'))};
+$('pw-go').onclick=function(){pw(false);toast(S.lang==='en'?'Demo: payments are not connected yet':'Demo: plaćanje još nije povezano')};
 $('team-pro').onclick=function(){pw(true)};
 $('pw-open').onclick=function(){pw(true)};
 var tf='all';
