@@ -555,6 +555,13 @@ button.foback{display:block;width:100%;margin-top:12px;background:transparent;co
 @keyframes frise{from{transform:translateY(34px);opacity:0}}
 @keyframes dpull{from{transform:translateY(-14px)}}
 @media(prefers-reduced-motion:reduce){.fopen.pull,.fopen.back,.drw-in button.fld,.drw-in .dfront{animation:none}}
+.dbox{overflow:hidden}
+.dfront{touch-action:none;cursor:grab;user-select:none;flex-direction:column;gap:4px;grid-auto-flow:row;height:auto;min-height:46px;padding:10px 0 8px}
+.dfront:active{cursor:grabbing}
+.dlab{font-size:.72rem;color:var(--mute);font-weight:600;display:none}
+.drw.shut .dlab{display:block}
+.drw.shut .dfront{margin-top:10px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06)}
+
 </style>
 </head>
 <body>
@@ -937,7 +944,7 @@ function envCard(e,i){var p=e.t>0?Math.min(100,Math.round(e.b/e.t*100)):0,ml=e.d
  +'<div class="envx'+(envMode[i]?'':' hide2')+'"><div class="row"><input type="text" inputmode="decimal" autocomplete="off" id="envv'+i+'" placeholder="'+(envMode[i]==='out'?L('Koliko vadiš','How much to take out'):L('Koliko ubacuješ','How much to add'))+'"><button type="button" data-ea="ok" data-ei="'+i+'">OK</button></div></div>'
  +'<button type="button" class="foback" data-ea="close" data-ei="'+i+'">'+L('Vrati u fioku','Put it back')+'</button></div></div>'}
 function envRender(){if(!$('env-list'))return;var E=S.env||[],fr=freeBal();if(envOpen>=E.length)envOpen=-1;$('env-free').textContent=fmt(fr)+' '+S.cur;$('env-free').className=fr<0?'mi':'';
- $('env-list').innerHTML=E.length?'<div class="drw'+(drwAnim?' drw-in':'')+'"><p class="small drh">'+L('Dodirni kovertu da je izvadiš iz fioke','Tap an envelope to take it out of the drawer')+'</p><div class="fstack">'+E.map(function(e,i){return '<button type="button" class="fld'+(i===envOpen?' out':'')+'" data-fo="'+i+'" style="--ec:'+CC[i%CC.length]+';--i:'+i+';--tx:'+[4,34,64][i%3]+'%"><span class="ftab" data-nt>'+esc(e.n)+'</span><span class="fbody"><span class="famt">'+fmt(e.b)+'</span></span></button>'}).join('')+'</div><div class="dfront"><i class="hdl"></i></div></div>'+(envOpen>=0?envCard(E[envOpen],envOpen):''):'<p class="small">'+L('Fioka je prazna. Napravi prvu kovertu ispod.','The drawer is empty. Create your first envelope below.')+'</p>';
+ $('env-list').innerHTML=E.length?'<div class="drw'+(drwAnim?' drw-in':'')+(S.drw==='c'?' shut':'')+'"><p class="small drh">'+(S.drw==='c'?L('Fioka je zatvorena. Povuci ručku nadole ili je dodirni.','The drawer is closed. Pull the handle down or tap it.'):L('Dodirni kovertu da je izvadiš. Ručku povuci gore da zatvoriš fioku.','Tap an envelope to take it out. Push the handle up to close the drawer.'))+'</p><div class="dbox"'+(S.drw==='c'?' style="height:0"':'')+'><div class="fstack">'+E.map(function(e,i){return '<button type="button" class="fld'+(i===envOpen?' out':'')+'" data-fo="'+i+'" style="--ec:'+CC[i%CC.length]+';--i:'+i+';--tx:'+[4,34,64][i%3]+'%"><span class="ftab" data-nt>'+esc(e.n)+'</span><span class="fbody"><span class="famt">'+fmt(e.b)+'</span></span></button>'}).join('')+'</div></div><div class="dfront" role="button" tabindex="0" aria-label="'+L('Otvori ili zatvori fioku','Open or close the drawer')+'"><i class="hdl"></i><span class="dlab">'+E.length+' '+L(E.length===1?'koverta':(E.length%10>=2&&E.length%10<=4&&(E.length%100<12||E.length%100>14)?'koverte':'koverti'),E.length===1?'envelope':'envelopes')+', '+fmt(envSum())+' '+S.cur+'</span></div></div>'+(envOpen>=0&&S.drw!=='c'?envCard(E[envOpen],envOpen):''):'<p class="small">'+L('Fioka je prazna. Napravi prvu kovertu ispod.','The drawer is empty. Create your first envelope below.')+'</p>';
  drwAnim=false;fpAnim=false;
  $('env-dist').style.display=E.length?'':'none';
  var sel=$('e-env'),cv=sel.value;sel.innerHTML='<option value="">'+L('Ne, iz slobodnog novca','No, from free money')+'</option>'+E.map(function(e){return '<option value="'+esc(e.id)+'">'+esc(e.n)+' ('+fmt(e.b)+')</option>'}).join('');sel.value=cv;$('e-envw').style.display=E.length?'':'none'}
@@ -955,6 +962,16 @@ $('env-dist').onclick=function(){var dp=$('env-dp'),E=S.env||[];if(!dp.classList
 $('en-go').onclick=function(){var n=$('en-n').value.trim(),t=num('en-t'),k=Math.round(num('en-k')),u=$('en-u').value;if(!n){toast(L('Upiši naziv koverte','Enter an envelope name'));return}
  var due=0,d=new Date();if(k>0)due=(u==='d'?new Date(d.getFullYear(),d.getMonth(),d.getDate()+k):u==='y'?new Date(d.getFullYear()+k,d.getMonth(),d.getDate()):new Date(d.getFullYear(),d.getMonth()+k,d.getDate())).getTime();
  (S.env=S.env||[]).push({id:'e'+Date.now().toString(36),n:n,b:0,t:t>0?t:0,due:t>0?due:0});$('en-n').value='';$('en-t').value='';$('en-k').value='';$('env-new').open=false;envOpen=S.env.length-1;fpAnim=!RM;save();render();toast(L('Koverta „'+n+'“ je napravljena. Ubaci prve pare u nju.','Envelope “'+n+'” created. Put some money in it.'))};
+
+var drag=null;
+function drwSet(c){var bx=document.querySelector('.dbox'),st=document.querySelector('.fstack');S.drw=c?'c':'o';save();try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}
+ if(bx&&st){bx.style.transition=RM?'none':'height .38s cubic-bezier(.2,.9,.3,1)';bx.style.height=(c?0:st.scrollHeight)+'px';setTimeout(function(){if(!c)bx.style.height='';envOpen=c?-1:envOpen;envMode={};envRender();trDom($('env-list'))},RM?0:400)}else envRender()}
+$('env-list').addEventListener('pointerdown',function(e){var f=e.target.closest('.dfront');if(!f)return;var bx=document.querySelector('.dbox'),st=document.querySelector('.fstack');if(!bx||!st)return;
+ drag={y:e.clientY,h0:bx.getBoundingClientRect().height,H:st.scrollHeight,bx:bx,moved:false};bx.style.transition='none';try{f.setPointerCapture(e.pointerId)}catch(x){}});
+$('env-list').addEventListener('pointermove',function(e){if(!drag)return;var dy=e.clientY-drag.y;if(Math.abs(dy)>4)drag.moved=true;if(drag.moved)drag.bx.style.height=Math.max(0,Math.min(drag.H,drag.h0+dy))+'px'});
+function dragEnd(e){if(!drag)return;var d=drag;drag=null;if(!d.moved){drwSet(S.drw!=='c');return}var h=d.bx.getBoundingClientRect().height;drwSet(h<d.H/2)}
+$('env-list').addEventListener('pointerup',dragEnd);$('env-list').addEventListener('pointercancel',dragEnd);
+$('env-list').addEventListener('keydown',function(e){if(e.target.closest('.dfront')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();drwSet(S.drw!=='c')}});
 var VICE=['Kafić','Brza hrana','Izlasci','Igrice','Odeća','Obuća'];
 function rulesRender(){var R=$('rules');
  if(!$('wk-in')){R.innerHTML='<p>'+L('Plamen raste za svaki dan kad upišeš troškove. Ako tog dana nisi ništa trošio, posle 20h se pojavi dugme „Danas nisam ništa trošio“. Ako preskočiš dan, plamen se gasi i kreće od 1.','The flame grows every day you log your spending. If you spent nothing, a “I didn’t spend anything today” button shows up after 8 pm. Skip a day and the flame goes out and starts over at 1.')+'</p><p>'+L('Budžet za želje ti pokazuje koliko smeš da potrošiš na sebe. Ono što ne potrošiš ostaje ti za kasnije, pa možeš da uštediš i za nešto veće.','Your fun budget shows how much you can spend on yourself. Whatever you don’t spend stays for later, so you can save up for something bigger.')+'</p><label for="wk-in">'+L('Nedeljno za želje','Weekly fun budget')+' ('+esc(S.cur)+')</label><div class="row"><input id="wk-in" type="text" inputmode="decimal" autocomplete="off"><button type="button" id="wk-go" class="wkb">'+L('Sačuvaj','Save')+'</button></div><p class="small" id="wk-h"></p><p class="small nd-h">'+L('Potrebe ne diraju budžet za želje. Dodirni kategoriju da je prebaciš.','Needs don’t touch your fun budget. Tap a category to move it.')+'</p><span class="ndl">'+L('Potrebe','Needs')+'</span><div class="chips wrap" id="nd-n"></div><span class="ndl">'+L('Želje','Wants')+'</span><div class="chips wrap" id="nd-w"></div>';
