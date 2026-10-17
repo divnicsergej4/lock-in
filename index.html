@@ -520,6 +520,41 @@ label.amtl{text-align:center;margin:4px 0 6px}
 .envs{margin:4px 0 0}.envb{display:flex;gap:6px;margin-top:6px}.envb button{margin:0;padding:6px 10px;font-size:.85rem}.envb button:last-child{margin-left:auto}
 .envx{margin-top:8px}button.envd{width:100%;margin-top:12px}
 .envdp{margin-top:10px}.srow2{display:flex;align-items:center;gap:10px;margin-top:8px}.srow2 span{flex:1;font-weight:600}.srow2 input{width:44%;flex:none}
+
+/* fioka sa kovertama */
+.drw{position:relative;margin-top:12px;overflow:hidden;border-radius:0 0 14px 14px}
+.drh{margin:0 0 8px}
+.fstack{position:relative;padding:16px 12px 0;display:flex;flex-direction:column;border-radius:14px 14px 0 0;background:linear-gradient(180deg,#07100b,#0e1a14);box-shadow:inset 0 8px 16px rgba(0,0,0,.55),inset 0 0 0 1px #1d2e25}
+html[data-theme=light] .fstack{background:linear-gradient(180deg,#c9d8ce,#dbe6df);box-shadow:inset 0 8px 16px rgba(13,31,21,.18),inset 0 0 0 1px #c3d4c8}
+button.fld{position:relative;display:block;width:100%;height:44px;margin:0;padding:0;border:0;background:transparent;text-align:left;z-index:calc(var(--i) + 1);cursor:pointer;transition:transform .25s,opacity .25s}
+.ftab{position:absolute;top:0;left:var(--tx);max-width:32%;height:24px;padding:3px 10px 0;border-radius:9px 9px 0 0;background:var(--ec);color:#111;font-size:.75rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 -1px 0 rgba(255,255,255,.25) inset}
+.fbody{position:absolute;top:22px;left:0;right:0;height:64px;border-radius:4px 10px 6px 6px;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(0,0,0,.08)),var(--ec);box-shadow:0 -3px 8px rgba(0,0,0,.25)}
+.famt{position:absolute;right:12px;top:6px;font-size:.78rem;font-weight:800;color:rgba(0,0,0,.6)}
+button.fld:active{transform:translateY(-4px)}
+button.fld.out .ftab,button.fld.out .fbody{visibility:hidden}
+.dfront{position:relative;z-index:50;margin-top:-22px;height:46px;border-radius:10px 10px 14px 14px;background:linear-gradient(180deg,#22352b,#15221b);border:1px solid #2c4436;box-shadow:0 -6px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);display:grid;place-items:center}
+.hdl{display:block;width:70px;height:9px;border-radius:5px;background:#3b5747;box-shadow:inset 0 2px 2px rgba(0,0,0,.4),0 1px 0 rgba(255,255,255,.08)}
+html[data-theme=light] .dfront{background:linear-gradient(180deg,#e7efe9,#d3e0d7);border-color:#c3d4c8;box-shadow:0 -6px 14px rgba(13,31,21,.12)}
+html[data-theme=light] .hdl{background:#a9bfb0}
+.fopen{position:relative;margin-top:18px;padding-top:26px}
+.fotab{position:absolute;top:0;left:14px;max-width:70%;height:30px;padding:5px 16px 0;border-radius:12px 12px 0 0;background:var(--ec);color:#111;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fobody{position:relative;border-radius:6px 16px 16px 16px;padding:16px;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 40%),var(--ec);color:#111;box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.foamt{font-size:2rem;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.foamt small{font-size:.9rem;font-weight:700;opacity:.7}
+.fobar{height:8px;border-radius:4px;background:rgba(0,0,0,.18);margin:8px 0 6px;overflow:hidden}.fobar i{display:block;height:100%;background:#111;border-radius:4px}
+.fotx{margin:0;font-size:.88rem;color:rgba(0,0,0,.75)}
+.fobody .envb button{background:rgba(0,0,0,.14);color:#111;border:0;font-weight:700}
+.fobody .envx input{background:rgba(255,255,255,.75);color:#111;border-color:transparent}
+.fobody .envx button{margin:0;flex:0 0 auto;width:auto;background:#111;color:#fff}
+button.foback{display:block;width:100%;margin-top:12px;background:transparent;color:#111;border:1.5px solid rgba(0,0,0,.35);font-weight:700}
+.fopen.pull{animation:fpull .55s cubic-bezier(.2,.9,.25,1) both}
+.fopen.back{animation:fback .33s ease-in both}
+@keyframes fpull{0%{transform:translateY(-70px) scale(.9) rotate(-4deg);opacity:0}55%{transform:translateY(6px) scale(1.01) rotate(.8deg);opacity:1}100%{transform:none}}
+@keyframes fback{to{transform:translateY(-60px) scale(.9) rotate(3deg);opacity:0}}
+.drw-in button.fld{animation:frise .5s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i)*80ms + 120ms)}
+.drw-in .dfront{animation:dpull .45s cubic-bezier(.2,.9,.3,1) both}
+@keyframes frise{from{transform:translateY(34px);opacity:0}}
+@keyframes dpull{from{transform:translateY(-14px)}}
+@media(prefers-reduced-motion:reduce){.fopen.pull,.fopen.back,.drw-in button.fld,.drw-in .dfront{animation:none}}
 </style>
 </head>
 <body>
@@ -893,27 +928,33 @@ function streakCard(){var si=streakInfo(),st=si.n,k=tierOf(st),T=TIERS[k],N=TIER
  if(S.tierSeen==null){S.tierSeen=k;save()}else if(k>S.tierSeen){S.tierSeen=k;save();setTimeout(function(){toast(L('🔥 '+T[2]+'! '+st+' '+dn(st)+' zaredom','🔥 '+T[3]+'! '+st+' '+den(st)+' in a row'));var f=$('flw');if(f){f.classList.remove('lvlup');void f.offsetWidth;f.classList.add('lvlup')}},700)}else if(k<S.tierSeen){S.tierSeen=k;save()}
  rulesRender()}
 
-var envMode={};
-function envRender(){if(!$('env-list'))return;var E=S.env||[],fr=freeBal();$('env-free').textContent=fmt(fr)+' '+S.cur;$('env-free').className=fr<0?'mi':'';
- $('env-list').innerHTML=E.length?E.map(function(e,i){var p=e.t>0?Math.min(100,Math.round(e.b/e.t*100)):0,ml=e.due?(e.due-Date.now())/(30.4*864e5):0,need=e.t>0&&e.due&&e.b<e.t?(e.t-e.b)/Math.max(ml,1/30.4):0;
-  return '<div class="env" style="--ec:'+CC[i%CC.length]+'"><div class="envh"><b data-nt>'+esc(e.n)+'</b><span>'+fmt(e.b)+(e.t>0?' / '+fmt(e.t):'')+' '+S.cur+'</span></div>'+(e.t>0?'<div class="bar"><div class="b"><i style="width:'+p+'%;background:var(--ec)"></i></div></div><p class="small envs">'+(e.b>=e.t?L('Cilj je ispunjen 🎉','Goal reached 🎉'):e.due?(ml<=0?L('Rok je prošao, fali još '+fmt(e.t-e.b)+' '+S.cur+'.','Deadline passed, '+fmt(e.t-e.b)+' '+S.cur+' still missing.'):L('Rok '+dd(e.due)+' Ubacuj oko '+fmt0(need)+' '+S.cur+' mesečno.','Deadline '+dd(e.due)+'. Put in about '+fmt0(need)+' '+S.cur+' a month.')):L('Fali još '+fmt(e.t-e.b)+' '+S.cur+'.',fmt(e.t-e.b)+' '+S.cur+' still missing.'))+'</p>':'')
-  +'<div class="envb"><button type="button" class="ghost" data-ea="in" data-ei="'+i+'">+ '+L('Ubaci','Add')+'</button><button type="button" class="ghost" data-ea="out" data-ei="'+i+'">− '+L('Izvadi','Take out')+'</button><button type="button" class="ghost" data-ea="del" data-ei="'+i+'" aria-label="'+L('Obriši','Delete')+'">✕</button></div>'
-  +'<div class="envx'+(envMode[i]?'':' hide2')+'"><div class="row"><input type="text" inputmode="decimal" autocomplete="off" id="envv'+i+'" placeholder="'+(envMode[i]==='out'?L('Koliko vadiš','How much to take out'):L('Koliko ubacuješ','How much to add'))+'"><button type="button" data-ea="ok" data-ei="'+i+'" style="margin:0;flex:0 0 auto;width:auto">OK</button></div></div></div>'}).join(''):'<p class="small">'+L('Još nemaš nijednu kovertu. Napravi prvu ispod.','No envelopes yet. Create your first one below.')+'</p>';
+function closeEnv(){var c=document.querySelector('.fopen');if(!c||RM){envOpen=-1;envMode={};envRender();return}c.classList.add('back');setTimeout(function(){envOpen=-1;envMode={};envRender();trDom($('env-list'))},330)}
+var envMode={},envOpen=-1,drwAnim=false,fpAnim=false;
+function envCard(e,i){var p=e.t>0?Math.min(100,Math.round(e.b/e.t*100)):0,ml=e.due?(e.due-Date.now())/(30.4*864e5):0,need=e.t>0&&e.due&&e.b<e.t?(e.t-e.b)/Math.max(ml,1/30.4):0;
+ return '<div class="fopen'+(fpAnim?' pull':'')+'" style="--ec:'+CC[i%CC.length]+'"><span class="fotab" data-nt>'+esc(e.n)+'</span><div class="fobody"><div class="foamt">'+fmt(e.b)+' <small>'+S.cur+'</small></div>'
+ +(e.t>0?'<div class="fobar"><i style="width:'+p+'%"></i></div><p class="fotx">'+(e.b>=e.t?L('Cilj je ispunjen 🎉','Goal reached 🎉'):L('Cilj ','Goal ')+fmt(e.t)+' '+S.cur+', '+(e.due?(ml<=0?L('rok je prošao.','the deadline has passed.'):L('rok '+dd(e.due)+' Ubacuj oko '+fmt0(need)+' '+S.cur+' mesečno.','deadline '+dd(e.due)+'. Put in about '+fmt0(need)+' '+S.cur+' a month.')):L('fali još '+fmt(e.t-e.b)+' '+S.cur+'.',fmt(e.t-e.b)+' '+S.cur+' still missing.')))+'</p>':'<p class="fotx">'+L('Koverta bez cilja, samo odvojen novac.','No goal, just money set aside.')+'</p>')
+ +'<div class="envb"><button type="button" data-ea="in" data-ei="'+i+'">+ '+L('Ubaci','Add')+'</button><button type="button" data-ea="out" data-ei="'+i+'">− '+L('Izvadi','Take out')+'</button><button type="button" data-ea="del" data-ei="'+i+'" aria-label="'+L('Obriši','Delete')+'">✕</button></div>'
+ +'<div class="envx'+(envMode[i]?'':' hide2')+'"><div class="row"><input type="text" inputmode="decimal" autocomplete="off" id="envv'+i+'" placeholder="'+(envMode[i]==='out'?L('Koliko vadiš','How much to take out'):L('Koliko ubacuješ','How much to add'))+'"><button type="button" data-ea="ok" data-ei="'+i+'">OK</button></div></div>'
+ +'<button type="button" class="foback" data-ea="close" data-ei="'+i+'">'+L('Vrati u fioku','Put it back')+'</button></div></div>'}
+function envRender(){if(!$('env-list'))return;var E=S.env||[],fr=freeBal();if(envOpen>=E.length)envOpen=-1;$('env-free').textContent=fmt(fr)+' '+S.cur;$('env-free').className=fr<0?'mi':'';
+ $('env-list').innerHTML=E.length?'<div class="drw'+(drwAnim?' drw-in':'')+'"><p class="small drh">'+L('Dodirni kovertu da je izvadiš iz fioke','Tap an envelope to take it out of the drawer')+'</p><div class="fstack">'+E.map(function(e,i){return '<button type="button" class="fld'+(i===envOpen?' out':'')+'" data-fo="'+i+'" style="--ec:'+CC[i%CC.length]+';--i:'+i+';--tx:'+[4,34,64][i%3]+'%"><span class="ftab" data-nt>'+esc(e.n)+'</span><span class="fbody"><span class="famt">'+fmt(e.b)+'</span></span></button>'}).join('')+'</div><div class="dfront"><i class="hdl"></i></div></div>'+(envOpen>=0?envCard(E[envOpen],envOpen):''):'<p class="small">'+L('Fioka je prazna. Napravi prvu kovertu ispod.','The drawer is empty. Create your first envelope below.')+'</p>';
+ drwAnim=false;fpAnim=false;
  $('env-dist').style.display=E.length?'':'none';
  var sel=$('e-env'),cv=sel.value;sel.innerHTML='<option value="">'+L('Ne, iz slobodnog novca','No, from free money')+'</option>'+E.map(function(e){return '<option value="'+esc(e.id)+'">'+esc(e.n)+' ('+fmt(e.b)+')</option>'}).join('');sel.value=cv;$('e-envw').style.display=E.length?'':'none'}
-$('env-list').onclick=function(ev){var b=ev.target.closest('[data-ea]');if(!b)return;var a=b.getAttribute('data-ea'),i=+b.getAttribute('data-ei'),e=(S.env||[])[i];if(!e)return;
+$('env-list').onclick=function(ev){var fo=ev.target.closest('[data-fo]');if(fo){var k=+fo.getAttribute('data-fo');if(k===envOpen){closeEnv();return}envOpen=k;envMode={};fpAnim=!RM;envRender();trDom($('env-list'));var c=document.querySelector('.fopen');if(c)setTimeout(function(){c.scrollIntoView({block:'nearest',behavior:RM?'auto':'smooth'})},80);return}
+ var b=ev.target.closest('[data-ea]');if(!b)return;if(b.getAttribute('data-ea')==='close'){closeEnv();return}var a=b.getAttribute('data-ea'),i=+b.getAttribute('data-ei'),e=(S.env||[])[i];if(!e)return;
  if(a==='in'||a==='out'){envMode={};envMode[i]=a;envRender();setTimeout(function(){var x=$('envv'+i);if(x)x.focus()},30);return}
  if(a==='ok'){var v=num('envv'+i);if(!(v>0)){toast(L('Upiši iznos','Enter the amount'));return}var md=envMode[i];
   if(md==='in'){var fr=freeBal();if(v>fr){toast(L('Nemaš toliko slobodnog novca. Slobodno: '+fmt(Math.max(fr,0))+' '+S.cur,'You don’t have that much free money. Free: '+fmt(Math.max(fr,0))+' '+S.cur));return}e.b+=v;envMode={};save();render();toast(L('Ubačeno '+fmt(v)+' '+S.cur+' u „'+e.n+'“','Added '+fmt(v)+' '+S.cur+' to “'+e.n+'”')+(e.t>0&&e.b>=e.t?L('\nCilj je ispunjen! 🎉','\nGoal reached! 🎉'):''))}
   else{v=Math.min(v,e.b);e.b-=v;envMode={};save();render();toast(L('Izvađeno '+fmt(v)+' '+S.cur+' iz „'+e.n+'“. Vraćeno u slobodan novac.','Took '+fmt(v)+' '+S.cur+' out of “'+e.n+'”. Back in free money.'))}return}
- if(a==='del'){if(!b.dataset.sure){b.dataset.sure='1';b.textContent=L('Sigurno?','Sure?');setTimeout(function(){if(b.isConnected){delete b.dataset.sure;b.textContent='✕'}},3000);return}S.env.splice(i,1);envMode={};save();render();toast(L('Koverta obrisana. Novac iz nje je opet slobodan.','Envelope deleted. Its money is free again.'))}};
+ if(a==='del'){if(!b.dataset.sure){b.dataset.sure='1';b.textContent=L('Sigurno?','Sure?');setTimeout(function(){if(b.isConnected){delete b.dataset.sure;b.textContent='✕'}},3000);return}S.env.splice(i,1);envMode={};envOpen=-1;save();render();toast(L('Koverta obrisana. Novac iz nje je opet slobodan.','Envelope deleted. Its money is free again.'))}};
 $('env-dist').onclick=function(){var dp=$('env-dp'),E=S.env||[];if(!dp.classList.contains('hide2')){dp.classList.add('hide2');return}
  dp.innerHTML='<div class="envdp">'+E.map(function(e,i){return '<div class="srow2"><span data-nt>'+esc(e.n)+'</span><input type="text" inputmode="decimal" autocomplete="off" data-di="'+i+'" placeholder="0"></div>'}).join('')+'<p class="small" id="dp-rem"></p><button type="button" id="dp-go">'+L('Sačuvaj raspored','Save')+'</button></div>';
  dp.classList.remove('hide2');var upd=function(){var t=0;qa('#env-dp [data-di]').forEach(function(x){var v=parseFloat(String(x.value).replace(/\./g,'').replace(',','.'));if(v>0)t+=v});var r=freeBal()-t;$('dp-rem').innerHTML=L('Ostaje neraspoređeno: ','Left unassigned: ')+'<b class="'+(r<0?'mi':'')+'">'+fmt(r)+' '+S.cur+'</b>';return r};
  dp.oninput=upd;upd();$('dp-go').onclick=function(){if(upd()<0){toast(L('Raspoređuješ više nego što imaš slobodno.','You’re assigning more than you have free.'));return}var n=0;qa('#env-dp [data-di]').forEach(function(x){var v=parseFloat(String(x.value).replace(/\./g,'').replace(',','.'));if(v>0){S.env[+x.getAttribute('data-di')].b+=v;n+=v}});dp.classList.add('hide2');save();render();toast(n>0?L('Raspoređeno '+fmt(n)+' '+S.cur+' 💪','Assigned '+fmt(n)+' '+S.cur+' 💪'):L('Ništa nije raspoređeno.','Nothing assigned.'))};trDom(dp)};
 $('en-go').onclick=function(){var n=$('en-n').value.trim(),t=num('en-t'),k=Math.round(num('en-k')),u=$('en-u').value;if(!n){toast(L('Upiši naziv koverte','Enter an envelope name'));return}
  var due=0,d=new Date();if(k>0)due=(u==='d'?new Date(d.getFullYear(),d.getMonth(),d.getDate()+k):u==='y'?new Date(d.getFullYear()+k,d.getMonth(),d.getDate()):new Date(d.getFullYear(),d.getMonth()+k,d.getDate())).getTime();
- (S.env=S.env||[]).push({id:'e'+Date.now().toString(36),n:n,b:0,t:t>0?t:0,due:t>0?due:0});$('en-n').value='';$('en-t').value='';$('en-k').value='';$('env-new').open=false;save();render();toast(L('Koverta „'+n+'“ je napravljena. Ubaci prve pare u nju.','Envelope “'+n+'” created. Put some money in it.'))};
+ (S.env=S.env||[]).push({id:'e'+Date.now().toString(36),n:n,b:0,t:t>0?t:0,due:t>0?due:0});$('en-n').value='';$('en-t').value='';$('en-k').value='';$('env-new').open=false;envOpen=S.env.length-1;fpAnim=!RM;save();render();toast(L('Koverta „'+n+'“ je napravljena. Ubaci prve pare u nju.','Envelope “'+n+'” created. Put some money in it.'))};
 var VICE=['Kafić','Brza hrana','Izlasci','Igrice','Odeća','Obuća'];
 function rulesRender(){var R=$('rules');
  if(!$('wk-in')){R.innerHTML='<p>'+L('Plamen raste za svaki dan kad upišeš troškove. Ako tog dana nisi ništa trošio, posle 20h se pojavi dugme „Danas nisam ništa trošio“. Ako preskočiš dan, plamen se gasi i kreće od 1.','The flame grows every day you log your spending. If you spent nothing, a “I didn’t spend anything today” button shows up after 8 pm. Skip a day and the flame goes out and starts over at 1.')+'</p><p>'+L('Budžet za želje ti pokazuje koliko smeš da potrošiš na sebe. Ono što ne potrošiš ostaje ti za kasnije, pa možeš da uštediš i za nešto veće.','Your fun budget shows how much you can spend on yourself. Whatever you don’t spend stays for later, so you can save up for something bigger.')+'</p><label for="wk-in">'+L('Nedeljno za želje','Weekly fun budget')+' ('+esc(S.cur)+')</label><div class="row"><input id="wk-in" type="text" inputmode="decimal" autocomplete="off"><button type="button" id="wk-go" class="wkb">'+L('Sačuvaj','Save')+'</button></div><p class="small" id="wk-h"></p><p class="small nd-h">'+L('Potrebe ne diraju budžet za želje. Dodirni kategoriju da je prebaciš.','Needs don’t touch your fun budget. Tap a category to move it.')+'</p><span class="ndl">'+L('Potrebe','Needs')+'</span><div class="chips wrap" id="nd-n"></div><span class="ndl">'+L('Želje','Wants')+'</span><div class="chips wrap" id="nd-w"></div>';
@@ -1148,7 +1189,7 @@ var rt;$('reset').onclick=function(){var b=this;
  if(!b.dataset.sure){b.dataset.sure='1';b.querySelector('b').textContent=L('Klikni opet da obrišeš sve','Tap again to delete everything');rt=setTimeout(function(){delete b.dataset.sure;b.querySelector('b').textContent=L('Resetuj sve','Reset everything')},4000);return}
  clearTimeout(rt);delete b.dataset.sure;b.querySelector('b').textContent=L('Resetuj sve','Reset everything');
  S={cur:'EUR',start:0,exp:[],cats:[],goal:null,fold:{}};step=0;lastScr='';save();$('s-amt').value='';$('s-inc').value='';$('n-inc').value='';$('plan').innerHTML='';$('w-out').innerHTML='';$('i-out').innerHTML='';tab(0);render();toast('Sve obrisano. Nov početak 🥀')};
-function tab(n){$('app').setAttribute('data-tab',n);document.querySelectorAll('#nav button').forEach(function(b,i){b.classList.toggle('on',i===n);b.setAttribute('aria-current',i===n?'page':'false')});if(n===1)lnRender();window.scrollTo(0,0);if(ptab!==null&&n!==ptab)animIn([].slice.call(document.querySelectorAll('#app section.t'+n)),n>ptab?'anim-l':'anim-r',60);ptab=n}
+function tab(n){$('app').setAttribute('data-tab',n);if(n===2&&ptab!==2&&!RM){drwAnim=true;envOpen=-1;envRender()}document.querySelectorAll('#nav button').forEach(function(b,i){b.classList.toggle('on',i===n);b.setAttribute('aria-current',i===n?'page':'false')});if(n===1)lnRender();window.scrollTo(0,0);if(ptab!==null&&n!==ptab)animIn([].slice.call(document.querySelectorAll('#app section.t'+n)),n>ptab?'anim-l':'anim-r',60);ptab=n}
 document.querySelectorAll('#nav button').forEach(function(b,i){b.onclick=function(){tab(i)}});
 tab(0);render();
 
