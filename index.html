@@ -532,7 +532,7 @@ button.fld{position:relative;display:block;width:100%;height:44px;margin:0;paddi
 .famt{position:absolute;right:12px;top:6px;font-size:.78rem;font-weight:800;color:rgba(0,0,0,.6)}
 button.fld:active{transform:translateY(-4px)}
 button.fld.out .ftab,button.fld.out .fbody{visibility:hidden}
-.dfront{position:relative;z-index:50;margin-top:-22px;height:46px;border-radius:10px 10px 14px 14px;background:linear-gradient(180deg,#22352b,#15221b);border:1px solid #2c4436;box-shadow:0 -6px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);display:grid;place-items:center}
+.dfront{position:relative;z-index:50;margin-top:0;height:46px;border-radius:10px 10px 14px 14px;background:linear-gradient(180deg,#22352b,#15221b);border:1px solid #2c4436;box-shadow:0 -6px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);display:grid;place-items:center}
 .hdl{display:block;width:70px;height:9px;border-radius:5px;background:#3b5747;box-shadow:inset 0 2px 2px rgba(0,0,0,.4),0 1px 0 rgba(255,255,255,.08)}
 html[data-theme=light] .dfront{background:linear-gradient(180deg,#e7efe9,#d3e0d7);border-color:#c3d4c8;box-shadow:0 -6px 14px rgba(13,31,21,.12)}
 html[data-theme=light] .hdl{background:#a9bfb0}
@@ -556,11 +556,11 @@ button.foback{display:block;width:100%;margin-top:12px;background:transparent;co
 @keyframes dpull{from{transform:translateY(-14px)}}
 @media(prefers-reduced-motion:reduce){.fopen.pull,.fopen.back,.drw-in button.fld,.drw-in .dfront{animation:none}}
 .dbox{overflow:hidden}
-.dfront{touch-action:none;cursor:grab;user-select:none;flex-direction:column;gap:4px;grid-auto-flow:row;height:auto;min-height:46px;padding:10px 0 8px}
+.dfront{touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;flex-direction:column;gap:4px;grid-auto-flow:row;height:auto;min-height:46px;padding:10px 0 8px}
 .dfront:active{cursor:grabbing}
 .dlab{font-size:.72rem;color:var(--mute);font-weight:600;display:none}
 .drw.shut .dlab{display:block}
-.drw.shut .dfront{margin-top:10px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06)}
+.drw .dfront{transition:border-radius .3s}.drw.shut .dfront{border-radius:14px}
 
 </style>
 </head>
@@ -944,7 +944,7 @@ function envCard(e,i){var p=e.t>0?Math.min(100,Math.round(e.b/e.t*100)):0,ml=e.d
  +'<div class="envx'+(envMode[i]?'':' hide2')+'"><div class="row"><input type="text" inputmode="decimal" autocomplete="off" id="envv'+i+'" placeholder="'+(envMode[i]==='out'?L('Koliko vadiš','How much to take out'):L('Koliko ubacuješ','How much to add'))+'"><button type="button" data-ea="ok" data-ei="'+i+'">OK</button></div></div>'
  +'<button type="button" class="foback" data-ea="close" data-ei="'+i+'">'+L('Vrati u fioku','Put it back')+'</button></div></div>'}
 function envRender(){if(!$('env-list'))return;var E=S.env||[],fr=freeBal();if(envOpen>=E.length)envOpen=-1;$('env-free').textContent=fmt(fr)+' '+S.cur;$('env-free').className=fr<0?'mi':'';
- $('env-list').innerHTML=E.length?'<div class="drw'+(drwAnim?' drw-in':'')+(S.drw==='c'?' shut':'')+'"><p class="small drh">'+(S.drw==='c'?L('Fioka je zatvorena. Povuci ručku nadole ili je dodirni.','The drawer is closed. Pull the handle down or tap it.'):L('Dodirni kovertu da je izvadiš. Ručku povuci gore da zatvoriš fioku.','Tap an envelope to take it out. Push the handle up to close the drawer.'))+'</p><div class="dbox"'+(S.drw==='c'?' style="height:0"':'')+'><div class="fstack">'+E.map(function(e,i){return '<button type="button" class="fld'+(i===envOpen?' out':'')+'" data-fo="'+i+'" style="--ec:'+CC[i%CC.length]+';--i:'+i+';--tx:'+[4,34,64][i%3]+'%"><span class="ftab" data-nt>'+esc(e.n)+'</span><span class="fbody"><span class="famt">'+fmt(e.b)+'</span></span></button>'}).join('')+'</div></div><div class="dfront" role="button" tabindex="0" aria-label="'+L('Otvori ili zatvori fioku','Open or close the drawer')+'"><i class="hdl"></i><span class="dlab">'+E.length+' '+L(E.length===1?'koverta':(E.length%10>=2&&E.length%10<=4&&(E.length%100<12||E.length%100>14)?'koverte':'koverti'),E.length===1?'envelope':'envelopes')+', '+fmt(envSum())+' '+S.cur+'</span></div></div>'+(envOpen>=0&&S.drw!=='c'?envCard(E[envOpen],envOpen):''):'<p class="small">'+L('Fioka je prazna. Napravi prvu kovertu ispod.','The drawer is empty. Create your first envelope below.')+'</p>';
+ $('env-list').innerHTML=E.length?'<div class="drw'+(drwAnim?' drw-in':'')+(S.drw==='c'?' shut':'')+'"><p class="small drh" id="drh">'+(S.drw==='c'?L('Fioka je zatvorena. Povuci ručku nadole ili je dodirni.','The drawer is closed. Pull the handle down or tap it.'):L('Dodirni kovertu da je izvadiš. Ručku povuci gore da zatvoriš fioku.','Tap an envelope to take it out. Push the handle up to close the drawer.'))+'</p><div class="dbox"'+(S.drw==='c'?' style="height:0"':'')+'><div class="fstack">'+E.map(function(e,i){return '<button type="button" class="fld'+(i===envOpen?' out':'')+'" data-fo="'+i+'" style="--ec:'+CC[i%CC.length]+';--i:'+i+';--tx:'+[4,34,64][i%3]+'%"><span class="ftab" data-nt>'+esc(e.n)+'</span><span class="fbody"><span class="famt">'+fmt(e.b)+'</span></span></button>'}).join('')+'</div></div><div class="dfront" role="button" tabindex="0" aria-label="'+L('Otvori ili zatvori fioku','Open or close the drawer')+'"><i class="hdl"></i><span class="dlab">'+E.length+' '+L(E.length===1?'koverta':(E.length%10>=2&&E.length%10<=4&&(E.length%100<12||E.length%100>14)?'koverte':'koverti'),E.length===1?'envelope':'envelopes')+', '+fmt(envSum())+' '+S.cur+'</span></div></div>'+(envOpen>=0&&S.drw!=='c'?envCard(E[envOpen],envOpen):''):'<p class="small">'+L('Fioka je prazna. Napravi prvu kovertu ispod.','The drawer is empty. Create your first envelope below.')+'</p>';
  drwAnim=false;fpAnim=false;
  $('env-dist').style.display=E.length?'':'none';
  var sel=$('e-env'),cv=sel.value;sel.innerHTML='<option value="">'+L('Ne, iz slobodnog novca','No, from free money')+'</option>'+E.map(function(e){return '<option value="'+esc(e.id)+'">'+esc(e.n)+' ('+fmt(e.b)+')</option>'}).join('');sel.value=cv;$('e-envw').style.display=E.length?'':'none'}
@@ -964,12 +964,24 @@ $('en-go').onclick=function(){var n=$('en-n').value.trim(),t=num('en-t'),k=Math.
  (S.env=S.env||[]).push({id:'e'+Date.now().toString(36),n:n,b:0,t:t>0?t:0,due:t>0?due:0});$('en-n').value='';$('en-t').value='';$('en-k').value='';$('env-new').open=false;envOpen=S.env.length-1;fpAnim=!RM;save();render();toast(L('Koverta „'+n+'“ je napravljena. Ubaci prve pare u nju.','Envelope “'+n+'” created. Put some money in it.'))};
 
 var drag=null;
-function drwSet(c){var bx=document.querySelector('.dbox'),st=document.querySelector('.fstack');S.drw=c?'c':'o';save();try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}
- if(bx&&st){bx.style.transition=RM?'none':'height .38s cubic-bezier(.2,.9,.3,1)';bx.style.height=(c?0:st.scrollHeight)+'px';setTimeout(function(){if(!c)bx.style.height='';envOpen=c?-1:envOpen;envMode={};envRender();trDom($('env-list'))},RM?0:400)}else envRender()}
-$('env-list').addEventListener('pointerdown',function(e){var f=e.target.closest('.dfront');if(!f)return;var bx=document.querySelector('.dbox'),st=document.querySelector('.fstack');if(!bx||!st)return;
- drag={y:e.clientY,h0:bx.getBoundingClientRect().height,H:st.scrollHeight,bx:bx,moved:false};bx.style.transition='none';try{f.setPointerCapture(e.pointerId)}catch(x){}});
-$('env-list').addEventListener('pointermove',function(e){if(!drag)return;var dy=e.clientY-drag.y;if(Math.abs(dy)>4)drag.moved=true;if(drag.moved)drag.bx.style.height=Math.max(0,Math.min(drag.H,drag.h0+dy))+'px'});
-function dragEnd(e){if(!drag)return;var d=drag;drag=null;if(!d.moved){drwSet(S.drw!=='c');return}var h=d.bx.getBoundingClientRect().height;drwSet(h<d.H/2)}
+function drhText(c){return c?L('Fioka je zatvorena. Povuci ručku nadole ili je dodirni.','The drawer is closed. Pull the handle down or tap it.'):L('Dodirni kovertu da je izvadiš. Ručku povuci gore da zatvoriš fioku.','Tap an envelope to take it out. Push the handle up to close the drawer.')}
+function drwSet(c){var dw=document.querySelector('.drw'),bx=document.querySelector('.dbox'),st=document.querySelector('.fstack');S.drw=c?'c':'o';save();try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}
+ if(!dw||!bx||!st)return;var H=st.offsetHeight,from=bx.getBoundingClientRect().height;
+ dw.classList.toggle('shut',c);var h=$('drh');if(h)h.textContent=drhText(c);
+ if(c&&envOpen>=0){var fo=document.querySelector('.fopen');envOpen=-1;envMode={};if(fo){if(RM)fo.remove();else{fo.classList.add('back');setTimeout(function(){fo.remove()},330)}}qa('.fld.out').forEach(function(x){x.classList.remove('out')})}
+ bx.style.transition='none';bx.style.height=from+'px';void bx.offsetHeight;
+ bx.style.transition=RM?'none':'height .36s cubic-bezier(.2,.9,.3,1)';bx.style.height=(c?0:H)+'px';
+ clearTimeout(bx._t);bx._t=setTimeout(function(){if(!c)bx.style.height='';bx.style.transition=''},RM?0:380)}
+var dragRaf=0;
+$('env-list').addEventListener('touchstart',function(e){if(e.target.closest('.dfront'))e.preventDefault()},{passive:false});
+$('env-list').addEventListener('touchmove',function(e){if(drag||e.target.closest('.dfront'))e.preventDefault()},{passive:false});
+$('env-list').addEventListener('pointerdown',function(e){var f=e.target.closest('.dfront');if(!f||(e.pointerType==='mouse'&&e.button!==0))return;var bx=document.querySelector('.dbox'),st=document.querySelector('.fstack');if(!bx||!st)return;
+ e.preventDefault();clearTimeout(bx._t);var h0=bx.getBoundingClientRect().height;bx.style.transition='none';bx.style.height=h0+'px';
+ drag={y:e.clientY,h0:h0,H:st.offsetHeight,bx:bx,moved:false,h:h0,id:e.pointerId,f:f};try{f.setPointerCapture(e.pointerId)}catch(x){}});
+$('env-list').addEventListener('pointermove',function(e){if(!drag||e.pointerId!==drag.id)return;var dy=e.clientY-drag.y;if(!drag.moved&&Math.abs(dy)<6)return;drag.moved=true;
+ drag.h=Math.max(0,Math.min(drag.H,drag.h0+dy));if(!dragRaf)dragRaf=requestAnimationFrame(function(){dragRaf=0;if(drag)drag.bx.style.height=drag.h+'px'})});
+function dragEnd(e){if(!drag||(e&&e.pointerId!==drag.id))return;var d=drag;drag=null;try{d.f.releasePointerCapture(d.id)}catch(x){}
+ if(!d.moved){drwSet(S.drw!=='c');return}var shut=S.drw==='c';drwSet(shut?d.h<d.H*0.25:d.h<d.H*0.75)}
 $('env-list').addEventListener('pointerup',dragEnd);$('env-list').addEventListener('pointercancel',dragEnd);
 $('env-list').addEventListener('keydown',function(e){if(e.target.closest('.dfront')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();drwSet(S.drw!=='c')}});
 var VICE=['Kafić','Brza hrana','Izlasci','Igrice','Odeća','Obuća'];
