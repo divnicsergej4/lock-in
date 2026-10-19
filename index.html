@@ -567,8 +567,8 @@ html[data-theme=light] .fld .ftab,html[data-theme=light] .fld .fbody{transition:
 #spent,#today,#n-out,#allow{display:none!important}
 /* holografski prsten sa tri grafikona: paneli lebde i okrecu se prevlacenjem */
 :root section.viz.holo{background:transparent;border:0;box-shadow:none;padding:0;border-radius:0;margin-left:-16px;margin-right:-16px}
-.hst{position:relative;height:560px;overflow:hidden;perspective:1100px;perspective-origin:50% 40%;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;outline:none;--hc:rgba(130,255,195,.5);--hb:#22e07a;--hr:rgba(130,255,195,.55)}
-.hst .vzs{position:absolute;top:20px;left:50%;width:var(--pw,326px);height:var(--ph,470px);margin-left:calc(var(--pw,326px)/-2);transform-origin:50% 50%;will-change:transform,opacity;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.hst{position:relative;height:560px;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;outline:none;--hc:rgba(130,255,195,.5);--hb:#22e07a;--hr:rgba(130,255,195,.55)}
+.hst .vzs{position:absolute;top:20px;left:50%;width:var(--pw,326px);height:var(--ph,470px);margin-left:calc(var(--pw,326px)/-2);transform-origin:50% 43%;will-change:transform,opacity;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .vzf{height:100%;animation:hfl 7s ease-in-out infinite}
 .hmov .vzf{animation-play-state:paused}.vzs[data-h="1"] .vzf{animation-delay:-2.4s}.vzs[data-h="2"] .vzf{animation-delay:-4.7s}
 @keyframes hfl{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
@@ -1233,7 +1233,7 @@ function hstep(){return hpw*.85}
 function vzDots(i){vzi=i;qa('#vzd button').forEach(function(b,j){b.classList.toggle('on',j===i);b.setAttribute('aria-current',j===i?'true':'false')})}
 function hPose(i,p,sp){var d=hm(i-p+1.5)-1.5,ad=Math.abs(d),sg=d<0?-1:1,a=Math.min(1,ad),e=ad>1?Math.min(1,(ad-1)/.5):0,A=a*sp,cur=hm(Math.round(p));
  var x=sg*(HX*A+HB*Math.sin(Math.PI*A)+HXE*e),z=-HZ*A-HZB*Math.sin(Math.PI*A)-HZE*e,ry=-HCV*sg*(HRY*A+HRYE*e);
- return{tf:'translate3d('+x.toFixed(2)+'px,0,'+z.toFixed(2)+'px) rotateY('+ry.toFixed(2)+'deg)',op:((1-e)*(i===cur?1:Math.min(1,.15+sp*.85))).toFixed(3),z:String(60-Math.round(ad*40)),dim:Math.min(1,.62*A+.38*e).toFixed(3)}}
+ return{tf:'perspective('+HP+'px) translate3d('+x.toFixed(2)+'px,0,'+z.toFixed(2)+'px) rotateY('+ry.toFixed(2)+'deg)',op:((1-e)*(i===cur?1:Math.min(1,.15+sp*.85))).toFixed(3),z:String(60-Math.round(ad*40)),dim:Math.min(1,.62*A+.38*e).toFixed(3)}}
 function hLayout(){HO.lay=0;var cur=hm(Math.round(HO.p));
  for(var i=0;i<HN;i++){var el=hpan[i],q=hPose(i,HO.p,HO.sp);el.style.transform=q.tf;el.style.opacity=q.op;if(el._z!==q.z){el._z=q.z;el.style.zIndex=q.z}if(el._dim)el._dim.style.opacity=q.dim}
  if(cur!==vzi)vzDots(cur)}
