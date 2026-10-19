@@ -983,7 +983,7 @@ function cal(){var dim=new Date(cy,cm0+1,0).getDate(),off=(new Date(cy,cm0,1).ge
  $('cal').innerHTML=h;$('cal-t').textContent=new Date(cy,cm0,1).toLocaleDateString(S.lang==='en'?'en-US':'sr-Latn-RS',{month:'long',year:'numeric'})+' ('+fmt(tot)+' '+S.cur+')'}
 $('cal-p').onclick=function(){cm0--;if(cm0<0){cm0=11;cy--}$('cal-day').textContent='';cal();hFit();calWave()};
 $('cal-n').onclick=function(){cm0++;if(cm0>11){cm0=0;cy++}$('cal-day').textContent='';cal();hFit();calWave()};
-$('cal').onclick=function(e){var c=e.target.closest('[data-d]');if(!c)return;var d=+c.getAttribute('data-d'),r=S.exp.filter(function(x){var t=new Date(x.t);return t.getFullYear()===cy&&t.getMonth()===cm0&&t.getDate()===d});var io=dayIO(cy,cm0,d),nt=io.i-io.o;$('cal-day').innerHTML='<b>'+d+'.'+(cm0+1)+'.</b> Primljeno '+fmt(io.i)+', potrošeno '+fmt(io.o)+', '+(nt>=0?'ušteđeno '+fmt(nt):'minus '+fmt(-nt))+'<br>'+(r.length?r.map(function(x){return em(x.cat)+' '+esc(x.cat)+': '+fmt(x.amt)}).join('<br>'):'Nema troškova tog dana.');hFit()};
+$('cal').onclick=function(e){var c=e.target.closest('[data-d]');if(!c)return;var d=+c.getAttribute('data-d'),r=S.exp.filter(function(x){var t=new Date(x.t);return t.getFullYear()===cy&&t.getMonth()===cm0&&t.getDate()===d});var io=dayIO(cy,cm0,d),nt=io.i-io.o;$('cal-day').innerHTML='<b>'+d+'.'+(cm0+1)+'.</b> Primljeno '+fmt(io.i)+', potrošeno '+fmt(io.o)+', '+(nt>=0?'ušteđeno '+fmt(nt):'minus '+fmt(-nt))+'<br>'+(r.length?r.slice(0,3).map(function(x){return em(x.cat)+' '+esc(x.cat)+': '+fmt(x.amt)}).join('<br>')+(r.length>3?'<br>'+L('… i još '+(r.length-3),'… and '+(r.length-3)+' more'):''):'Nema troškova tog dana.');hFit()};
 $('chips').onclick=function(e){var b=e.target.closest('.chip');if(b){$('e-cat').value=cats()[+b.getAttribute('data-i')];markChip();lastAmt()}};
 $('e-cat').onchange=markChip;
 function lastAmt(){var v=$('e-cat').value;if($('e-amt').value)return;for(var j=S.exp.length-1;j>=0;j--)if(S.exp[j].cat===v){$('e-amt').value=String(S.exp[j].amt).replace('.',',');return}}
@@ -1276,7 +1276,7 @@ if(hst){
  hst.addEventListener('pointerup',hUp);hst.addEventListener('pointercancel',hUp);hst.addEventListener('lostpointercapture',function(e){if(e.target===hst)hUp(e)});
  hst.addEventListener('touchmove',function(e){if(HO.drag&&HO.drag.lk&&e.cancelable)e.preventDefault()},{passive:false});
  // a tap on a side panel (or beside the front one) turns the ring to it; no click right after a swipe
- hst.addEventListener('click',function(e){if(performance.now()-HO.nc<400){e.preventDefault();e.stopPropagation();return}
+ hst.addEventListener('click',function(e){if(performance.now()-HO.nc<300){e.preventDefault();e.stopPropagation();return}
   var pn=e.target.closest?e.target.closest('.vzs'):null,i=pn?hpan.indexOf(pn):-1,cur=hm(Math.round(HO.t));if(i===cur)return;
   var r=hpan[cur].getBoundingClientRect(),dir=i>=0?(hm(i-cur)===1?1:-1):(e.clientX<r.left?-1:e.clientX>r.right?1:0);
   if(dir){e.preventDefault();e.stopPropagation();hGo(Math.round(HO.t)+dir)}},true);
@@ -1284,6 +1284,8 @@ if(hst){
  var hwA=0,hwT=0;hst.addEventListener('wheel',function(e){if(Math.abs(e.deltaX)<=Math.abs(e.deltaY))return;e.preventDefault();var nw=performance.now();if(nw-hwT<480){hwA=0;return}hwA+=e.deltaX;if(Math.abs(hwA)>28){hGo(Math.round(HO.t)+(hwA>0?1:-1));hwA=0;hwT=nw}},{passive:false});
  qa('#vzd button').forEach(function(b,j){b.onclick=function(){var k=Math.round(HO.t),df=hm(j-k+1)-1;if(df)hGo(k+df);else if(HO.act!==j)hActivate(j)}});
  window.addEventListener('resize',function(){var w=hst.clientWidth;if(w&&w!==hW)hFit()});
+ // late web fonts change text heights: measure the panels again once they are in
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){if(hst.clientWidth)hFit()});
 }
 var car=$('car'),cdi=0;
 function cdSet(i){cdi=i;qa('#cdots button').forEach(function(b,j){b.classList.toggle('on',j===i);b.setAttribute('aria-current',j===i?'true':'false')});$('nx').textContent=i<2?L('Dalje','Next'):L('Podesi aplikaciju','Set up the app');$('skip').style.visibility=i<2?'':'hidden'}
