@@ -432,9 +432,6 @@ html[data-theme=light] .ovr{color:#fff}
 .t-lg::after{content:'🗿';position:absolute;right:-6px;bottom:-6px;font-size:1.25rem;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
 .flw.lvlup{animation:lvl .9s cubic-bezier(.3,1.6,.5,1)}
 @keyframes lvl{0%{transform:scale(1)}35%{transform:scale(1.28) rotate(-7deg)}100%{transform:scale(1)}}
-details.rules{margin-top:12px}
-details.rules summary{cursor:pointer;font-weight:600;font-size:.88rem;color:var(--mute)}
-details.rules p{margin:8px 0 6px;font-size:.85rem}
 .rl2{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(4,20,10,.12);font-size:.85rem}
 .rl2 b{text-align:right;font-weight:800}
 @media(prefers-reduced-motion:reduce){.flm,.flm *,.flw,.t-di::before,.t-di::after,.t-lg::before{animation:none!important}.flm .em{opacity:0}}
@@ -481,7 +478,6 @@ html[data-theme=light] .hot .tkb.neg b{color:#d93a3a}
 .ckb>span{display:block;font-size:.9rem}
 .ckb .row button{margin-top:10px;width:100%}
 button.ckt{display:block;width:100%;margin-top:10px;padding:11px}
-details.rules{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 #rules p{margin:10px 0;font-size:.88rem;line-height:1.5}
 #rules label{margin-top:14px}
 #rules .nd-h{margin-top:16px}
@@ -562,6 +558,19 @@ button.foback{display:block;width:100%;margin-top:12px;background:transparent;co
 .drw.shut .dlab{display:block}
 .drw .dfront{transition:border-radius .3s}.drw.shut .dfront{border-radius:14px}
 
+#spent,#today,#n-out,#allow{display:none!important}
+.vzw{padding-left:0;padding-right:0}
+.vzc{display:flex;align-items:flex-start;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;transition:height .3s ease}
+.vzc::-webkit-scrollbar{display:none}
+.vzs{flex:0 0 100%;min-width:0;scroll-snap-align:center;scroll-snap-stop:always;padding:0 18px}
+.vzd{padding:14px 0 2px}
+@media(prefers-reduced-motion:reduce){.vzc{transition:none}}
+html[data-theme=light] .ftab,html[data-theme=light] .fotab{background:linear-gradient(rgba(255,255,255,.45),rgba(255,255,255,.45)),var(--ec);background:color-mix(in srgb,color-mix(in srgb,var(--ec) 58%,#fff) 82%,transparent)}
+html[data-theme=light] .fbody{background:linear-gradient(rgba(255,255,255,.45),rgba(255,255,255,.45)),var(--ec);background:color-mix(in srgb,color-mix(in srgb,var(--ec) 58%,#fff) 82%,transparent);box-shadow:0 -2px 6px rgba(13,31,21,.10)}
+html[data-theme=light] .fobody{background:linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,.4)),var(--ec);background:color-mix(in srgb,color-mix(in srgb,var(--ec) 62%,#fff) 90%,transparent);box-shadow:0 10px 24px rgba(13,31,21,.14)}
+.wk7{display:flex;justify-content:space-between;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+.wk7 span{flex:1;aspect-ratio:1;max-width:40px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:800;background:rgba(127,127,127,.12);color:var(--mute)}
+.wk7 .ok{background:#22e07a;color:#04140a}.wk7 .td{border:2px dashed #f2c200;background:transparent;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -615,9 +624,9 @@ button.foback{display:block;width:100%;margin-top:12px;background:transparent;co
 <p class="sp" data-en="The messages are honest, sometimes harsh. You choose how harsh.">Poruke su iskrene, nekad i grube. Koliko grube, biraš sam.</p></div>
 <div class="sl" role="group" aria-roledescription="slide" aria-label="3 / 3"><div class="vis" aria-hidden="true">
 <div class="fdemo"><div class="flw t-gd" id="flw-demo"></div><div><b class="fn">14</b><span data-en="days in a row">dana zaredom</span><span class="ft" data-en="Golden flame">Zlatni plamen</span></div></div>
-<div class="tkd"><span data-en="Left for wants">Slobodno za želje</span><b data-en="$46">2.300 RSD</b></div></div>
+<div class="wk7"><span class="ok">P</span><span class="ok">U</span><span class="ok">S</span><span class="ok">Č</span><span class="ok">P</span><span class="ok">S</span><span class="td">N</span></div></div>
 <h2 class="sh" data-en="Keep the flame alive.">Čuvaj plamen.</h2>
-<p class="sp" data-en="Log your spending every day and the flame grows. Skip a day and it goes out. Your weekly fun budget shows how much you can spend on yourself.">Upisuj troškove svaki dan i plamen raste. Ako preskočiš dan, gasi se. Nedeljni budžet za želje ti pokazuje koliko smeš da potrošiš na sebe.</p></div>
+<p class="sp" data-en="Log your spending every day and the flame grows. Skip a single day and it goes out.">Upisuj troškove svaki dan i plamen raste. Ako preskočiš samo jedan dan, gasi se.</p></div>
 </div>
 <div class="cdots" id="cdots"><button type="button" class="on" aria-label="1 / 3"></button><button type="button" aria-label="2 / 3"></button><button type="button" aria-label="3 / 3"></button></div>
 <button id="nx" type="button">Dalje</button>
@@ -641,7 +650,7 @@ button.foback{display:block;width:100%;margin-top:12px;background:transparent;co
 <div class="bal"><span id="bal"></span> <small id="cur"></small></div><div id="bal2" class="b2l"></div><div id="envl" class="small" style="margin-top:4px"></div>
 <div id="spark"></div><div class="small" id="spent"></div><div id="today" class="small" style="margin-top:6px"></div><div id="n-out" class="small" style="margin-top:4px"></div><div id="allow"></div><div id="lvl"></div>
 </section>
-<section class="t0 hot"><div id="streak"></div><div id="chal"></div><details class="rules"><summary>Kako radi plamen?</summary><div id="rules"></div></details></section>
+<section class="t0 hot"><div id="streak"></div><div id="chal"></div></section>
 <section id="sheet" class="t0"><h2><span class="hi">➕</span>Novi unos</h2>
 <div class="mode" role="tablist"><button type="button" class="mb on" data-m="o">− Trošak</button><button type="button" class="mb" data-m="i">+ Prihod</button></div>
 <div class="cs" id="e-cs"></div><label for="e-amt" class="amtl">Iznos</label><input id="e-amt" class="amt" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-label="Iznos">
@@ -657,15 +666,15 @@ button.foback{display:block;width:100%;margin-top:12px;background:transparent;co
 
 
 
-<section class="t1 viz"><h2><span class="hi">🍩</span>Raspodela ovog meseca</h2><div id="dn"></div><div id="dn-list"></div></section>
-<section class="t1">
+<section class="t1 viz vzw"><div class="vzc" id="vzc" role="region" aria-roledescription="carousel" aria-label="Grafikoni"><div class="vzs" role="group" aria-roledescription="slide" aria-label="1 / 3"><h2>Raspodela ovog meseca</h2><div id="dn"></div><div id="dn-list"></div></div><div class="vzs" role="group" aria-roledescription="slide" aria-label="2 / 3"><h2>Ušteđeno vs potrošeno</h2><p class="small" style="margin:-4px 0 8px">Prevuci prstom preko grafikona da vidiš dan po dan.</p><div id="ln" class="ln"></div><div id="ln-tip" class="lntip"></div></div><div class="vzs" role="group" aria-roledescription="slide" aria-label="3 / 3"><h2>Dnevna potrošnja</h2><div class="calh"><button class="ghost" id="cal-p" aria-label="Prethodni mesec">‹</button><b id="cal-t"></b><button class="ghost" id="cal-n" aria-label="Sledeći mesec">›</button></div><div id="cal" class="cal"></div><div id="cal-day" class="small" style="margin-top:10px"></div></div></div><div class="cdots vzd" id="vzd"><button type="button" class="on" aria-label="1 / 3"></button><button type="button" aria-label="2 / 3"></button><button type="button" aria-label="3 / 3"></button></div></section>
+<section data-fold="tx" data-open="1" class="fold t1">
 <h2><span class="hi">📊</span>Sve promene</h2><div id="flt"><button class="fb on" data-f="all">Sve</button><button class="fb" data-f="in">Prihodi</button><button class="fb" data-f="out">Troškovi</button></div>
 <div id="stats"></div>
 <div id="week"></div><ul id="hist"></ul>
 </section>
-<section data-fold="line" class="fold t1 viz"><h2><span class="hi">📈</span>Ušteđeno vs potrošeno</h2><p class="small" style="margin:-4px 0 8px">Prevuci prstom preko grafikona da vidiš dan po dan.</p><div id="ln" class="ln"></div><div id="ln-tip" class="lntip"></div></section>
 
-<section data-fold="cal" class="fold t1"><h2><span class="hi">📅</span>Dnevna potrošnja</h2><div class="calh"><button class="ghost" id="cal-p" aria-label="Prethodni mesec">‹</button><b id="cal-t"></b><button class="ghost" id="cal-n" aria-label="Sledeći mesec">›</button></div><div id="cal" class="cal"></div><div id="cal-day" class="small" style="margin-top:10px"></div></section>
+
+
 <section data-fold="lim" class="fold outline t1"><h2><span class="hi">🚧</span>Limiti po kategorijama</h2><div class="row"><select id="l-cat" aria-label="Kategorija"></select><input id="l-amt" type="text" inputmode="decimal" autocomplete="off" placeholder="Limit mesečno" aria-label="Limit"></div><button id="l-go">Postavi limit</button><div id="l-out" style="margin-top:10px"></div></section>
 
 
@@ -785,7 +794,7 @@ M.Prevoz=["gorivo ili karta, ok. ali taksi za 500 metara? 🥀","prevoz je nuža
 M.Računi=["računi nisu zabavni, ali bar su iskreni. plaćeno, idemo dalje 💪","plaćen račun je mirna savest, ovo je dobar trošak"];
 M.Ostalo=M._;
 M.C=["{c}? opet? to ti je već stalna stavka u budžetu 🥀","{c} je tvoj omiljeni način da pare nestanu","gng, {c} ne gradi ušteđevinu, samo da znaš 🥀","znam da voliš {c}, ali cilj te gleda sa police"];
-function todayCount(){var d=new Date();d.setHours(0,0,0,0);return S.exp.filter(function(x){return x.t>=d.getTime()}).length}
+function todayCount(){var d=new Date();d.setHours(0,0,0,0);return S.exp.filter(function(x){return !x.auto&&x.t>=d.getTime()}).length}
 function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 function week(){var d=[],mx=1,i,now=new Date();now.setHours(0,0,0,0);
 for(i=6;i>=0;i--){var a=now.getTime()-i*864e5,b=a+864e5,v=0;S.exp.forEach(function(x){if(x.t>=a&&x.t<b)v+=x.amt});d.push({l:new Date(a).toLocaleDateString(S.lang==='en'?'en-US':'sr-Latn-RS',{weekday:'short'}),v:v});mx=Math.max(mx,v)}
@@ -796,31 +805,24 @@ function dys(){if(!S.exp.length)return 0;var f=Math.min.apply(null,S.exp.map(fun
 function day0(t){var d=new Date(t);return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()}
 function dAdd(t,n){var d=new Date(t);return new Date(d.getFullYear(),d.getMonth(),d.getDate()+n).getTime()}
 function fmt0(n){return fmt(Math.round(n))}
-function isNeed(c){var o=S.need||{};return Object.prototype.hasOwnProperty.call(o,c)?!!o[c]:NEC.indexOf(c)>=0}
-function isWant(x){return !x.auto&&(x.w!=null?!!x.w:!isNeed(x.cat))}
-function savTarget(){var sv=(S.plan&&S.plan.save)||0,gm=0;(S.env||[]).forEach(function(e){if(e.t>0&&e.due&&e.b<e.t)gm+=(e.t-e.b)/Math.max((e.due-Date.now())/(30.4*864e5),1/30.4)});return Math.max(sv,gm)}
+function isNeed(c){return NEC.indexOf(c)>=0}
 function envSum(){return (S.env||[]).reduce(function(a,e){return a+(e.b||0)},0)}
 function freeBal(){return curBal()-envSum()}
 function envGoal(){var E=(S.env||[]).filter(function(e){return e.t>0&&e.b<e.t});if(!E.length)return null;var e=E[0];return{n:e.n,t:e.t,hv:e.b||0,m:e.due?Math.max((e.due-Date.now())/(30.4*864e5),1/30.4):0,i:getInc()}}
 function dd(t){var d=new Date(t);return S.lang==='en'?d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear()+'.'}
+function rateTo(rem,due){var dl=Math.round((day0(due)-day0(Date.now()))/864e5);if(dl<0)return{past:1,dl:dl};if(dl===0)return{today:1,dl:0};if(dl<=31)return{a:rem/dl,u:'d',dl:dl};if(dl<=92)return{a:rem/(dl/7),u:'w',dl:dl};return{a:rem/(dl/30.4),u:'m',dl:dl}}
+function rateTxt(r){return fmt0(Math.ceil(r.a))+' '+S.cur+' '+{d:L('dnevno','a day'),w:L('nedeljno','a week'),m:L('mesečno','a month')}[r.u]}
 function nice(v){if(!(v>0))return 0;var m=Math.pow(10,Math.max(0,Math.floor(Math.log(v)/Math.LN10)-1));return Math.round(v/m)*m}
-function wkSug(){var inc=getInc();return inc>0?nice(.4*Math.max(0,inc-savTarget())/4.345):0}
-function wkCur(){return S.wk>0?S.wk:wkSug()}
 function tkStart(){if(!S.tk0){var f=S.t0||Date.now();S.exp.forEach(function(x){if(!x.auto&&x.t<f)f=x.t});S.tk0=day0(f)}return S.tk0}
-function wkSync(){var t=day0(Date.now()),w=wkCur(),H=S.wkh;if(!H||!H.length){S.wkh=[[tkStart(),w]];return true}var l=H[H.length-1];if(l[1]===w)return false;if(l[0]>=t)l[1]=w;else H.push([t,w]);return true}
-function migrate(){var ch=false;if(!S.env){S.env=[];if(S.goal&&S.goal.t>0){var g0=S.goal,dm=new Date();S.env.push({id:'g'+Date.now().toString(36),n:g0.n||'Cilj',b:Math.max(0,Math.min(g0.hv||0,curBal())),t:g0.t,due:g0.m>0?new Date(dm.getFullYear(),dm.getMonth()+Math.round(g0.m),dm.getDate()).getTime():0})}ch=true}S.exp.forEach(function(x){if(x.w==null&&!x.auto){x.w=isNeed(x.cat)?0:1;ch=true}});if(!S.tk0){tkStart();ch=true}if(wkSync())ch=true;return ch}
-function tank(){var t0=tkStart(),T=day0(Date.now()),H=S.wkh&&S.wkh.length?S.wkh:[[t0,wkCur()]],hi=0,by={},ck=S.chk||{},D=[],tk=0,fu=false,t=t0,g=0;
- S.exp.forEach(function(x){if(x.auto)return;var k=day0(x.t),o=by[k]||(by[k]={w:0,n:0});o.n++;if(isWant(x))o.w+=x.amt});
- while(t<=T&&g++<5000){while(hi+1<H.length&&H[hi+1][0]<=t)hi++;var W=H[hi][0]<=t?(H[hi][1]||0):0,o=by[t]||{w:0,n:0},k=dk(new Date(t));
-  if(W>0){if(!fu){fu=true;tk=W}else tk+=W/7;tk-=o.w}else{fu=false;tk=0}
-  D.push({t:t,k:k,chk:o.n>0||!!ck[k],tk:W>0?tk:null,W:W});t=dAdd(t,1)}
+function migrate(){var ch=false;if(!(S.income>0)&&S.goal&&S.goal.i>0){S.income=S.goal.i;ch=true}if(!S.env){S.env=[];if(S.goal&&S.goal.t>0){var g0=S.goal,dm=new Date();S.env.push({id:'g'+Date.now().toString(36),n:g0.n||'Cilj',b:Math.max(0,Math.min(g0.hv||0,curBal())),t:g0.t,due:g0.m>0?new Date(dm.getFullYear(),dm.getMonth()+Math.round(g0.m),dm.getDate()).getTime():0})}ch=true}if(!S.tk0){tkStart();ch=true}return ch}
+function tank(){var t0=tkStart(),T=day0(Date.now()),by={},ck=S.chk||{},D=[],t=t0,g=0;
+ S.exp.forEach(function(x){if(!x.auto)by[day0(x.t)]=1});
+ while(t<=T&&g++<5000){var k=dk(new Date(t));D.push({t:t,k:k,chk:!!by[t]||!!ck[k]});t=dAdd(t,1)}
  return D}
-function neg(d){return !!d&&d.tk!=null&&d.tk<-.005}
-function streakInfo(){var D=tank(),z=D.length-1,n=0,i;if(z<0)return{n:1,td:{chk:false,tk:null,W:0},tk:null,W:0};
+function streakInfo(){var D=tank(),z=D.length-1,n=0,i;if(z<0)return{n:1,td:{chk:false}};
  for(i=z;i>=0;i--){var d=D[i];if(i===z||d.chk)n++;else break}
- var td=D[z];return{n:n,td:td,tk:td.tk,W:td.W}}
+ return{n:n,td:D[z]}}
 function streak(){return streakInfo().n}
-function backIn(tk,W){return W>0?Math.max(1,Math.ceil(-tk/(W/7))):0}
 function catStreak(cat){var n=0,t=day0(Date.now()),t0=tkStart(),has={};S.exp.forEach(function(x){if(!x.auto&&x.cat===cat)has[day0(x.t)]=1});while(t>=t0&&n<400){if(has[t])break;n++;t=dAdd(t,-1)}return n}
 function checkIn(t){S.chk=S.chk||{};S.chk[dk(new Date(t))]=1;save();track('log')}
 function curBal(){return S.start+(S.added||0)-S.exp.reduce(function(t,x){return t+(x.c2?0:x.amt)},0)}
@@ -828,14 +830,14 @@ function monthSpent(){var n0=new Date(),ms=0;S.exp.forEach(function(x){var d=new
 var EM={Namirnice:'🛒','Brza hrana':'🍔',Hrana:'🍽️',Kafić:'☕',Odeća:'👕',Obuća:'👟',Teretana:'💪',Prevoz:'🚌',Računi:'🧾',Kirija:'🏠',Pretplata:'📺',Izlasci:'🎉',Igrice:'🎮',Ostalo:'📦'};
 function em(c){return EM[c]||'✨'}
 function delExp(i){S.exp.splice(i,1);save();render()}
-function getInc(){return S.income>0?S.income:(S.goal&&S.goal.i>0?S.goal.i:0)}
+function getInc(){return S.income>0?S.income:0}
 function incInfo(){var mi=getInc();$('spent').style.display=mi>0?'none':'';mi=getInc(),ms=0,n0=new Date(),dl=new Date(n0.getFullYear(),n0.getMonth()+1,0).getDate()-n0.getDate()+1;S.exp.forEach(function(x){var d=new Date(x.t);if(d.getFullYear()===n0.getFullYear()&&d.getMonth()===n0.getMonth())ms+=x.amt});
  if(S.income>0){if(!$('n-inc').value)$('n-inc').value=S.income;}
  $('n-out').textContent=mi>0?L('Ovog meseca potrošeno '+fmt(ms)+' od '+fmt(mi)+' '+S.cur+' ('+Math.round(ms/mi*100)+'%), ostaje '+fmt(Math.max(mi-ms,0))+'.','This month: '+fmt(ms)+' of '+fmt(mi)+' '+S.cur+' spent ('+Math.round(ms/mi*100)+'%), '+fmt(Math.max(mi-ms,0))+' left.'):'Upiši prihod da vidiš koliko ti ostaje do kraja meseca.'}
 function pace(){var g=S.goal;if(!g)return null;var rem=Math.max(g.t-(g.hv||0),0),dy=dys();if(!(g.m>0)&&!(getInc()>0&&dy>=7))return null;var d=getInc()>0&&dy>=7?(getInc()-totalSpent()/dy*30)/30:rem/g.m/30;return{rem:rem,d:d,b:getInc()>0&&dy>=7?'po tvom stvarnom tempu':'po planu cilja'}}
 function unsub(i){S.exp[i].sub=false;save();extra()}
 window.unrec=function(i){var r=(S.rec||[])[i];if(!r)return;S.rec.splice(i,1);save();render();toast(L('Otkazano: '+r.note+'. Više se neće upisivati svakog meseca. Ne zaboravi da otkažeš i kod njih.','Cancelled: '+r.note+'. It won’t be logged every month anymore. Don’t forget to cancel it with them too.'))};
-function extra(){incInfo();envRender();more();lims();streakCard();todayCard();lnRender();dnRender();planRender();recRender();remChk();cur2Render();
+function extra(){incInfo();envRender();setTimeout(function(){if(typeof vzH==='function')vzH()},0);more();lims();streakCard();todayCard();lnRender();dnRender();planRender();recRender();remChk();cur2Render();
  var g=S.goal,sE=(g?g.hv||0:0)*R[S.cur],inc=getInc(),st=streak(),pc=pace(),h='';
  var A=[['🥉 Prvih 100 € ušteđeno',sE>=100],['🥈 Prvih 1.000 € ušteđeno',sE>=1000],['🥇 Prvih 5.000 € ušteđeno',sE>=5000],['🔥 7 dana u budžetu',st>=7],['💀 30 dana bez kupovine odeće',catStreak('Odeća')>=30],['🏦 Rezerva od 3 mesečna prihoda',inc>0&&sE>=3*inc*R[S.cur]],['🎯 Cilj na 50%',!!g&&(g.hv||0)/g.t>=.5]];
  var n=A.filter(function(x){return x[1]}).length,xp=st*10+n*100+Math.floor(sE/10),lv=Math.floor(Math.sqrt(xp/25))+1;
@@ -846,8 +848,8 @@ function extra(){incInfo();envRender();more();lims();streakCard();todayCard();ln
  else h='<p class="small">Napravi plan u cilju štednje da vidiš napredak.</p>';
  h+='<div style="display:none">'+A.map(function(a){return '<span style="display:inline-block;margin:3px 4px 0 0;padding:4px 9px;border:2px solid var(--ink);border-radius:20px;font-size:.8rem;opacity:'+(a[1]?1:.35)+(a[1]?';background:var(--yel);color:#1b1340':'')+'">'+a[0]+'</span>'}).join('')+'</div>';
  $('prog').innerHTML=h;
- var byc={},lim=Date.now()-30*864e5;S.exp.forEach(function(x){if(x.t>=lim&&isWant(x))byc[x.cat]=(byc[x.cat]||0)+x.amt});var tc=Object.keys(byc).sort(function(a,b){return byc[b]-byc[a]})[0],cs=tc?catStreak(tc):0;
- $('chal').innerHTML='<div class="ch"><span class="small">'+L('Izazov nedelje','Challenge of the week')+'</span>'+(tc?'<b>'+L('7 dana bez: ','7 days without: ')+em(tc)+' '+esc(tc)+'</b><span class="small">'+L('Tu ti odlazi najviše novca za želje. Tvoj niz: '+Math.min(cs,7)+' / 7 dana.','That’s where most of your fun money goes. Your run: '+Math.min(cs,7)+' / 7 days.')+(cs>=7?L(' Izazov završen! 🏆',' Challenge complete! 🏆'):'')+'</span>':'<span>'+L('Upiši par troškova za želje pa ću ti izabrati izazov.','Log a few fun expenses and I’ll pick a challenge for you.')+'</span>')+'</div>';
+ var byc={},lim=Date.now()-30*864e5;S.exp.forEach(function(x){if(x.t>=lim&&!x.auto&&!isNeed(x.cat))byc[x.cat]=(byc[x.cat]||0)+x.amt});var tc=Object.keys(byc).sort(function(a,b){return byc[b]-byc[a]})[0],cs=tc?catStreak(tc):0;
+ $('chal').innerHTML='<div class="ch"><span class="small">'+L('Izazov nedelje','Challenge of the week')+'</span>'+(tc?'<b>'+L('7 dana bez: ','7 days without: ')+em(tc)+' '+esc(tc)+'</b><span class="small">'+L('Tu ti odlazi najviše novca. Tvoj niz: '+Math.min(cs,7)+' / 7 dana.','That’s where most of your money goes. Your run: '+Math.min(cs,7)+' / 7 days.')+(cs>=7?L(' Izazov završen! 🏆',' Challenge complete! 🏆'):'')+'</span>':'<span>'+L('Upiši par troškova pa ću ti izabrati izazov.','Log a few expenses and I’ll pick a challenge for you.')+'</span>')+'</div>';
  var sb=[],tot=0;S.exp.forEach(function(x,i){if(x.sub){sb.push({n:x.note||x.cat,c:x.cat,a:x.amt,b:'unsub('+i+')'});tot+=x.amt}});(S.rec||[]).forEach(function(r,i){if(r.k==='o'&&r.cat==='Pretplata'){sb.push({n:r.note,c:r.cat,a:r.amt,d:r.day,b:'unrec('+i+')'});tot+=r.amt}});sb.sort(function(x,y){return (x.d||99)-(y.d||99)});
  $('subs').innerHTML=sb.length?'<ul>'+sb.map(function(q){return '<li><span><b data-nt>'+esc(q.n)+'</b> <span class="small">'+L(fmt(q.a)+' mesečno'+(q.d?', svakog '+q.d+'.':''),fmt(q.a)+' a month'+(q.d?', on the '+q.d+(['st','nd','rd'][((q.d+90)%100-10)%10-1]||'th'):''))+'</span></span><button class="ghost" style="margin:0" onclick="'+q.b+'">Ne koristim</button></li>'}).join('')+'</ul><p>Plaćaš '+fmt(tot)+' '+S.cur+' mesečno, a to je '+fmt(tot*12)+' godišnje. Koje od ovoga stvarno koristiš?</p>':'<p class="small">'+L('Dodaj ponavljajući unos sa kategorijom „Pretplata“ (iznad) ili označi trošak kao mesečnu pretplatu i pojaviće se ovde.','Add a recurring entry with the “Subscription” category (above) or mark an expense as a monthly subscription and it will show up here.')+'</p>';
  var dy=dys(),o=[];
@@ -856,13 +858,29 @@ function extra(){incInfo();envRender();more();lims();streakCard();todayCard();ln
  var nw=new Date(),cm={},lm={};S.exp.forEach(function(x){var d=new Date(x.t),k=(d.getFullYear()*12+d.getMonth())-(nw.getFullYear()*12+nw.getMonth());if(k===0)cm[x.cat]=(cm[x.cat]||0)+x.amt;if(k===-1)lm[x.cat]=(lm[x.cat]||0)+x.amt});
  Object.keys(cm).forEach(function(k){if(lm[k]&&cm[k]>=lm[k]*1.2)o.push(L('Za '+esc(k)+' si ovog meseca potrošio '+Math.round((cm[k]/lm[k]-1)*100)+'% više nego prošlog.','You spent '+Math.round((cm[k]/lm[k]-1)*100)+'% more on '+esc(k)+' this month than last month.'))});
  $('pat').innerHTML=o.length?o.map(function(t){return '<div class="tip" style="margin-bottom:8px">'+t+'</div>'}).join(''):'<p class="small">Treba mi bar 2 nedelje troškova da uočim šablone.</p>'}
-$('w-go').onclick=function(){var p=num('w-p'),n=$('w-n').value.trim()||'To',g=S.goal,pc=pace();
- if(!(p>0)){$('w-out').innerHTML='<p class="small">Upiši cenu.</p>';return}
- var wd=getInc()>0?p/(getInc()/22):null,V=['Možeš lagano 😎','Ako baš moraš... 🤨','Ozbiljno razmisli, to je skoro mesec dana rada 😬','Brate, to je više od mesec dana rada 🥀','Skoro dva meseca rada. Spusti telefon 💀','Tebra, si realan da me pitaš uopšte ovako nešto 💀'];
- var h='<div class="tip"><b>'+(p>freeBal()?'Trenutno nemaš ni toliko para 🥀':wd==null?'Upiši mesečni prihod da ti kažem iskreno 👀':V[Math.min(5,Math.floor(wd/10))])+'</b>';
- if(wd!=null)h+='<br>'+esc(n)+' = '+fmt(wd)+L(' radnih dana tvog rada.',' days of work for you.');
- if(pc){if(pc.d>0)h+='<br>Cilj "'+esc(g.n)+'" se pomera za '+Math.ceil(p/pc.d)+' dana (štediš oko '+fmt(pc.d)+' '+S.cur+' dnevno, '+pc.b+').';else h+='<br>Ovim tempom ne štediš ništa, pa cilj "'+esc(g.n)+'" ionako stoji 🥀'}
- $('w-out').innerHTML=h+'</div>'};
+function upcomingFixed(){var n=new Date(),k=mk(n),dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate(),L0=[],sum=0;(S.rec||[]).forEach(function(r){if(r.k!=='o'||r.last===k)return;var d=Math.min(r.day,dim);L0.push({n:r.note||r.cat,a:r.amt,d:d});sum+=r.amt});L0.sort(function(x,y){return x.d-y.d});return{sum:sum,list:L0}}
+$('w-go').onclick=function(){var p=num('w-p'),n=$('w-n').value.trim()||L('To','That');
+ if(!(p>0)){$('w-out').innerHTML='<p class="small">'+L('Upiši cenu.','Enter the price.')+'</p>';return}
+ var bal=curBal(),fr=freeBal(),U=upcomingFixed(),left=fr-p,inc=getInc(),wd=inc>0?p/(inc/22):null,cu=' '+S.cur,v,ln=[];
+ var V=['Možeš lagano 😎','Ako baš moraš... 🤨','Ozbiljno razmisli, to je skoro mesec dana rada 😬','Brate, to je više od mesec dana rada 🥀','Skoro dva meseca rada. Spusti telefon 💀','Tebra, si realan da me pitaš uopšte ovako nešto 💀'];
+ if(p>bal)v=L('Trenutno nemaš ni toliko para 🥀','You don’t even have that much right now 🥀');
+ else if(p>fr)v=L('Toliko slobodnog novca nemaš. Morao bi da uzmeš iz koverti 🥀','You don’t have that much free money. You’d have to take it from your envelopes 🥀');
+ else if(U.sum>0&&left<U.sum)v=L('Može, ali onda nemaš za fiksne troškove koji tek dolaze 🥀','You could, but then you can’t cover the fixed costs still coming 🥀');
+ else if(wd!=null)v=V[Math.min(5,Math.floor(wd/10))];
+ else{var r=p/Math.max(fr,1);v=r<.1?L('Možeš lagano 😎','Easy, go for it 😎'):r<.25?L('Ako baš moraš... 🤨','If you really must... 🤨'):r<.5?L('Ozbiljno razmisli, to je veliki deo tvog slobodnog novca 😬','Think hard, that’s a big part of your free money 😬'):r<.8?L('Brate, to je više od pola tvog slobodnog novca 🥀','Bro, that’s more than half of your free money 🥀'):L('To je skoro sav tvoj slobodan novac. Spusti telefon 💀','That’s almost all of your free money. Put the phone down 💀')}
+ if(p<=fr)ln.push(L('Posle kupovine ti ostaje '+fmt(left)+cu+' slobodnog novca.','After buying it you’d have '+fmt(left)+cu+' of free money left.'));
+ else if(p<=bal)ln.push(L('Slobodno ti je samo '+fmt(Math.max(fr,0))+cu+', ostalo je u kovertama.','Only '+fmt(Math.max(fr,0))+cu+' is free, the rest is in envelopes.'));
+ if(U.sum>0)ln.push(L('Ovog meseca još dolaze fiksni troškovi: ','Fixed costs still coming this month: ')+U.list.map(function(x){return '<span data-nt>'+esc(x.n)+'</span> '+fmt(x.a)+' ('+x.d+(S.lang==='en'?'':'.')+')'}).join(', ')+'.');
+ if(wd!=null)ln.push(esc(n)+' = '+fmt(Math.round(wd*10)/10)+L(' radnih dana tvog rada.',' days of work for you.'));
+ var G=(S.env||[]).filter(function(e){return e.t>0&&e.b<e.t}).sort(function(x,y){return (x.due||9e15)-(y.due||9e15)});
+ if(G.length&&p<=bal){var alloc=function(F){return G.map(function(e){var rem=e.t-e.b,c=Math.max(0,Math.min(rem,F));F-=c;return rem-c})},A0=alloc(fr),A1=alloc(fr-p),q0=L('„','“'),q1=L('“','”'),hit=-1;
+  for(var gi=0;gi<G.length;gi++)if(A1[gi]>A0[gi]+.5){hit=gi;break}
+  if(hit<0)ln.push(L('Imaš dovoljno slobodnog novca i za ovo i za sve ciljeve.','You have enough free money for this and for all your goals.'));
+  else{var g=G[hit],gn=q0+'<span data-nt>'+esc(g.n)+'</span>'+q1,r0=g.due?rateTo(A0[hit],g.due):null,r1=g.due?rateTo(A1[hit],g.due):null;
+   if(r1&&r1.a){if(A0[hit]<=.5)ln.push(L('Za '+gn+' bi ti do sada bilo dovoljno slobodnog novca. Posle kupovine moraćeš da odvajaš oko '+rateTxt(r1)+' do '+dd(g.due),'Your free money would have covered '+gn+'. After this you’d need to set aside about '+rateTxt(r1)+' until '+dd(g.due)));
+    else ln.push(L('Da stigneš na '+gn+' do '+dd(g.due)+' umesto oko '+rateTxt(r0)+' odvajaćeš oko '+rateTxt(r1)+'.','To reach '+gn+' by '+dd(g.due)+' you’d set aside about '+rateTxt(r1)+' instead of '+rateTxt(r0)+'.'))}
+   else ln.push(L('Za '+gn+' ti onda fali još '+fmt(A1[hit])+cu+' umesto '+fmt(A0[hit])+cu+'.','For '+gn+' you’d then still need '+fmt(A1[hit])+cu+' instead of '+fmt(A0[hit])+cu+'.'))}}
+ $('w-out').innerHTML='<div class="tip"><b>'+v+'</b>'+ln.map(function(x){return '<br>'+x}).join('')+'</div>';trDom($('w-out'));fxDom()};
 $('i-go').onclick=function(){var a=num('i-m'),pc=pace();if(!(a>0)){$('i-out').innerHTML='<p class="small">Upiši iznos.</p>';return}
  var h='<div class="tip">'+fmt(a)+' '+S.cur+' mesečno = <b>'+fmt(a*12)+' '+S.cur+' godišnje</b>.';
  if(pc&&pc.rem>0&&pc.d>0)h+='<br>Cilj stiže '+Math.max(0,Math.round(pc.rem/pc.d-pc.rem/(pc.d+a/30)))+' dana ranije.';
@@ -921,25 +939,24 @@ function den(n){return n===1?'day':'days'}
 var TCD={or:'#ff8a00',bl:'#2fb8ff',rd:'#ff5a5a',gd:'#f2c200',pu:'#c77dff',gr:'#3ee08f',di:'#a8dcff',rb:'#ffb300',lg:'#ffd23f'},TCL={or:'#c25e00',bl:'#0a78c2',rd:'#cf2b2b',gd:'#8f6c00',pu:'#7f3fc4',gr:'#0f8f4f',di:'#2f74b0',rb:'#a86400',lg:'#8f6c00'};
 function isLight(){return document.documentElement.getAttribute('data-theme')==='light'}
 function flameSVG(id){return '<svg viewBox="0 0 64 80" class="flm" aria-hidden="true"><defs><linearGradient id="fg1'+id+'" x1="0" y1="1" x2="0" y2="0"><stop offset="0" class="s1a"/><stop offset="1" class="s1b"/></linearGradient><linearGradient id="fg2'+id+'" x1="0" y1="1" x2="0" y2="0"><stop offset="0" class="s2a"/><stop offset="1" class="s2b"/></linearGradient></defs><path class="fo" fill="url(#fg1'+id+')" d="M32 3C37 15 51 23 52 41C53 59 44 76 32 76C20 76 11 61 12 45C13 34 18 28 22 20C24 28 27 31 30 32C30 22 28 13 32 3Z">'+(RM?'':'<animate attributeName="d" dur="1.9s" repeatCount="indefinite" values="M32 3C37 15 51 23 52 41C53 59 44 76 32 76C20 76 11 61 12 45C13 34 18 28 22 20C24 28 27 31 30 32C30 22 28 13 32 3Z;M37 5C39 17 52 25 53 42C54 60 44 76 32 76C20 76 11 61 11 46C12 35 17 28 21 21C24 29 28 31 31 31C32 21 32 13 37 5Z;M32 3C37 15 51 23 52 41C53 59 44 76 32 76C20 76 11 61 12 45C13 34 18 28 22 20C24 28 27 31 30 32C30 22 28 13 32 3Z;M27 4C33 15 49 23 51 40C53 58 44 76 32 76C20 76 11 62 12 45C13 33 19 27 24 18C25 27 28 30 30 31C29 21 25 12 27 4Z;M32 3C37 15 51 23 52 41C53 59 44 76 32 76C20 76 11 61 12 45C13 34 18 28 22 20C24 28 27 31 30 32C30 22 28 13 32 3Z"/>')+'</path><path class="fm" fill="url(#fg2'+id+')" d="M32 24C36 33 45 39 45 52C45 65 39 74 32 74C25 74 19 66 19 55C19 47 24 42 27 36C29 42 31 44 33 44C33 38 31 31 32 24Z">'+(RM?'':'<animate attributeName="d" dur="1.4s" repeatCount="indefinite" values="M32 24C36 33 45 39 45 52C45 65 39 74 32 74C25 74 19 66 19 55C19 47 24 42 27 36C29 42 31 44 33 44C33 38 31 31 32 24Z;M35 25C38 34 46 40 46 53C46 66 39 74 32 74C25 74 19 66 19 56C19 48 23 43 26 37C29 43 32 45 34 44C35 38 34 31 35 25Z;M32 24C36 33 45 39 45 52C45 65 39 74 32 74C25 74 19 66 19 55C19 47 24 42 27 36C29 42 31 44 33 44C33 38 31 31 32 24Z;M29 25C34 33 44 39 44 52C44 65 39 74 32 74C25 74 19 66 19 55C19 46 25 41 28 35C29 41 31 43 32 43C31 37 28 31 29 25Z;M32 24C36 33 45 39 45 52C45 65 39 74 32 74C25 74 19 66 19 55C19 47 24 42 27 36C29 42 31 44 33 44C33 38 31 31 32 24Z"/>')+'</path><path class="fi" fill="var(--c)" d="M32 44C35 50 39 54 39 61C39 68 36 73 32 73C28 73 25 68 25 62C25 57 28 54 29 50C31 54 32 55 33 55C33 51 32 48 32 44Z">'+(RM?'':'<animate attributeName="d" dur="1s" repeatCount="indefinite" values="M32 44C35 50 39 54 39 61C39 68 36 73 32 73C28 73 25 68 25 62C25 57 28 54 29 50C31 54 32 55 33 55C33 51 32 48 32 44Z;M34 45C36 51 40 55 40 62C40 69 36 73 32 73C28 73 25 68 25 62C25 57 28 54 30 51C31 54 33 56 34 55C35 51 34 48 34 45Z;M32 44C35 50 39 54 39 61C39 68 36 73 32 73C28 73 25 68 25 62C25 57 28 54 29 50C31 54 32 55 33 55C33 51 32 48 32 44Z;M30 45C34 50 38 54 38 61C38 68 36 73 32 73C28 73 24 68 24 62C24 57 27 53 29 49C30 53 31 54 32 54C31 50 30 48 30 45Z;M32 44C35 50 39 54 39 61C39 68 36 73 32 73C28 73 25 68 25 62C25 57 28 54 29 50C31 54 32 55 33 55C33 51 32 48 32 44Z"/>')+'</path><circle class="em e1" cx="25" cy="44" r="1.7"/><circle class="em e2" cx="38" cy="40" r="1.4"/><circle class="em e3" cx="31" cy="34" r="1.2"/></svg>'}
-function streakCard(){var si=streakInfo(),st=si.n,k=tierOf(st),T=TIERS[k],N=TIERS[k+1],W=si.W,tk=si.tk,cu=' '+S.cur,ng=neg(si.td),bi=ng?backIn(tk,W):0;
- if(!$('flw'))$('streak').innerHTML='<div class="sk"><div class="flw" id="flw">'+flameSVG('a')+'</div><div class="skt"><div class="skn"><span class="sn" id="sk-n"></span><span id="sk-l"></span></div><span class="tchip" id="sk-t"></span><div class="tbar"><i id="sk-b"></i></div></div></div><p class="small" id="sk-m"></p><div id="sk-tk"></div><div id="sk-ck"></div>';
+function streakCard(){var si=streakInfo(),st=si.n,k=tierOf(st),T=TIERS[k],N=TIERS[k+1];
+ if(!$('flw'))$('streak').innerHTML='<div class="sk"><div class="flw" id="flw">'+flameSVG('a')+'</div><div class="skt"><div class="skn"><span class="sn" id="sk-n"></span><span id="sk-l"></span></div><span class="tchip" id="sk-t"></span><div class="tbar"><i id="sk-b"></i></div></div></div><p class="small" id="sk-m"></p><div id="sk-ck"></div>';
  $('flw').className='flw t-'+T[1]+($('flw').classList.contains('lvlup')?' lvlup':'');try{var fs=$('flw').querySelector('svg');if(st===0)fs.pauseAnimations();else fs.unpauseAnimations()}catch(x){}
  $('streak').parentNode.style.setProperty('--tc',(isLight()?TCL:TCD)[T[1]]);
  $('sk-n').textContent=st;$('sk-l').textContent=L(dn(st)+' zaredom',den(st)+' in a row');
  $('sk-t').textContent=L(T[2],T[3]);$('sk-b').style.width=Math.round((N?(st-T[0])/(N[0]-T[0]):1)*100)+'%';
  $('sk-m').textContent=!si.td.chk?L('Upiši današnje troškove. Ako preskočiš dan, plamen se gasi.','Log today’s spending. Skip a day and the flame goes out.'):N?L('Još '+(N[0]-st)+' '+dn(N[0]-st)+' do: '+N[2],(N[0]-st)+' more '+den(N[0]-st)+' to: '+N[3]):L('Godinu dana zaredom. Legenda.','A whole year in a row. Legend.');
- $('sk-tk').innerHTML=W>0?'<div class="tkb'+(ng?' neg':'')+'"><span>'+(ng?L('Minus za želje','Over your fun budget'):L('Slobodno za želje','Left for wants'))+'</span><b>'+(ng?'−':'')+fmt0(Math.abs(tk))+cu+'</b><small>'+(ng?L('Vraćaš se u plus za oko '+bi+' '+dn(bi)+' ako ne trošiš na želje.','Back in the green in about '+bi+' '+den(bi)+' if you skip wants.'):L('+'+fmt0(W/7)+cu+' svaki dan','+'+fmt0(W/7)+cu+' every day'))+'</small></div>':'<div class="tkb"><span>'+L('Postavi nedeljni budžet za želje i plamen će znati koliko smeš.','Set a weekly fun budget so the flame knows how much you can spend.')+'</span><button type="button" class="ghost" data-act="setb">'+L('Postavi','Set')+'</button></div>';
  var ck='';
  if(!si.td.chk&&new Date().getHours()>=20)ck+='<button type="button" class="ghost ckt" data-act="tno">'+L('Danas nisam ništa trošio','I didn’t spend anything today')+'</button>';
  $('sk-ck').innerHTML=ck;
  if(S.tierSeen==null){S.tierSeen=k;save()}else if(k>S.tierSeen){S.tierSeen=k;save();setTimeout(function(){toast(L('🔥 '+T[2]+'! '+st+' '+dn(st)+' zaredom','🔥 '+T[3]+'! '+st+' '+den(st)+' in a row'));var f=$('flw');if(f){f.classList.remove('lvlup');void f.offsetWidth;f.classList.add('lvlup')}},700)}else if(k<S.tierSeen){S.tierSeen=k;save()}
- rulesRender()}
+ }
 
 function closeEnv(){var c=document.querySelector('.fopen');if(!c||RM){envOpen=-1;envMode={};envRender();return}c.classList.add('back');setTimeout(function(){envOpen=-1;envMode={};envRender();trDom($('env-list'))},330)}
 var envMode={},envOpen=-1,drwAnim=false,fpAnim=false;
-function envCard(e,i){var p=e.t>0?Math.min(100,Math.round(e.b/e.t*100)):0,ml=e.due?(e.due-Date.now())/(30.4*864e5):0,need=e.t>0&&e.due&&e.b<e.t?(e.t-e.b)/Math.max(ml,1/30.4):0;
+function envCard(e,i){var p=e.t>0?Math.min(100,Math.round(e.b/e.t*100)):0,rt=e.t>0&&e.due&&e.b<e.t?rateTo(e.t-e.b,e.due):null;
  return '<div class="fopen'+(fpAnim?' pull':'')+'" style="--ec:'+CC[i%CC.length]+'"><span class="fotab" data-nt>'+esc(e.n)+'</span><div class="fobody"><div class="foamt">'+fmt(e.b)+' <small>'+S.cur+'</small></div>'
- +(e.t>0?'<div class="fobar"><i style="width:'+p+'%"></i></div><p class="fotx">'+(e.b>=e.t?L('Cilj je ispunjen 🎉','Goal reached 🎉'):L('Cilj ','Goal ')+fmt(e.t)+' '+S.cur+', '+(e.due?(ml<=0?L('rok je prošao.','the deadline has passed.'):L('rok '+dd(e.due)+' Ubacuj oko '+fmt0(need)+' '+S.cur+' mesečno.','deadline '+dd(e.due)+'. Put in about '+fmt0(need)+' '+S.cur+' a month.')):L('fali još '+fmt(e.t-e.b)+' '+S.cur+'.',fmt(e.t-e.b)+' '+S.cur+' still missing.')))+'</p>':'<p class="fotx">'+L('Koverta bez cilja, samo odvojen novac.','No goal, just money set aside.')+'</p>')
+ +(e.t>0?'<div class="fobar"><i style="width:'+p+'%"></i></div><p class="fotx">'+(e.b>=e.t?L('Cilj je ispunjen 🎉','Goal reached 🎉'):L('Cilj ','Goal ')+fmt(e.t)+' '+S.cur+', '+(rt?(rt.past?L('rok je prošao, fali još '+fmt(e.t-e.b)+' '+S.cur+'.','the deadline has passed, '+fmt(e.t-e.b)+' '+S.cur+' still missing.'):rt.today?L('rok je danas, fali još '+fmt(e.t-e.b)+' '+S.cur+'.','the deadline is today, '+fmt(e.t-e.b)+' '+S.cur+' still missing.'):L('rok '+dd(e.due)+' Ubacuj oko '+rateTxt(rt)+'.','deadline '+dd(e.due)+'. Put in about '+rateTxt(rt)+'.')):L('fali još '+fmt(e.t-e.b)+' '+S.cur+'.',fmt(e.t-e.b)+' '+S.cur+' still missing.')))+'</p>':'<p class="fotx">'+L('Koverta bez cilja, samo odvojen novac.','No goal, just money set aside.')+'</p>')
  +'<div class="envb"><button type="button" data-ea="in" data-ei="'+i+'">+ '+L('Ubaci','Add')+'</button><button type="button" data-ea="out" data-ei="'+i+'">− '+L('Izvadi','Take out')+'</button><button type="button" data-ea="del" data-ei="'+i+'" aria-label="'+L('Obriši','Delete')+'">✕</button></div>'
  +'<div class="envx'+(envMode[i]?'':' hide2')+'"><div class="row"><input type="text" inputmode="decimal" autocomplete="off" id="envv'+i+'" placeholder="'+(envMode[i]==='out'?L('Koliko vadiš','How much to take out'):L('Koliko ubacuješ','How much to add'))+'"><button type="button" data-ea="ok" data-ei="'+i+'">OK</button></div></div>'
  +'<button type="button" class="foback" data-ea="close" data-ei="'+i+'">'+L('Vrati u fioku','Put it back')+'</button></div></div>'}
@@ -984,19 +1001,9 @@ function dragEnd(e){if(!drag||(e&&e.pointerId!==drag.id))return;var d=drag;drag=
  if(!d.moved){drwSet(S.drw!=='c');return}var shut=S.drw==='c';drwSet(shut?d.h<d.H*0.25:d.h<d.H*0.75)}
 $('env-list').addEventListener('pointerup',dragEnd);$('env-list').addEventListener('pointercancel',dragEnd);
 $('env-list').addEventListener('keydown',function(e){if(e.target.closest('.dfront')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();drwSet(S.drw!=='c')}});
-var VICE=['Kafić','Brza hrana','Izlasci','Igrice','Odeća','Obuća'];
-function rulesRender(){var R=$('rules');
- if(!$('wk-in')){R.innerHTML='<p>'+L('Plamen raste za svaki dan kad upišeš troškove. Ako tog dana nisi ništa trošio, posle 20h se pojavi dugme „Danas nisam ništa trošio“. Ako preskočiš dan, plamen se gasi i kreće od 1.','The flame grows every day you log your spending. If you spent nothing, a “I didn’t spend anything today” button shows up after 8 pm. Skip a day and the flame goes out and starts over at 1.')+'</p><p>'+L('Budžet za želje ti pokazuje koliko smeš da potrošiš na sebe. Ono što ne potrošiš ostaje ti za kasnije, pa možeš da uštediš i za nešto veće.','Your fun budget shows how much you can spend on yourself. Whatever you don’t spend stays for later, so you can save up for something bigger.')+'</p><label for="wk-in">'+L('Nedeljno za želje','Weekly fun budget')+' ('+esc(S.cur)+')</label><div class="row"><input id="wk-in" type="text" inputmode="decimal" autocomplete="off"><button type="button" id="wk-go" class="wkb">'+L('Sačuvaj','Save')+'</button></div><p class="small" id="wk-h"></p><p class="small nd-h">'+L('Potrebe ne diraju budžet za želje. Dodirni kategoriju da je prebaciš.','Needs don’t touch your fun budget. Tap a category to move it.')+'</p><span class="ndl">'+L('Potrebe','Needs')+'</span><div class="chips wrap" id="nd-n"></div><span class="ndl">'+L('Želje','Wants')+'</span><div class="chips wrap" id="nd-w"></div>';
-  $('wk-go').onclick=wkSave;R.onclick=ndTap}
- var sg=wkSug(),wi=$('wk-in');wi.placeholder=sg>0?fmt(sg):'';if(document.activeElement!==wi)wi.value=S.wk>0?String(S.wk):'';
- $('wk-h').textContent=sg<=0&&getInc()>0?L('Cilj štednje ti je veći od onoga što ostane od prihoda, pa nemam predlog. Upiši iznos sam.','Your savings goal takes everything left of your income, so there’s no suggestion. Enter an amount yourself.'):sg>0?L('Predlog: '+fmt(sg)+' '+S.cur+', to je 40% onoga što ti ostane od prihoda posle štednje. Ostavi prazno da važi predlog.','Suggested: '+fmt(sg)+' '+S.cur+', 40% of what’s left of your income after savings. Leave it empty to use the suggestion.'):L('Upiši mesečni prihod u podešavanjima i predložiću ti iznos.','Add your monthly income in settings and I’ll suggest an amount.');
- var hn='',hw='';cats().forEach(function(c,i){var b='<button type="button" class="chip" data-nd="'+i+'">'+tile(c)+esc(c)+'</button>';if(isNeed(c))hn+=b;else hw+=b});$('nd-n').innerHTML=hn||'<span class="small">–</span>';$('nd-w').innerHTML=hw||'<span class="small">–</span>'}
-function wkSave(){var raw=String($('wk-in').value).trim(),v=num('wk-in');if(!raw)S.wk=null;else if(v>0)S.wk=v;else{toast(L('Upiši iznos veći od nule.','Enter an amount above zero.'));return}wkSync();save();render();var w=wkCur();toast(w>0?L('Budžet za želje: '+fmt(w)+' '+S.cur+' nedeljno. Važi od danas.','Fun budget: '+fmt(w)+' '+S.cur+' a week, starting today.'):L('Upiši prihod ili iznos budžeta.','Enter your income or a budget amount.'))}
-function ndTap(e){var b=e.target.closest('[data-nd]');if(!b)return;var c=cats()[+b.getAttribute('data-nd')];if(!c)return;S.need=S.need||{};var nn=!isNeed(c);S.need[c]=nn;save();render();
- toast(nn?(VICE.indexOf(c)>=0?L(c+' kao potreba? Hrabro 🗿 Važi od sada.',c+' as a need? Bold 🗿 Applies from now on.'):L(c+' je sada potreba. Važi od sada.',c+' is now a need. Applies from now on.')):L(c+' sada ide u želje. Važi od sada.',c+' now counts as a want. Applies from now on.'))}
-$('streak').onclick=function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act'),t=Date.now();
+$('streak').onclick=$('streak').onclick=function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act'),t=Date.now();
  if(a==='tno'){checkIn(t);render();var n=streak();toast(n>0?L('Zabeleženo. 🔥 '+n+' '+dn(n)+' zaredom.','Logged. 🔥 '+n+' '+den(n)+' in a row.'):L('Zabeleženo.','Logged.'))}
- else if(a==='setb'){var dr=document.querySelector('details.rules');if(dr)dr.open=true;setTimeout(function(){$('wk-in').scrollIntoView({block:'center'});$('wk-in').focus()},50)}};
+};
 function dayIO(y,m,d){var a=new Date(y,m,d).getTime(),b=new Date(y,m,d+1).getTime(),i=0,o=0;(S.ins||[]).forEach(function(x){if(x.t>=a&&x.t<b)i+=x.amt});S.exp.forEach(function(x){if(x.t>=a&&x.t<b)o+=x.amt});return{i:i,o:o}}
 function todayCard(){var n=new Date(),io=dayIO(n.getFullYear(),n.getMonth(),n.getDate());$('today').innerHTML=L('Danas potrošeno ','Spent today ')+'<b>'+fmt(io.o)+' '+S.cur+'</b>'+(io.i>0?L(', primljeno ',', received ')+'<b>'+fmt(io.i)+' '+S.cur+'</b>':'')}
 function spark(){var n=new Date();n.setHours(0,0,0,0);var v=[],i,mx=1;for(i=6;i>=0;i--){var a=n.getTime()-i*864e5,b=a+864e5,t=0;S.exp.forEach(function(x){if(x.t>=a&&x.t<b)t+=x.amt});v.push(t);mx=Math.max(mx,t)}
@@ -1010,7 +1017,7 @@ function trDom(root){if(S.lang!=='en')return;var w=document.createTreeWalker(roo
 var trBusy=false;new MutationObserver(function(){if(trBusy)return;if(S.lang==='en'){trBusy=true;trDom();trBusy=false}else if(S.g==='f'){trBusy=true;fxDom();trBusy=false}}).observe(document.body,{childList:true,subtree:true,characterData:true});
 $('thm').onchange=function(){S.theme=this.value;save();render()};
 $('st-g').onchange=function(){S.g=this.value;save();location.reload()};
-var FX=[[/\b(P|p)otrošio\b/g,'$1otrošila'],[/\b(P|p)rešao\b/g,'$1rešla'],[/\bjeo si\b/g,'jela si'],[/\btrebao\b/g,'trebala'],[/\bkoristio\b/g,'koristila'],[/\btrošio\b/g,'trošila'],[/\bupisao\b/g,'upisala'],[/\bsiguran\b/g,'sigurna'],[/\blenj\b/g,'lenja'],[/\bsi realan\b/g,'si realna'],[/\bsam vodiš\b/g,'sama vodiš']];
+var FX=[[/\bMorao\b/g,'Morala'],[/\bmorao\b/g,'morala'],[/\b(P|p)otrošio\b/g,'$1otrošila'],[/\b(P|p)rešao\b/g,'$1rešla'],[/\bjeo si\b/g,'jela si'],[/\btrebao\b/g,'trebala'],[/\bkoristio\b/g,'koristila'],[/\btrošio\b/g,'trošila'],[/\bupisao\b/g,'upisala'],[/\bsiguran\b/g,'sigurna'],[/\blenj\b/g,'lenja'],[/\bsi realan\b/g,'si realna'],[/\bsam vodiš\b/g,'sama vodiš']];
 function fx(t){if(S.lang==='en'||S.g!=='f'||!t)return t;FX.forEach(function(r){t=t.replace(r[0],r[1])});return t}
 function fxDom(){var w=document.createTreeWalker(document.body,4),n;while(n=w.nextNode()){if(n.parentNode&&(/^(SCRIPT|STYLE|TEXTAREA)$/.test(n.parentNode.nodeName)||(n.parentNode.closest&&n.parentNode.closest('[data-nt]'))))continue;var v=fx(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v}}
 $('lang2').onchange=function(){S.lang=this.value;save();location.reload()};
@@ -1080,6 +1087,12 @@ function txRender(){var L=[],h='',ld='';if(tf!=='in')S.exp.forEach(function(e,i)
  $('hist').innerHTML=h||'<p class="small">Još nema promena.</p>'}
 $('hist').onclick=function(e){var eb=e.target.closest('[data-ed]');if(eb){edOpen(eb.getAttribute('data-ed'));return}var b=e.target.closest('[data-tx]');if(!b)return;var v=b.getAttribute('data-tx'),i=+v.slice(1);if(v[0]==='o'){var xe=S.exp[i],eo=xe&&xe.env&&(S.env||[]).filter(function(e){return e.id===xe.env})[0];if(eo)eo.b+=xe.envAmt||0;S.exp.splice(i,1)}else{if(!S.ins[i].c2)S.added=(S.added||0)-S.ins[i].amt;S.ins.splice(i,1)}save();render()};
 qa('#flt .fb').forEach(function(b){b.onclick=function(){tf=b.getAttribute('data-f');qa('#flt .fb').forEach(function(x){x.classList.toggle('on',x===b)});txRender()}});
+var vzc=$('vzc'),vzi=0;
+function vzSet(i,force){if(i===vzi&&!force)return;vzi=i;qa('#vzd button').forEach(function(b,j){b.classList.toggle('on',j===i);b.setAttribute('aria-current',j===i?'true':'false')});vzH()}
+function vzH(){var sl=vzc.children[vzi];if(sl&&sl.offsetHeight)vzc.style.height=sl.offsetHeight+'px'}
+vzc.addEventListener('scroll',function(){var i=Math.max(0,Math.min(2,Math.round(vzc.scrollLeft/Math.max(1,vzc.clientWidth))));if(i!==vzi){vzSet(i);if(i===1)lnRender()}},{passive:true});
+qa('#vzd button').forEach(function(b,j){b.onclick=function(){vzc.scrollTo({left:j*vzc.clientWidth,behavior:RM?'auto':'smooth'})}});
+window.addEventListener('resize',function(){vzH()});if(window.ResizeObserver){var vzRO=new ResizeObserver(function(){vzH()});[].forEach.call(vzc.children,function(c){vzRO.observe(c)})}
 var car=$('car'),cdi=0;
 function cdSet(i){cdi=i;qa('#cdots button').forEach(function(b,j){b.classList.toggle('on',j===i);b.setAttribute('aria-current',j===i?'true':'false')});$('nx').textContent=i<2?L('Dalje','Next'):L('Podesi aplikaciju','Set up the app');$('skip').style.visibility=i<2?'':'hidden'}
 function cdGo(i){car.scrollTo({left:i*car.clientWidth,behavior:RM?'auto':'smooth'})}
@@ -1097,7 +1110,7 @@ function edOpen(k){edK=k;var o=k[0]==='o',i=+k.slice(1),e=o?S.exp[i]:S.ins[i];if
 $('ed-x').onclick=function(){$('ed').classList.add('hide2')};
 $('ed').onclick=function(e){if(e.target===$('ed'))$('ed').classList.add('hide2')};
 $('ed-ok').onclick=function(){var o=edK[0]==='o',i=+edK.slice(1),e=o?S.exp[i]:S.ins[i],v=num('ed-amt'),n=$('ed-note').value.trim();if(!(v>0)){toast('Upiši iznos');return}if(!n){toast('Upiši opis');return}
- if(o){var nc=$('ed-cat').value;if(nc!==e.cat){e.cat=nc;e.w=isNeed(nc)?0:1}}else{if(!e.c2)S.added=(S.added||0)-e.amt+v;e.type=$('ed-cat').value}if(e.c2){e.oa=v;e.amt=conv(v)}else e.amt=v;e.note=n;save();$('ed').classList.add('hide2');render();toast('Izmenjeno ✅')};
+ if(o){var nc=$('ed-cat').value;if(nc!==e.cat){e.cat=nc}}else{if(!e.c2)S.added=(S.added||0)-e.amt+v;e.type=$('ed-cat').value}if(e.c2){e.oa=v;e.amt=conv(v)}else e.amt=v;e.note=n;save();$('ed').classList.add('hide2');render();toast('Izmenjeno ✅')};
 function mk(d){return d.getFullYear()+'-'+(d.getMonth()+1)}
 function recProcess(){var R=S.rec||[],n=new Date(),k=mk(n),ch=false;R.forEach(function(r){if(r.last===k)return;var dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate(),dd=Math.min(r.day,dim);if(n.getDate()<dd)return;var t=new Date(n.getFullYear(),n.getMonth(),dd,12).getTime();
  if(r.k==='o')S.exp.push({amt:r.amt,cat:r.cat,t:t,note:r.note,auto:1});else{S.added=(S.added||0)+r.amt;(S.ins=S.ins||[]).push({amt:r.amt,t:t,type:r.cat,note:r.note,auto:1})}r.last=k;ch=true});if(ch)save()}
@@ -1180,21 +1193,16 @@ $('e-go').onclick=function(){
  if(!(a>0)){$('err').textContent='Upiši iznos.';return}
  if(!c){$('err').textContent='Moraš da navedeš na šta je potrošeno.';return}
  if(!$('e-note').value.trim()){$('err').textContent='Upiši opis troška (npr. ručak sa drugom).';return}
- var si0=streakInfo(),st0=si0.n,ck0=si0.td.chk,tt=Date.now();S.exp.push({amt:eCur==='s'&&S.cur2?conv(a):a,oa:eCur==='s'&&S.cur2?a:undefined,c2:eCur==='s'&&S.cur2?1:undefined,cat:c,t:tt,w:isNeed(c)?0:1,sub:$('e-sub').checked,note:$('e-note').value.trim()});var xi=S.exp.length-1,evi=$('e-env').value,evo=(S.env||[]).filter(function(e){return e.id===evi})[0];if(evo){var tk0=Math.min(evo.b,S.exp[xi].amt);evo.b-=tk0;S.exp[xi].env=evi;S.exp[xi].envAmt=tk0}$('e-env').value='';$('e-note').value='';$('e-sub').checked=false;save();$('e-amt').value='';render();
+ var si0=streakInfo(),st0=si0.n,ck0=si0.td.chk,tt=Date.now();S.exp.push({amt:eCur==='s'&&S.cur2?conv(a):a,oa:eCur==='s'&&S.cur2?a:undefined,c2:eCur==='s'&&S.cur2?1:undefined,cat:c,t:tt,sub:$('e-sub').checked,note:$('e-note').value.trim()});var xi=S.exp.length-1,evi=$('e-env').value,evo=(S.env||[]).filter(function(e){return e.id===evi})[0];if(evo){var tk0=Math.min(evo.b,S.exp[xi].amt);evo.b-=tk0;S.exp[xi].env=evi;S.exp[xi].envAmt=tk0}$('e-env').value='';$('e-note').value='';$('e-sub').checked=false;save();$('e-amt').value='';render();
  var bal=curBal(),m;
  if(bal<0)m='u minusu si, brate. stani. 🥀🥀🥀';
  else if(a>(S.start+(S.added||0))*.1)m='to je preko 10% svega što imaš, jel si siguran 🥀';
  else m=M[c]?pick(M[c]):pick(M.C).replace('{c}',c);
- if(bal>=0&&a<=(S.start+(S.added||0))*.1&&todayCount()>=3)m='treći trošak danas, brate. zaključaj telefon 🥀';
+ if(bal>=0&&a<=(S.start+(S.added||0))*.1&&todayCount()===3)m='treći trošak danas, brate. zaključaj telefon 🥀';
  var mi=getInc();if(mi>0&&bal>=0){var rr=monthSpent()/mi;if(rr>=1)m='potrošio si ceo mesečni prihod, brate. stani 🥀🥀';else if(rr>=.8)m='preko 80% mesečnog prihoda je već otišlo 🥀'}
  var ro=S.roast==null?1:S.roast;if(bal>=0&&ro===0)m=pick(M.soft);else if(bal>=0&&ro===2)m+=' '+pick(M.hard);
  var LM=(S.lim||{})[c];if(LM){var cs=mcat(0).o[c]||0;if(cs>LM)m='prešao si mesečni limit za '+c+' ('+fmt(cs)+' / '+fmt(LM)+') 🥀🥀';else if(cs>=LM*.8)m='blizu si limita za '+c+': '+fmt(cs)+' / '+fmt(LM)+' 🥀'}
- var si=streakInfo(),cx=S.exp[xi],ex='',ng=neg(si.td);
- if(cx&&isWant(cx)){if(si.W>0){if(ng){var bi=backIn(si.tk,si.W),nm=fmt0(-si.tk)+' '+S.cur;if(bal>=0&&ro!==0)m=pick([L('sad si u minusu '+nm+' za želje 🥀','you’re now '+nm+' over your fun budget 🥀'),L('budžet za želje je prazan, a ti i dalje kupuješ 🥀','your fun budget is empty and you’re still buying 🥀'),L('minus '+nm+' za želje. budući ti već plače 🥀','minus '+nm+' on wants. future you is already crying 🥀')])+(ro===2?' '+pick(M.hard):'');
-   ex=L('Minus za želje: '+nm+'. U plus se vraćaš za oko '+bi+' '+dn(bi)+'.','Over your fun budget by '+nm+'. Back in the green in about '+bi+' '+den(bi)+'.')}
-  else ex=L('Za želje ostalo: '+fmt0(si.tk)+' '+S.cur,'Left for wants: '+fmt0(si.tk)+' '+S.cur)}
-  else ex=L('Postavi budžet za želje na kartici sa plamenom.','Set a fun budget on the flame card.')}
- else if(cx)ex=L('✅ Potreba, budžet za želje ostaje isti.','✅ A need. Your fun budget stays the same.');
+ var si=streakInfo(),ex='';
  if(!ck0&&si.n>0)ex+=(ex?'\n':'')+L('🔥 Dan upisan: '+si.n+' '+dn(si.n)+' zaredom','🔥 Day logged: '+si.n+' '+den(si.n)+' in a row');
  sheet(false);toast(ex?m+'\n'+ex:m);track('log')
 };
@@ -1218,7 +1226,7 @@ var rt;$('reset').onclick=function(){var b=this;
  if(!b.dataset.sure){b.dataset.sure='1';b.querySelector('b').textContent=L('Klikni opet da obrišeš sve','Tap again to delete everything');rt=setTimeout(function(){delete b.dataset.sure;b.querySelector('b').textContent=L('Resetuj sve','Reset everything')},4000);return}
  clearTimeout(rt);delete b.dataset.sure;b.querySelector('b').textContent=L('Resetuj sve','Reset everything');
  S={cur:'EUR',start:0,exp:[],cats:[],goal:null,fold:{}};step=0;lastScr='';save();$('s-amt').value='';$('s-inc').value='';$('n-inc').value='';$('plan').innerHTML='';$('w-out').innerHTML='';$('i-out').innerHTML='';tab(0);render();toast('Sve obrisano. Nov početak 🥀')};
-function tab(n){$('app').setAttribute('data-tab',n);if(n===2&&ptab!==2&&!RM){drwAnim=true;envOpen=-1;envRender()}document.querySelectorAll('#nav button').forEach(function(b,i){b.classList.toggle('on',i===n);b.setAttribute('aria-current',i===n?'page':'false')});if(n===1)lnRender();window.scrollTo(0,0);if(ptab!==null&&n!==ptab)animIn([].slice.call(document.querySelectorAll('#app section.t'+n)),n>ptab?'anim-l':'anim-r',60);ptab=n}
+function tab(n){$('app').setAttribute('data-tab',n);if(n===2&&ptab!==2&&!RM){drwAnim=true;envOpen=-1;envRender()}document.querySelectorAll('#nav button').forEach(function(b,i){b.classList.toggle('on',i===n);b.setAttribute('aria-current',i===n?'page':'false')});if(n===1){lnRender();setTimeout(vzH,30)}window.scrollTo(0,0);if(ptab!==null&&n!==ptab)animIn([].slice.call(document.querySelectorAll('#app section.t'+n)),n>ptab?'anim-l':'anim-r',60);ptab=n}
 document.querySelectorAll('#nav button').forEach(function(b,i){b.onclick=function(){tab(i)}});
 tab(0);render();
 
@@ -1240,7 +1248,7 @@ function foldInit(){S.fold=S.fold||{};qa('section[data-fold]').forEach(function(
  function tg(){var o=!sec.classList.contains('open');sec.classList.toggle('open',o);h.setAttribute('aria-expanded',o);(S.fold=S.fold||{})[k]=o;save();if(o){animIn([].slice.call(sec.children).filter(function(c){return c!==h}),'anim-in',40);if(k==='line')lnRender()}}
  h.onclick=tg;h.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}}})}
 foldInit();
-window.__lk={streakInfo:streakInfo,tank:tank,wkSug:wkSug,wkCur:wkCur,isNeed:isNeed,catStreak:catStreak,tierOf:tierOf};window.unsub=unsub;window.delExp=delExp;
+window.__lk={streakInfo:streakInfo,tank:tank,isNeed:isNeed,catStreak:catStreak,tierOf:tierOf,rateTo:rateTo,freeBal:freeBal};window.unsub=unsub;window.delExp=delExp;
 })();
 </script>
 </body>
