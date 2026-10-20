@@ -1239,7 +1239,8 @@ qa('#flt .fb').forEach(function(b){b.onclick=function(){tf=b.getAttribute('data-
 // On top of that each panel only gets depth, a turn and dimming, tied to the scroll position
 // (CSS scroll timeline where supported, otherwise a light scroll listener). Slow changes, so any lag is invisible.
 var hst=$('vzc'),hpan=qa('#vzc .vzs'),HN=hpan.length,hring=$('hring'),hpw=326,hS=286,HP=1000,HZ=150,HZB=60,HZE=120,HRY=30,HRYE=14,HTK=18,HCV=1,HPT=20,HPB=60,hW=0,vzi=0,hKey='';
-var HSD=!!(window.CSS&&CSS.supports&&CSS.supports('animation-timeline','--a')&&CSS.supports('scroll-timeline','--a x'));
+// depth/turn are always set from a scroll listener: CSS scroll timelines did not apply on iPhone Safari
+var HSD=false;
 var HO={act:-1,touch:0,st:0,lay:0,mov:0,skip:0,turn:0};
 hpan.forEach(function(el){el._dim=el.querySelector('.hdim')});
 if(hst)hst.classList.toggle('sd',HSD);
