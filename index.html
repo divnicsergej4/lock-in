@@ -571,11 +571,8 @@ html[data-theme=light] .fld .ftab,html[data-theme=light] .fld .fbody{transition:
 #spent,#today,#n-out,#allow{display:none!important}
 /* holografski prsten sa tri grafikona: paneli lebde i okrecu se prevlacenjem */
 :root section.viz.holo{background:transparent;border:0;box-shadow:none;padding:0;border-radius:0;margin-left:-16px;margin-right:-16px}
-.hwr{position:relative}
-.hst{position:relative;height:560px;display:flex;align-items:flex-start;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:auto;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scroll-timeline:--hr x;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;outline:none;--hc:rgba(130,255,195,.5);--hb:#22e07a;--hr:rgba(130,255,195,.55)}
-.hst::-webkit-scrollbar{display:none}
-.hsp{flex:0 0 var(--hpad,32px);height:1px}
-.hst .vzs{position:relative;flex:0 0 var(--pw,326px);width:var(--pw,326px);height:var(--ph,470px);margin:20px var(--hov,-40px) 0 0;scroll-snap-align:center;scroll-snap-stop:always;transform-origin:50% 50%;will-change:transform,opacity;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.hst{position:relative;height:560px;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;outline:none;--hc:rgba(130,255,195,.5);--hb:#22e07a;--hr:rgba(130,255,195,.55)}
+.hst .vzs{position:absolute;top:20px;left:50%;width:var(--pw,326px);height:var(--ph,470px);margin-left:calc(var(--pw,326px)/-2);transform-origin:50% 43%;will-change:transform,opacity;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .vzf{height:100%;animation:hfl 7s ease-in-out infinite}
 .hmov .vzf{animation-play-state:paused}.vzs[data-h="1"] .vzf{animation-delay:-2.4s}.vzs[data-h="2"] .vzf{animation-delay:-4.7s}
 @keyframes hfl{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
@@ -586,7 +583,6 @@ html[data-theme=light] .fld .ftab,html[data-theme=light] .fld .fbody{transition:
 .hscan{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:2}
 .hscan b{position:absolute;left:0;right:0;top:0;height:70px;opacity:0;transform:translateY(-90px);background:linear-gradient(180deg,rgba(34,224,122,0),rgba(34,224,122,.06) 55%,rgba(140,255,200,.2) 95%,rgba(215,255,232,.95) 98.6%,rgba(34,224,122,0))}
 .hdim{position:absolute;inset:0;border-radius:inherit;background:rgba(3,9,6,.8);opacity:0;pointer-events:none;z-index:3;will-change:opacity}
-.hst .vzs:nth-last-of-type(1){margin-right:0}
 .hbase{position:absolute;left:50%;bottom:8px;width:min(88%,430px);height:46px;transform:translateX(-50%);pointer-events:none}
 .hbase svg{display:block;width:100%;height:100%;overflow:visible}
 #hring{transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1)}
@@ -738,7 +734,7 @@ html[data-theme=light] .fobody{background:linear-gradient(rgba(255,255,255,.4),r
 
 
 
-<section class="t1 viz vzw holo"><div class="hwr"><div class="hbase" aria-hidden="true"><svg viewBox="0 0 300 46" preserveAspectRatio="none"><defs><radialGradient id="hbg" cx="50%" cy="50%" r="50%"><stop offset="0" style="stop-color:var(--hb);stop-opacity:.34"/><stop offset=".55" style="stop-color:var(--hb);stop-opacity:.1"/><stop offset="1" style="stop-color:var(--hb);stop-opacity:0"/></radialGradient></defs><ellipse cx="150" cy="23" rx="150" ry="23" fill="url(#hbg)"/><ellipse cx="150" cy="23" rx="132" ry="12.5" fill="none" style="stroke:var(--hr)" stroke-opacity=".5" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse id="hring" cx="150" cy="23" rx="108" ry="9.5" fill="none" style="stroke:var(--hr)" stroke-width="1.6" stroke-dasharray="2 7" vector-effect="non-scaling-stroke"/></svg></div><div class="hst" id="vzc" role="region" aria-roledescription="carousel" aria-label="Grafikoni" tabindex="0"><i class="hsp"></i><div class="vzs" data-h="2" role="group" aria-roledescription="slide" aria-label="3 / 3"><div class="vzf"><div class="vzp"><div class="vzi"><div class="hh"><h2>Dnevna potrošnja</h2><span class="htag" id="cal-m"></span></div><div class="calh"><button class="ghost" id="cal-p" aria-label="Prethodni mesec">‹</button><b id="cal-t"></b><button class="ghost" id="cal-n" aria-label="Sledeći mesec">›</button></div><div id="cal" class="cal"></div><div id="cal-day" class="small hcd"></div></div><i class="hscan"><b></b></i><i class="hdim"></i></div></div></div><div class="vzs" data-h="0" role="group" aria-roledescription="slide" aria-label="1 / 3"><div class="vzf"><div class="vzp"><div class="vzi"><div class="hh"><h2>Raspodela ovog meseca</h2><span class="htag" id="dn-m"></span></div><div id="dn"></div><div id="dn-list"></div></div><i class="hscan"><b></b></i><i class="hdim"></i></div></div></div><div class="vzs" data-h="1" role="group" aria-roledescription="slide" aria-label="2 / 3"><div class="vzf"><div class="vzp"><div class="vzi"><div class="hh"><h2>Ušteđeno vs potrošeno</h2><span class="htag" id="ln-m"></span></div><p class="small hhint" data-en="Tap the chart, or hold your finger and drag, to see each day.">Dodirni grafikon ili zadrži prst i prevuci da vidiš dan po dan.</p><div id="ln" class="ln"></div><div id="ln-tip" class="lntip"></div><div id="ln-st" class="hstat"></div></div><i class="hscan"><b></b></i><i class="hdim"></i></div></div></div><i class="hsp"></i></div></div><div class="cdots vzd" id="vzd"><button type="button" class="on" aria-label="1 / 3"></button><button type="button" aria-label="2 / 3"></button><button type="button" aria-label="3 / 3"></button></div></section>
+<section class="t1 viz vzw holo"><div class="hst" id="vzc" role="region" aria-roledescription="carousel" aria-label="Grafikoni" tabindex="0"><div class="hbase" aria-hidden="true"><svg viewBox="0 0 300 46" preserveAspectRatio="none"><defs><radialGradient id="hbg" cx="50%" cy="50%" r="50%"><stop offset="0" style="stop-color:var(--hb);stop-opacity:.34"/><stop offset=".55" style="stop-color:var(--hb);stop-opacity:.1"/><stop offset="1" style="stop-color:var(--hb);stop-opacity:0"/></radialGradient></defs><ellipse cx="150" cy="23" rx="150" ry="23" fill="url(#hbg)"/><ellipse cx="150" cy="23" rx="132" ry="12.5" fill="none" style="stroke:var(--hr)" stroke-opacity=".5" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse id="hring" cx="150" cy="23" rx="108" ry="9.5" fill="none" style="stroke:var(--hr)" stroke-width="1.6" stroke-dasharray="2 7" vector-effect="non-scaling-stroke"/></svg></div><div class="vzs" data-h="0" role="group" aria-roledescription="slide" aria-label="1 / 3"><div class="vzf"><div class="vzp"><div class="vzi"><div class="hh"><h2>Raspodela ovog meseca</h2><span class="htag" id="dn-m"></span></div><div id="dn"></div><div id="dn-list"></div></div><i class="hscan"><b></b></i><i class="hdim"></i></div></div></div><div class="vzs" data-h="1" role="group" aria-roledescription="slide" aria-label="2 / 3"><div class="vzf"><div class="vzp"><div class="vzi"><div class="hh"><h2>Ušteđeno vs potrošeno</h2><span class="htag" id="ln-m"></span></div><p class="small hhint" data-en="Tap the chart, or hold your finger and drag, to see each day.">Dodirni grafikon ili zadrži prst i prevuci da vidiš dan po dan.</p><div id="ln" class="ln"></div><div id="ln-tip" class="lntip"></div><div id="ln-st" class="hstat"></div></div><i class="hscan"><b></b></i><i class="hdim"></i></div></div></div><div class="vzs" data-h="2" role="group" aria-roledescription="slide" aria-label="3 / 3"><div class="vzf"><div class="vzp"><div class="vzi"><div class="hh"><h2>Dnevna potrošnja</h2><span class="htag" id="cal-m"></span></div><div class="calh"><button class="ghost" id="cal-p" aria-label="Prethodni mesec">‹</button><b id="cal-t"></b><button class="ghost" id="cal-n" aria-label="Sledeći mesec">›</button></div><div id="cal" class="cal"></div><div id="cal-day" class="small hcd"></div></div><i class="hscan"><b></b></i><i class="hdim"></i></div></div></div></div><div class="cdots vzd" id="vzd"><button type="button" class="on" aria-label="1 / 3"></button><button type="button" aria-label="2 / 3"></button><button type="button" aria-label="3 / 3"></button></div></section>
 <section data-fold="tx" data-open="1" class="fold t1">
 <h2><span class="hi">📊</span>Sve promene</h2><div id="flt"><button class="fb on" data-f="all">Sve</button><button class="fb" data-f="in">Prihodi</button><button class="fb" data-f="out">Troškovi</button></div>
 <div id="stats"></div>
@@ -1149,7 +1145,7 @@ function lnRender(){var el=$('ln');if(!el)return;var W=el.clientWidth||300,H=lnH
  var pt=D.map(function(x,k){return [X(k),Y(x.c)]}),pts=pt.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join(' ');
  lnLen=0;for(i=1;i<pt.length;i++)lnLen+=Math.sqrt(Math.pow(pt[i][0]-pt[i-1][0],2)+Math.pow(pt[i][1]-pt[i-1][1],2));
  var dl=function(x){return x.d.getDate()+'.'+(x.d.getMonth()+1)+'.'};
- el.innerHTML='<svg width="'+W+'" height="'+(H+XL)+'" viewBox="0 0 '+W+' '+(H+XL)+'" style="display:block;cursor:crosshair;overflow:visible"><defs><linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22e07a" stop-opacity=".26"/><stop offset="1" stop-color="#22e07a" stop-opacity="0"/></linearGradient></defs>'
+ el.innerHTML='<svg width="'+W+'" height="'+(H+XL)+'" viewBox="0 0 '+W+' '+(H+XL)+'" style="display:block;touch-action:pan-y;cursor:crosshair;overflow:visible"><defs><linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22e07a" stop-opacity=".26"/><stop offset="1" stop-color="#22e07a" stop-opacity="0"/></linearGradient></defs>'
   +'<line x1="0" x2="'+W+'" y1="'+Y(0).toFixed(1)+'" y2="'+Y(0).toFixed(1)+'" stroke="#2b5a40" stroke-dasharray="4 4"/><polygon points="'+X(0)+','+Y(0).toFixed(1)+' '+pts+' '+X(n-1)+','+Y(0).toFixed(1)+'" fill="url(#lg1)"/>'
   +'<polyline points="'+pts+'" fill="none" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--pink)" stroke-opacity=".16"/><polyline points="'+pts+'" fill="none" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--pink)"/>'
   +'<text x="'+P+'" y="'+(H+XL-3)+'">'+dl(D[0])+'</text><text x="'+X(15).toFixed(1)+'" y="'+(H+XL-3)+'" text-anchor="middle">'+dl(D[15])+'</text><text x="'+(W-P)+'" y="'+(H+XL-3)+'" text-anchor="end">'+L('danas','today')+'</text>'
@@ -1234,69 +1230,74 @@ function txRender(){var L=[],h='',ld='';if(tf!=='in')S.exp.forEach(function(e,i)
  $('hist').innerHTML=h||'<p class="small">Još nema promena.</p>'}
 $('hist').onclick=function(e){var eb=e.target.closest('[data-ed]');if(eb){edOpen(eb.getAttribute('data-ed'));return}var b=e.target.closest('[data-tx]');if(!b)return;var v=b.getAttribute('data-tx'),i=+v.slice(1);if(v[0]==='o'){var xe=S.exp[i],eo=xe&&xe.env&&(S.env||[]).filter(function(e){return e.id===xe.env})[0];if(eo)eo.b+=xe.envAmt||0;S.exp.splice(i,1)}else{if(!S.ins[i].c2)S.added=(S.added||0)-S.ins[i].amt;S.ins.splice(i,1)}save();render()};
 qa('#flt .fb').forEach(function(b){b.onclick=function(){tf=b.getAttribute('data-f');qa('#flt .fb').forEach(function(x){x.classList.toggle('on',x===b)});txRender()}});
-// ---- holographic ring ----
-// The phone's own scrolling moves the panels sideways (native, 120 Hz, glued to the finger, never stuck).
-// On top of that each panel only gets depth, a turn and dimming, tied to the scroll position
-// (CSS scroll timeline where supported, otherwise a light scroll listener). Slow changes, so any lag is invisible.
-var hst=$('vzc'),hpan=qa('#vzc .vzs'),HN=hpan.length,hring=$('hring'),hpw=326,hS=286,HP=1000,HZ=150,HZB=60,HZE=120,HRY=30,HRYE=14,HTK=18,HCV=1,HPT=20,HPB=60,hW=0,vzi=0,hKey='';
-// depth/turn are always set from a scroll listener: CSS scroll timelines did not apply on iPhone Safari
-var HSD=false;
-var HO={act:-1,touch:0,st:0,lay:0,mov:0,skip:0,turn:0};
+// ---- holographic ring: three panels float in 3D, the finger turns the ring, a spring settles it ----
+var hst=$('vzc'),hpan=qa('#vzc .vzs'),HN=hpan.length,hring=$('hring'),hpw=326,HP=1100,HZ=200,HZE=150,HZB=130,HRY=34,HRYE=16,HXE=70,HX=70,HB=104,HBF=.36,HCV=1,HPT=20,HPB=60,hW=0,vzi=0;
+var HO={p:0,v:0,t:0,raf:0,lt:0,act:-1,sp:1,drag:null,nc:0,boot:0,lay:0};
 hpan.forEach(function(el){el._dim=el.querySelector('.hdim')});
-if(hst)hst.classList.toggle('sd',HSD);
 function hm(x){return ((x%HN)+HN)%HN}
-function hSlots(){return qa('#vzc > .vzs')}
+function hstep(){return hpw*.85}
 function vzDots(i){vzi=i;qa('#vzd button').forEach(function(b,j){b.classList.toggle('on',j===i);b.setAttribute('aria-current',j===i?'true':'false')})}
-function hPose(d){var ad=Math.abs(d),sg=d<0?-1:1,a=Math.min(1,ad),e=ad>1?Math.min(1,(ad-1)/.5):0;
- var x=-sg*HTK*a,z=-HZ*a-HZB*Math.sin(Math.PI*a)-HZE*e,ry=-HCV*sg*(HRY*a+HRYE*e);
- return{tf:'perspective('+HP+'px) translate3d('+x.toFixed(2)+'px,0,'+z.toFixed(2)+'px) rotateY('+ry.toFixed(2)+'deg)',op:(1-e).toFixed(3),z:String(60-Math.round(ad*20)),dim:Math.min(1,.62*a+.38*e).toFixed(3)}}
-function hApply(){HO.lay=0;if(HSD||!hst)return;var p=hst.scrollLeft/hS;hSlots().forEach(function(el,j){var q=hPose(j-p);el.style.transform=q.tf;el.style.opacity=q.op;if(el._z!==q.z){el._z=q.z;el.style.zIndex=q.z}if(el._dim)el._dim.style.opacity=q.dim})}
-function hReq(){if(!HO.lay)HO.lay=requestAnimationFrame(hApply)}
-function hCur(){var sl=hSlots(),k=Math.max(0,Math.min(sl.length-1,Math.round(hst.scrollLeft/hS)));return{k:k,el:sl[k],id:+sl[k].getAttribute('data-h')}}
-function hKF(){var key=[hpw,hS,HP].join();if(key===hKey)return;hKey=key;var css='';
- for(var j=0;j<3;j++){var a='',z='',dm='';for(var k=0;k<=40;k++){var t=k/40,q=hPose(j-2*t),o=(t*100).toFixed(1)+'%';a+=o+'{transform:'+q.tf+';opacity:'+q.op+'}';z+=o+'{z-index:'+q.z+'}';dm+=o+'{opacity:'+q.dim+'}'}
-  css+='@keyframes hs'+j+'{'+a+'}@keyframes hz'+j+'{'+z+'}@keyframes hd'+j+'{'+dm+'}'
-   +'.hst.sd>.vzs:nth-of-type('+(j+1)+'){animation:hs'+j+' 1ms linear both,hz'+j+' 1ms linear both;animation-timeline:--hr,--hr}'
-   +'.hst.sd>.vzs:nth-of-type('+(j+1)+') .hdim{animation:hd'+j+' 1ms linear both;animation-timeline:--hr}'}
- var st=$('hkf');if(!st){st=document.createElement('style');st.id='hkf';document.head.appendChild(st)}st.textContent=css}
-function hFit(){if(!hst)return;var W=hst.clientWidth;if(!W)return;hW=W;hpw=Math.round(Math.min(W-(W<370?44:64),400));
- // step between panels: the side panel tucks just behind the front one and peeks out at the screen edge
- var th=HRY*Math.PI/180,inner=(-HTK-hpw/2*Math.cos(th))*HP/(HP+HZ+HCV*hpw/2*Math.sin(th));hS=Math.round(hpw/2-6-inner);
- hst.style.setProperty('--pw',hpw+'px');hst.style.setProperty('--hpad',((W-hpw)/2)+'px');hst.style.setProperty('--hov',(hS-hpw)+'px');
+function hPose(i,p,sp){var d=hm(i-p+1.5)-1.5,ad=Math.abs(d),sg=d<0?-1:1,a=Math.min(1,ad),e=ad>1?Math.min(1,(ad-1)/.5):0,A=a*sp,cur=hm(Math.round(p));
+ var x=sg*(HX*A+HB*Math.sin(Math.PI*A)+HXE*e),z=-HZ*A-HZB*Math.sin(Math.PI*A)-HZE*e,ry=-HCV*sg*(HRY*A+HRYE*e);
+ return{tf:'perspective('+HP+'px) translate3d('+x.toFixed(2)+'px,0,'+z.toFixed(2)+'px) rotateY('+ry.toFixed(2)+'deg)',op:((1-e)*(i===cur?1:Math.min(1,.15+sp*.85))).toFixed(3),z:String(60-Math.round(ad*40)),dim:Math.min(1,.62*A+.38*e).toFixed(3)}}
+function hLayout(){HO.lay=0;var cur=hm(Math.round(HO.p));
+ for(var i=0;i<HN;i++){var el=hpan[i],q=hPose(i,HO.p,HO.sp);el.style.transform=q.tf;el.style.opacity=q.op;if(el._z!==q.z){el._z=q.z;el.style.zIndex=q.z}if(el._dim)el._dim.style.opacity=q.dim}
+ if(cur!==vzi)vzDots(cur)}
+function hReq(){if(!HO.lay)HO.lay=requestAnimationFrame(hLayout)}
+function hFit(){if(!hst)return;var W=hst.clientWidth;if(!W)return;hW=W;hpw=Math.round(Math.min(W-(W<370?44:64),400));hst.style.setProperty('--pw',hpw+'px');
+ var th=HRY*Math.PI/180,f=HP/(HP+HZ-HCV*hpw/2*Math.sin(th));HX=Math.max(24,(W/2-8)/f-hpw/2*Math.cos(th));HB=hpw*HBF;
  var ps=hpan.map(function(el){return el.querySelector('.vzp')}),cl=$('cal');lnH=176;lnRender();cl.style.gridAutoRows='';
  ps.forEach(function(q){q.style.height='auto'});var nh=ps.map(function(q){return q.offsetHeight}),T=Math.max.apply(null,nh),ex=T-nh[1],ex2=T-nh[2];
  // equal windows without stretching: the chart and the calendar may grow only a little, the rest stays as calm space
  if(ex>6){lnH=176+Math.min(44,Math.round(ex));lnRender();nh[1]=ps[1].offsetHeight;T=Math.max(T,nh[1])}
  if(ex2>6){var rows=Math.ceil(cl.querySelectorAll('.d').length/7)||5;cl.style.gridAutoRows=Math.min(52,44+ex2/rows).toFixed(1)+'px'}
- ps.forEach(function(q){q.style.height=''});hst.style.setProperty('--ph',T+'px');hst.style.height=(T+HPT+HPB)+'px';
- hKF();if(!HO.mov&&!HO.touch){HO.skip=1;hst.scrollLeft=hS}hApply()}
-function hTo(k){k=Math.max(0,Math.min(2,k));hst.scrollTo({left:k*hS,behavior:RM?'auto':'smooth'})}
-// keep the front panel in the middle slot, so there is always a panel on both sides (endless ring)
-function hRotate(k){var sl=hSlots(),mv;if(k===2){mv=sl[0];hst.insertBefore(mv,hst.lastElementChild);HO.turn++}else if(k===0){mv=sl[2];hst.insertBefore(mv,sl[0]);HO.turn--}else return;
- HO.skip=1;hst.scrollLeft=hS;hApply();if(hring)hring.style.strokeDashoffset=(-HO.turn*46)+'px';
- var vp=mv.querySelector('.vzp');if(vp&&vp.animate&&!RM)vp.animate([{opacity:0},{opacity:1}],{duration:360,easing:'ease-out'})}
-function hSettle(){if(HO.touch||!hst.clientWidth)return;var c=hCur(),x=c.k*hS;
- if(Math.abs(hst.scrollLeft-x)>2){hst.scrollTo({left:x,behavior:RM?'auto':'smooth'});return}
- HO.mov=0;hst.classList.remove('hmov');vzDots(c.id);if(c.id!==HO.act)hActivate(c.id);if(c.k!==1)hRotate(c.k)}
+ ps.forEach(function(q){q.style.height=''});hst.style.setProperty('--ph',T+'px');hst.style.height=(T+HPT+HPB)+'px';hLayout()}
+// after the finger lets go, the spring path is precomputed and handed to the compositor (WAAPI),
+// so the settle runs at the screen's own refresh rate (120 Hz on ProMotion) instead of a JS loop
+function hAt(){var A=HO.an;if(!A)return HO.p;var t=(performance.now()-A.t0)/1000,S=A.S,k=Math.min(S.length-1,Math.max(0,Math.floor(t/A.dt)));return S[k]}
+function hHalt(){var A=HO.an;if(!A)return;var t=(performance.now()-A.t0)/1000,k=Math.min(A.S.length-2,Math.max(0,Math.floor(t/A.dt)));HO.p=A.S[k];HO.v=(A.S[k+1]-A.S[k])/A.dt;
+ clearTimeout(A.tm);A.list.forEach(function(x){x.cancel()});HO.an=null;hst.classList.remove('hmov');hLayout()}
+function hGo(t,v0){var v=typeof v0==='number'?v0:0;if(HO.an){hHalt();if(typeof v0!=='number')v=HO.v}HO.t=t;
+ if(RM){HO.p=hm(t);HO.t=HO.p;HO.v=0;hLayout();hActivate(HO.p);return}
+ var p=HO.p,dt=1/120,S=[p],T=0,ta=-1;while(T<2.2){var ac=-190*(p-t)-24*v;v+=ac*dt;p+=v*dt;T+=dt;S.push(p);if(ta<0&&Math.abs(p-t)<.03)ta=T;if(Math.abs(p-t)<.0008&&Math.abs(v)<.003)break}
+ S[S.length-1]=t;var n=S.length-1,st=Math.max(1,Math.round(n/72)),ix=[];for(var k=0;k<n;k+=st)ix.push(k);ix.push(n);
+ var A=HO.an={S:S,dt:dt,t0:performance.now(),list:[],tm:0};hst.classList.add('hmov');
+ hpan.forEach(function(el,i){var kf=[],kd=[];ix.forEach(function(k){var q=hPose(i,S[k],1),o=k/n;kf.push({transform:q.tf,opacity:q.op,zIndex:q.z,offset:o});kd.push({opacity:q.dim,offset:o})});
+  A.list.push(el.animate(kf,{duration:T*1000,fill:'forwards'}));if(el._dim)A.list.push(el._dim.animate(kd,{duration:T*1000,fill:'forwards'}))});
+ var ti=hm(t);vzDots(ti);if(hring)hring.style.strokeDashoffset=(-t*46)+'px';
+ // the panel's content lights up only once it has (almost) landed, so heavy drawing never fights the motion
+ A.tm=setTimeout(function(){if(HO.an===A&&ti!==HO.act)hActivate(ti)},Math.max(0,ta)*1000);
+ A.list[0].onfinish=function(){if(HO.an!==A)return;HO.p=hm(t);HO.t=HO.p;HO.v=0;hLayout();A.list.forEach(function(x){x.cancel()});HO.an=null;hst.classList.remove('hmov');if(ti!==HO.act)hActivate(ti)}}
 function hActivate(i){HO.act=i;vzDots(i);hpan.forEach(function(el,j){var on=j===i;el.setAttribute('aria-hidden',on?'false':'true');qa('#vzc .vzs[data-h="'+j+'"] button').forEach(function(b){if(on)b.removeAttribute('tabindex');else b.setAttribute('tabindex','-1')})});
  if(RM)return;var pn=hpan[i],sb=pn.querySelector('.hscan b'),vi=pn.querySelector('.vzi'),H=pn.offsetHeight||460;
  if(sb&&sb.animate)sb.animate([{transform:'translateY(-90px)',opacity:0},{transform:'translateY(-60px)',opacity:1,offset:.08},{transform:'translateY('+(H+10)+'px)',opacity:1}],{duration:700,easing:'cubic-bezier(.42,0,.22,1)'});
  if(vi&&vi.animate)vi.animate([{opacity:.35},{opacity:1,offset:.28},{opacity:.72,offset:.42},{opacity:1}],{duration:420});
  try{navigator.vibrate&&navigator.vibrate(6)}catch(x){}
  if(i===0)dnSpin();else if(i===1)lnDraw();else calWave()}
-function hBoot(){if(!hst||!hst.clientWidth)return;var c=hCur();hActivate(c.id);if(RM)return;
- // side panels glide out from behind the front one
- hSlots().forEach(function(el,k){if(k===c.k)return;var f=el.querySelector('.vzf'),sg=k<c.k?1:-1;if(f&&f.animate)f.animate([{transform:'translateX('+(sg*90)+'px) scale(.9)',opacity:0},{transform:'none',opacity:1}],{duration:720,delay:60,easing:'cubic-bezier(.2,.8,.2,1)',fill:'backwards'})})}
+function hBoot(){if(!hst||!hst.clientWidth)return;cancelAnimationFrame(HO.boot);HO.boot=0;var cur=hm(Math.round(HO.p));
+ if(RM){HO.sp=1;hLayout();hActivate(cur);return}
+ // the ring unfolds from the front panel, then the front panel lights up
+ var t0=0,fired=false;HO.sp=0;hLayout();
+ function st(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/760),e=1-Math.pow(1-k,3);HO.sp=e;hLayout();if(!fired){fired=true;hActivate(cur)}if(k<1)HO.boot=requestAnimationFrame(st);else{HO.boot=0;HO.sp=1;hLayout()}}
+ HO.boot=requestAnimationFrame(st)}
 if(hst){
- hst.addEventListener('scroll',function(){if(HO.skip){HO.skip=0;return}if(!HO.mov){HO.mov=1;hst.classList.add('hmov')}hReq();var c=hCur();if(c.id!==vzi)vzDots(c.id);clearTimeout(HO.st);HO.st=setTimeout(hSettle,HO.touch?600:160)},{passive:true});
- if('onscrollend' in window)hst.addEventListener('scrollend',function(){clearTimeout(HO.st);hSettle()});
- hst.addEventListener('touchstart',function(){HO.touch=1;clearTimeout(HO.st)},{passive:true});
- var hTE=function(){HO.touch=0;clearTimeout(HO.st);HO.st=setTimeout(hSettle,160)};hst.addEventListener('touchend',hTE,{passive:true});hst.addEventListener('touchcancel',hTE,{passive:true});
- // a tap on a side panel (or beside the front one) turns the ring to it
- hst.addEventListener('click',function(e){var pn=e.target.closest?e.target.closest('.vzs'):null,c=hCur();if(pn===c.el)return;var sl=hSlots(),j=pn?sl.indexOf(pn):-1,r=c.el.getBoundingClientRect(),dir=j>=0?(j>c.k?1:-1):(e.clientX<r.left?-1:e.clientX>r.right?1:0);
-  if(dir){e.preventDefault();e.stopPropagation();hTo(c.k+dir)}},true);
- hst.addEventListener('keydown',function(e){if(e.target!==hst)return;if(e.key==='ArrowRight'){e.preventDefault();hTo(hCur().k+1)}else if(e.key==='ArrowLeft'){e.preventDefault();hTo(hCur().k-1)}});
- qa('#vzd button').forEach(function(b,j){b.onclick=function(){var sl=hSlots();for(var k=0;k<sl.length;k++)if(+sl[k].getAttribute('data-h')===j){if(k===hCur().k){if(HO.act!==j)hActivate(j)}else hTo(k);return}}});
+ hst.addEventListener('pointerdown',function(e){if(HO.drag||(e.pointerType==='mouse'&&e.button!==0))return;if(e.pointerType==='mouse'&&e.target.closest&&e.target.closest('#ln svg'))return;
+  HO.drag={id:e.pointerId,x0:e.clientX,y0:e.clientY,p0:HO.p,lk:0,lx:e.clientX,lt:e.timeStamp,vx:0}});
+ hst.addEventListener('pointermove',function(e){var g=HO.drag;if(!g||e.pointerId!==g.id)return;if(lnHold&&lnHold.on&&lnHold.id===g.id){HO.drag=null;return}var dx=e.clientX-g.x0,dy=e.clientY-g.y0;
+  if(!g.lk){if(Math.abs(dx)>7&&Math.abs(dx)>Math.abs(dy)*1.1){g.lk=1;g.x0=e.clientX;g.lx=e.clientX;g.lt=e.timeStamp;hHalt();hst.classList.add('hmov');cancelAnimationFrame(HO.boot);HO.boot=0;HO.sp=1;g.p0=HO.p;try{hst.setPointerCapture(g.id)}catch(x){}}else if(Math.abs(dy)>9)HO.drag=null;return}
+  var dtt=Math.max(1,e.timeStamp-g.lt),iv=(e.clientX-g.lx)/dtt;g.vx=g.vx*.5+iv*.5;g.lx=e.clientX;g.lt=e.timeStamp;HO.p=g.p0-(e.clientX-g.x0)/hstep();hReq()});
+ var hUp=function(e){var g=HO.drag;if(!g||(e&&e.pointerId!=null&&e.pointerId!==g.id))return;HO.drag=null;if(!g.lk)return;hst.classList.remove('hmov');HO.nc=performance.now();
+  if(e&&e.timeStamp-g.lt>90)g.vx=0;var vp=-g.vx*1000/hstep(),b0=Math.round(g.p0),t=Math.round(HO.p+Math.max(-1.2,Math.min(1.2,vp*.16)));t=Math.max(b0-2,Math.min(b0+2,t));hGo(t,Math.max(-6,Math.min(6,vp)))};
+ hst.addEventListener('pointerup',hUp);hst.addEventListener('pointercancel',hUp);hst.addEventListener('lostpointercapture',function(e){if(e.target===hst)hUp(e)});
+ hst.addEventListener('touchmove',function(e){if(HO.drag&&HO.drag.lk&&e.cancelable)e.preventDefault()},{passive:false});
+ // a tap on a side panel (or beside the front one) turns the ring to it; no click right after a swipe
+ hst.addEventListener('click',function(e){if(performance.now()-HO.nc<300){e.preventDefault();e.stopPropagation();return}
+  var pn=e.target.closest?e.target.closest('.vzs'):null,i=pn?hpan.indexOf(pn):-1,cur=hm(Math.round(HO.t));if(i===cur)return;
+  var r=hpan[cur].getBoundingClientRect(),dir=i>=0?(hm(i-cur)===1?1:-1):(e.clientX<r.left?-1:e.clientX>r.right?1:0);
+  if(dir){e.preventDefault();e.stopPropagation();hGo(Math.round(HO.t)+dir)}},true);
+ hst.addEventListener('keydown',function(e){if(e.target!==hst)return;if(e.key==='ArrowRight'){e.preventDefault();hGo(Math.round(HO.t)+1)}else if(e.key==='ArrowLeft'){e.preventDefault();hGo(Math.round(HO.t)-1)}});
+ var hwA=0,hwT=0;hst.addEventListener('wheel',function(e){if(Math.abs(e.deltaX)<=Math.abs(e.deltaY))return;e.preventDefault();var nw=performance.now();if(nw-hwT<480){hwA=0;return}hwA+=e.deltaX;if(Math.abs(hwA)>28){hGo(Math.round(HO.t)+(hwA>0?1:-1));hwA=0;hwT=nw}},{passive:false});
+ qa('#vzd button').forEach(function(b,j){b.onclick=function(){var k=Math.round(HO.t),df=hm(j-k+1)-1;if(df)hGo(k+df);else if(HO.act!==j)hActivate(j)}});
  window.addEventListener('resize',function(){var w=hst.clientWidth;if(w&&w!==hW)hFit()});
  // late web fonts change text heights: measure the panels again once they are in
  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){if(hst.clientWidth)hFit()});
@@ -1456,7 +1457,7 @@ function foldInit(){S.fold=S.fold||{};qa('section[data-fold]').forEach(function(
  function tg(){var o=!sec.classList.contains('open');sec.classList.toggle('open',o);h.setAttribute('aria-expanded',o);(S.fold=S.fold||{})[k]=o;save();if(o){animIn([].slice.call(sec.children).filter(function(c){return c!==h}),'anim-in',40);if(k==='line')lnRender()}}
  h.onclick=tg;h.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}}})}
 foldInit();
-window.__lk={holo:function(){var c=hCur(),f=hst.scrollLeft/hS-c.k;return{p:Math.abs(f)<.002?c.id:c.id+f,t:c.id,act:HO.act,pw:hpw,sd:HSD}},holoSet:function(v){hst.scrollLeft=v*hS},streakInfo:streakInfo,tank:tank,isNeed:isNeed,catStreak:catStreak,tierOf:tierOf,rateTo:rateTo,freeBal:freeBal};window.unsub=unsub;window.delExp=delExp;
+window.__lk={holo:function(){return{p:HO.p,t:HO.t,act:HO.act,sp:HO.sp,pw:hpw}},holoSet:function(v){hHalt();HO.p=v;HO.t=v;hLayout()},holoCfg:function(o){if('z' in o)HZ=o.z;if('zb' in o)HZB=o.zb;if('ry' in o)HRY=o.ry;if('cv' in o)HCV=o.cv;if('bf' in o)HBF=o.bf;hFit()},streakInfo:streakInfo,tank:tank,isNeed:isNeed,catStreak:catStreak,tierOf:tierOf,rateTo:rateTo,freeBal:freeBal};window.unsub=unsub;window.delExp=delExp;
 })();
 </script>
 </body>
