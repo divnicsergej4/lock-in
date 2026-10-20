@@ -639,6 +639,31 @@ html[data-theme=light] .fobody{background:linear-gradient(rgba(255,255,255,.4),r
 .wk7{display:flex;justify-content:space-between;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
 .wk7 span{flex:1;aspect-ratio:1;max-width:40px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:800;background:rgba(127,127,127,.12);color:var(--mute)}
 .wk7 .ok{background:#22e07a;color:#04140a}.wk7 .td{border:2px dashed #f2c200;background:transparent;color:var(--ink)}
+
+/* obilazak aplikacije: objasnjeni deo je ostar, ostalo zamagljeno */
+.tut{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;transition:opacity .4s ease}
+.tut.on{opacity:1}
+.tpn{position:fixed;left:0;top:0;width:0;height:0;pointer-events:auto;background:rgba(2,7,4,.5);-webkit-backdrop-filter:blur(6px) saturate(.8);backdrop-filter:blur(6px) saturate(.8)}
+.tring{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;border-radius:16px;box-shadow:0 0 0 1.5px rgba(34,224,122,.8),0 0 24px rgba(34,224,122,.28);transition:opacity .3s}
+.tbub{position:fixed;left:0;top:0;pointer-events:auto;width:min(340px,calc(100vw - 24px));box-sizing:border-box;background:var(--card);color:var(--ink);border:1px solid rgba(120,255,190,.22);border-radius:18px;padding:13px 16px 12px;box-shadow:0 18px 44px rgba(0,0,0,.5)}
+.tbub .tar{position:absolute;left:var(--ax,50%);width:12px;height:12px;margin-left:-6px;background:var(--card);border:1px solid rgba(120,255,190,.22);border-right:0;border-bottom:0;transform:rotate(45deg);top:-7px;transition:opacity .2s}
+.tbub.dn .tar{top:auto;bottom:-7px;transform:rotate(225deg)}.tbub.mid .tar{opacity:0}
+.tcnt{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);font-weight:700}
+.ttx{margin:5px 0 10px;font-size:.97rem;line-height:1.45;transition:opacity .25s ease,transform .25s ease}
+.ttx.sw{opacity:0;transform:translateY(5px)}
+.ttx.ok{color:var(--pink)}
+.tbr{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:36px}
+.tbr .tnx{margin:0 0 0 auto;width:auto;padding:9px 20px;border-radius:12px;font-weight:700;font-size:.9rem}
+.tbr .tsk2{background:none;border:0;box-shadow:none;color:var(--mute);padding:4px 0;margin:0;width:auto;font-size:.8rem;font-weight:500;text-decoration:underline;opacity:0;pointer-events:none;transition:opacity .4s}
+.tbr .tsk2.on{opacity:1;pointer-events:auto}
+.tpr{display:block;height:3px;border-radius:2px;background:rgba(127,127,127,.2);margin-top:10px;overflow:hidden}.tpr b{display:block;width:0;height:100%;background:var(--pink);transition:width .5s ease}
+.tsk{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;pointer-events:auto;margin:0;width:auto;padding:8px 14px;border-radius:20px;background:rgba(10,24,16,.88);color:var(--ink);border:1px solid rgba(120,255,190,.25);font-size:.82rem;font-weight:600;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:none}
+html[data-theme=light] .tpn{background:rgba(232,240,235,.5)}
+html[data-theme=light] .tbub,html[data-theme=light] .tbub .tar{border-color:rgba(18,184,95,.28)}
+html[data-theme=light] .tbub{box-shadow:0 18px 44px rgba(13,31,21,.2)}
+html[data-theme=light] .tsk{background:rgba(255,255,255,.92);border-color:rgba(18,184,95,.3)}
+body.tuton #toast{z-index:60;bottom:auto;top:calc(env(safe-area-inset-top,0px) + 54px);transform:translateY(-12px);transition:top .5s cubic-bezier(.4,0,.2,1),transform .3s,opacity .3s,visibility .3s}body.tuton #toast.show{transform:none}
+@media(prefers-reduced-motion:reduce){.tut,.tpn,.tring,.tbub,.tbub .tar,.ttx,.tpr b,body.tuton #toast{transition:none}}
 </style>
 </head>
 <body>
@@ -806,7 +831,7 @@ html[data-theme=light] .fobody{background:linear-gradient(rgba(255,255,255,.4),r
 <select id="d-dir" aria-label="Smer" style="margin-top:8px"><option value="dug">Ja dugujem njemu</option><option value="potraz">On duguje meni</option></select>
 <button id="d-go">Dodaj</button><div id="d-out" style="margin-top:10px"></div></section>
 <section data-fold="bk" class="fold outline t3"><h2><span class="hi">💾</span>Rezervna kopija</h2><p class="small">Napravi kopiju, kopiraj tekst i sačuvaj ga (npr. u beleške). Na drugom telefonu ga nalepi i pritisni Uvezi.</p><textarea id="bk" aria-label="Rezervna kopija" spellcheck="false"></textarea><div class="row"><button id="bk-out" class="ghost">Napravi kopiju</button><button id="bk-in" class="ghost">Uvezi</button></div></section>
-<section data-fold="set" class="fold t3"><h2><span class="hi">⚙️</span>Podešavanja</h2><div class="sgrp"><p class="sgl">Novac</p><div class="sbox"><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6.5" width="17" height="12" rx="2.5"/><path d="M3.5 10.5h17"/><path d="M15 15h2.5"/></svg></span><div class="stx"><b>Mesečna plata</b><span class="small">Za plan meseca i „Mogu li to da kupim?“</span></div></div><div class="sctl"><div class="row"><input id="n-inc" type="text" inputmode="decimal" autocomplete="off" placeholder="Ukupni prihod" aria-label="Ukupni mesečni prihod"><button id="n-go" style="margin-top:0;flex:0 0 auto;width:auto">Sačuvaj</button></div></div><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5h13l-3-3"/><path d="M19 15.5H6l3 3"/></svg></span><div class="stx"><b>Druga valuta</b><span class="small">Ako štediš i u drugoj valuti, npr. EUR i RSD</span></div></div><div class="sctl"><div class="row"><select id="st-cur2" aria-label="Druga valuta"></select><input id="st-amt2" type="text" inputmode="decimal" autocomplete="off" placeholder="Stanje" aria-label="Stanje u drugoj valuti"></div><button class="ghost" id="st-c2" style="width:100%">Sačuvaj drugu valutu</button></div></div></div><div class="sgrp"><p class="sgl">Izgled i jezik</p><div class="sbox"><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.5 2.4 3.7 5.2 3.7 8.5s-1.2 6.1-3.7 8.5c-2.5-2.4-3.7-5.2-3.7-8.5S9.5 5.9 12 3.5Z"/></svg></span><div class="stx"><b>Jezik</b></div><select id="lang2" aria-label="Jezik / Language"><option value="sr">Srpski</option><option value="en">English</option></select></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.3A7.8 7.8 0 1 1 9.7 4.5a6.2 6.2 0 0 0 9.8 9.8Z"/></svg></span><div class="stx"><b>Tema</b></div><select id="thm" aria-label="Tema"><option value="dark">Tamna</option><option value="light">Svetla</option></select></div><div class="srow inl sgen"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/></svg></span><div class="stx"><b>Obraćanje</b></div><select id="st-g" aria-label="Obraćanje"><option value="m">Muški rod</option><option value="f">Ženski rod</option></select></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c.9 3 4.9 5.1 4.9 9.7a4.9 4.9 0 0 1-9.8 0c0-2.3 1-3.9 2.2-5.1.3 1.7 1 2.7 2.2 3.2-.5-2.7-.4-5.3.5-7.8Z"/></svg></span><div class="stx"><b>Jačina poruka</b><span class="small">Koliko te aplikacija prozivа</span></div><select id="ro" aria-label="Intenzitet poruka"><option value="0">Blago</option><option value="1">Normalno</option><option value="2">Bez milosti</option></select></div></div></div><div class="sgrp"><p class="sgl">Podsetnik</p><div class="sbox"><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 16.5v-5a5.5 5.5 0 0 1 11 0v5l1.5 2h-14Z"/><path d="M10 20.5a2.3 2.3 0 0 0 4 0"/></svg></span><div class="stx"><b>Podseti me da upišem troškove</b><span class="small">Ako do tog vremena ništa ne upišeš</span></div><input type="checkbox" id="rm-on" class="sw" aria-label="Podseti me da upišem troškove"></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><div class="stx"><b>Vreme podsetnika</b></div><input id="rm-t" type="time" value="20:00" aria-label="Vreme podsetnika"></div></div></div><div class="sgrp"><p class="sgl">Pretplata</p><div class="sbox"><button id="pw-open" class="srow sbtn" type="button"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 2.4 5 5.4.7-4 3.7 1 5.4L12 16.2l-4.8 2.6 1-5.4-4-3.7 5.4-.7Z"/></svg></span><div class="stx"><b>Lock-in Pro</b><span class="small">Pogledaj planove (demo)</span></div><span class="sarr">›</span></button></div></div><div class="sgrp"><p class="sgl">Privatnost</p><div class="sbox"><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span><div class="stx"><b>Tvoji podaci su tvoji</b><span class="small"><span class="trk">Beležimo samo da li si koristio aplikaciju i kog dana, anonimno. Iznosi, opisi i kategorije ostaju samo na tvom telefonu.</span></span></div></div></div></div><div class="sgrp"><p class="sgl">Opasna zona</p><div class="sbox"><button class="srow sbtn danger2" id="reset" type="button"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10.2 10.5v5.5M13.8 10.5v5.5"/></svg></span><div class="stx"><b>Resetuj sve</b><span class="small">Briše sve podatke sa ovog telefona</span></div></button></div></div></section>
+<section data-fold="set" class="fold t3"><h2><span class="hi">⚙️</span>Podešavanja</h2><div class="sgrp"><p class="sgl">Novac</p><div class="sbox"><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6.5" width="17" height="12" rx="2.5"/><path d="M3.5 10.5h17"/><path d="M15 15h2.5"/></svg></span><div class="stx"><b>Mesečna plata</b><span class="small">Za plan meseca i „Mogu li to da kupim?“</span></div></div><div class="sctl"><div class="row"><input id="n-inc" type="text" inputmode="decimal" autocomplete="off" placeholder="Ukupni prihod" aria-label="Ukupni mesečni prihod"><button id="n-go" style="margin-top:0;flex:0 0 auto;width:auto">Sačuvaj</button></div></div><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5h13l-3-3"/><path d="M19 15.5H6l3 3"/></svg></span><div class="stx"><b>Druga valuta</b><span class="small">Ako štediš i u drugoj valuti, npr. EUR i RSD</span></div></div><div class="sctl"><div class="row"><select id="st-cur2" aria-label="Druga valuta"></select><input id="st-amt2" type="text" inputmode="decimal" autocomplete="off" placeholder="Stanje" aria-label="Stanje u drugoj valuti"></div><button class="ghost" id="st-c2" style="width:100%">Sačuvaj drugu valutu</button></div></div></div><div class="sgrp"><p class="sgl">Izgled i jezik</p><div class="sbox"><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.5 2.4 3.7 5.2 3.7 8.5s-1.2 6.1-3.7 8.5c-2.5-2.4-3.7-5.2-3.7-8.5S9.5 5.9 12 3.5Z"/></svg></span><div class="stx"><b>Jezik</b></div><select id="lang2" aria-label="Jezik / Language"><option value="sr">Srpski</option><option value="en">English</option></select></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.3A7.8 7.8 0 1 1 9.7 4.5a6.2 6.2 0 0 0 9.8 9.8Z"/></svg></span><div class="stx"><b>Tema</b></div><select id="thm" aria-label="Tema"><option value="dark">Tamna</option><option value="light">Svetla</option></select></div><div class="srow inl sgen"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/></svg></span><div class="stx"><b>Obraćanje</b></div><select id="st-g" aria-label="Obraćanje"><option value="m">Muški rod</option><option value="f">Ženski rod</option></select></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c.9 3 4.9 5.1 4.9 9.7a4.9 4.9 0 0 1-9.8 0c0-2.3 1-3.9 2.2-5.1.3 1.7 1 2.7 2.2 3.2-.5-2.7-.4-5.3.5-7.8Z"/></svg></span><div class="stx"><b>Jačina poruka</b><span class="small">Koliko te aplikacija prozivа</span></div><select id="ro" aria-label="Intenzitet poruka"><option value="0">Blago</option><option value="1">Normalno</option><option value="2">Bez milosti</option></select></div></div></div><div class="sgrp"><p class="sgl">Podsetnik</p><div class="sbox"><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 16.5v-5a5.5 5.5 0 0 1 11 0v5l1.5 2h-14Z"/><path d="M10 20.5a2.3 2.3 0 0 0 4 0"/></svg></span><div class="stx"><b>Podseti me da upišem troškove</b><span class="small">Ako do tog vremena ništa ne upišeš</span></div><input type="checkbox" id="rm-on" class="sw" aria-label="Podseti me da upišem troškove"></div><div class="srow inl"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><div class="stx"><b>Vreme podsetnika</b></div><input id="rm-t" type="time" value="20:00" aria-label="Vreme podsetnika"></div></div></div><div class="sgrp"><p class="sgl" data-en="Help">Pomoć</p><div class="sbox"><button id="tut-open" class="srow sbtn" type="button"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .8-1 1.5v.3M12 16.8h.01"/></svg></span><div class="stx"><b data-en="App tour">Obilazak aplikacije</b><span class="small" data-en="Go through every feature again">Prođi ponovo kroz sve funkcije</span></div><span class="sarr">›</span></button></div></div><div class="sgrp"><p class="sgl">Pretplata</p><div class="sbox"><button id="pw-open" class="srow sbtn" type="button"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 2.4 5 5.4.7-4 3.7 1 5.4L12 16.2l-4.8 2.6 1-5.4-4-3.7 5.4-.7Z"/></svg></span><div class="stx"><b>Lock-in Pro</b><span class="small">Pogledaj planove (demo)</span></div><span class="sarr">›</span></button></div></div><div class="sgrp"><p class="sgl">Privatnost</p><div class="sbox"><div class="srow"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg></span><div class="stx"><b>Tvoji podaci su tvoji</b><span class="small"><span class="trk">Beležimo samo da li si koristio aplikaciju i kog dana, anonimno. Iznosi, opisi i kategorije ostaju samo na tvom telefonu.</span></span></div></div></div></div><div class="sgrp"><p class="sgl">Opasna zona</p><div class="sbox"><button class="srow sbtn danger2" id="reset" type="button"><span class="sic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10.2 10.5v5.5M13.8 10.5v5.5"/></svg></span><div class="stx"><b>Resetuj sve</b><span class="small">Briše sve podatke sa ovog telefona</span></div></button></div></div></section>
 <div id="scrim"></div>
 
 <button id="fab" aria-label="Novi trošak">+</button>
@@ -840,6 +865,7 @@ var BASE=['Namirnice','Hrana','Kafić','Odeća','Obuća','Teretana','Prevoz','Ra
 var S={cur:'EUR',start:0,exp:[],cats:[],goal:null};
 var $=function(i){return document.getElementById(i)};
 try{var raw=localStorage.getItem('lockin');if(raw)S=JSON.parse(raw)}catch(e){}
+try{var tsn=localStorage.getItem('lockin_tut');if(tsn){S=JSON.parse(tsn);S.tutSeen=1;localStorage.removeItem('lockin_tut');localStorage.setItem('lockin',JSON.stringify(S))}}catch(e){}
 function save(){try{localStorage.setItem('lockin',JSON.stringify(S))}catch(e){}}
 var M={
  Odeća:["gng ti nisi trebao to 🥀 imaš dovoljno odeće","opet majice? ormar ti već ima svoj poštanski broj 🥀🥀"],
@@ -1215,7 +1241,7 @@ function qa(q){return [].slice.call(document.querySelectorAll(q))}
 function scrAnim(k){if(k==='s0')animIn(qa('#s-lang > :not(.globe)'),'anim-in',90);
  else if(k==='s1'){animIn([document.querySelector('#s-intro .tag'),document.querySelector('.stage2')],'anim-in',140);animIn([document.querySelector('.ibot')],'anim-up',0,80);animIn(qa('.ibot > :not(.appi)'),'anim-in',90,320);animIn(qa('.appi'),'anim-pop',0,520)}
  else if(k==='s2')animIn([$('land')],'anim-in',0);else if(k==='s3')animIn([$('hero0'),$('setup')],'anim-in',90);}
-function pw(o){$('pw').classList.toggle('open',o);if(o){$('pw').scrollTop=0;animIn(qa('#pw .pwf li, #pw .plan'),'anim-in',60,180)}}
+function pw(o){$('pw').classList.toggle('open',o);if(!o&&S.start>0&&!S.tutSeen&&typeof TUT!=='undefined'&&!TUT.on)setTimeout(tutStart,500);if(o){$('pw').scrollTop=0;animIn(qa('#pw .pwf li, #pw .plan'),'anim-in',60,180)}}
 $('pw-x').onclick=function(){pw(false)};
 qa('#pw .plan').forEach(function(b){b.onclick=function(){qa('#pw .plan').forEach(function(x){x.classList.toggle('on',x===b)})}});
 $('pw-go').onclick=function(){pw(false);toast(S.lang==='en'?'Demo: payments are not connected yet':'Demo: plaćanje još nije povezano')};
@@ -1354,7 +1380,8 @@ $('st-c2').onclick=function(){var c=$('st-cur2').value,v=num('st-amt2');if(c===S
 var SB_URL='https://awcuxsziarprpabywzgx.supabase.co/rest/v1/events',SB_KEY='sb_publishable_qXlToHN3YB02QkN0xGfK7Q_1L3rl0AI';
 var TRK={};
 function devId(){var d;try{d=localStorage.getItem('lockin_dev')}catch(x){}if(!d){d=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'d'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);try{localStorage.setItem('lockin_dev',d)}catch(x){}}return d}
-function track(ev){if(location.hostname!=='divnicsergej4.github.io')return;// brojimo samo na javnom linku, ne u test verzijama
+function track(ev){if(location.hostname!=='divnicsergej4.github.io')return;if(typeof TUT!=='undefined'&&TUT.on)return;// probni unosi iz obilaska se ne broje
+// brojimo samo na javnom linku, ne u test verzijama
  try{var n=new Date(),day=n.getFullYear()+'-'+('0'+(n.getMonth()+1)).slice(-2)+'-'+('0'+n.getDate()).slice(-2),k='lockin_ev_'+ev,last=null;
  try{last=localStorage.getItem(k)}catch(x){}if(TRK[k])return;if(ev!=='onboard'&&last===day)return;if(ev==='onboard'&&last)return;TRK[k]=1;
  fetch(SB_URL,{method:'POST',keepalive:true,headers:{'apikey':SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
@@ -1438,6 +1465,7 @@ var rt;$('reset').onclick=function(){var b=this;
 function tab(n){$('app').setAttribute('data-tab',n);if(n===2&&ptab!==2&&!RM){drwAnim=true;envOpen=-1;envRender()}document.querySelectorAll('#nav button').forEach(function(b,i){b.classList.toggle('on',i===n);b.setAttribute('aria-current',i===n?'page':'false')});if(n===1){hFit();hBoot()}window.scrollTo(0,0);if(ptab!==null&&n!==ptab)animIn([].slice.call(document.querySelectorAll('#app section.t'+n)),n>ptab?'anim-l':'anim-r',60);ptab=n}
 document.querySelectorAll('#nav button').forEach(function(b,i){b.onclick=function(){tab(i)}});
 tab(0);render();
+if(S.start>0&&!S.tutSeen)setTimeout(function(){if(!$('pw').classList.contains('open'))tutStart()},1100);
 
 var mode='o';
 function setMode(m){mode=m;qa('.mode .mb').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-m')===m)});var i=m==='i';
@@ -1457,7 +1485,112 @@ function foldInit(){S.fold=S.fold||{};qa('section[data-fold]').forEach(function(
  function tg(){var o=!sec.classList.contains('open');sec.classList.toggle('open',o);h.setAttribute('aria-expanded',o);(S.fold=S.fold||{})[k]=o;save();if(o){animIn([].slice.call(sec.children).filter(function(c){return c!==h}),'anim-in',40);if(k==='line')lnRender()}}
  h.onclick=tg;h.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}}})}
 foldInit();
-window.__lk={holo:function(){return{p:HO.p,t:HO.t,act:HO.act,sp:HO.sp,pw:hpw}},holoSet:function(v){hHalt();HO.p=v;HO.t=v;hLayout()},holoCfg:function(o){if('z' in o)HZ=o.z;if('zb' in o)HZB=o.zb;if('ry' in o)HRY=o.ry;if('cv' in o)HCV=o.cv;if('bf' in o)HBF=o.bf;hFit()},streakInfo:streakInfo,tank:tank,isNeed:isNeed,catStreak:catStreak,tierOf:tierOf,rateTo:rateTo,freeBal:freeBal};window.unsub=unsub;window.delExp=delExp;
+
+// ---------- guided tour ----------
+// the part being explained stays sharp, everything else is blurred; one sentence at a time;
+// the user does every important step himself; practice entries are thrown away at the end
+var TUT={on:false,i:-1,S:[],raf:0,poll:0,wait:0,nx:0,flag:{},k:'',bk:'',v:{},d:null};
+function tq(x){return document.querySelector(x)}
+function tutEls(st){var t=typeof st.t==='function'?st.t():(st.t?tq(st.t):null);if(!t)return[];return(Array.isArray(t)?t:[t]).filter(function(e){return e&&e.getClientRects().length})}
+function tutRect(st){var r=null;tutEls(st).forEach(function(e){var b=e.getBoundingClientRect();if(!b.width&&!b.height)return;r=r?{l:Math.min(r.l,b.left),t:Math.min(r.t,b.top),r:Math.max(r.r,b.right),b:Math.max(r.b,b.bottom)}:{l:b.left,t:b.top,r:b.right,b:b.bottom}});return r}
+function curTab(){return +$('app').getAttribute('data-tab')}
+function tutSteps(){var V=TUT.v;return [
+ {c:L('Hajde da zajedno prođemo kroz aplikaciju. Sve ćeš probati sam, korak po korak.','Let’s walk through the app together. You’ll try everything yourself, step by step.'),btn:L('Kreni','Start')},
+ {c:L('Ništa ne brini: sve što upišeš tokom obilaska je probno i briše se na kraju.','Don’t worry: everything you enter during the tour is practice and gets deleted at the end.')},
+ {tab:0,t:'#app section.bal-card',c:L('Ovo je novac koji ti je slobodan. Svaki trošak koji upišeš odmah se oduzima odavde.','This is your free money. Every expense you log comes straight off this number.')},
+ {tab:0,t:'#streak',c:L('Ovo je tvoj plamen. Raste svaki dan kad upišeš troškove, a ako preskočiš dan, gasi se.','This is your flame. It grows every day you log your spending, and if you skip a day it goes out.')},
+ {tab:0,t:'#chal',skip:function(){return !$('chal').textContent.trim()},c:L('Izazov nedelje: probaj 7 dana bez kategorije na koju ti odlazi najviše para.','Challenge of the week: try 7 days without the category that eats most of your money.')},
+ {tab:0,t:'#sheet .mode',c:L('Ovde biraš da li upisuješ trošak ili prihod. Sada ostavi Trošak.','Here you choose whether you log an expense or income. Keep Expense for now.'),pre:function(){if(mode!=='o')setMode('o')}},
+ {tab:0,t:'#e-amt',pos:'up',c:L('Upiši neki iznos, na primer 350.','Type an amount, for example 350.'),act:function(){return num('e-amt')>0}},
+ {tab:0,t:'#e-note',pos:'up',c:L('Sad napiši na šta je potrošeno, na primer kafa sa drugom.','Now write what it was for, for example coffee with a friend.'),act:function(){return $('e-note').value.trim().length>=2}},
+ {tab:0,t:'#chips',pos:'up',c:L('Izaberi kategoriju kojoj trošak pripada.','Pick the category this expense belongs to.'),init:function(){TUT.flag.chip=0},act:function(){return TUT.flag.chip}},
+ {tab:0,t:'#sheet details.more',c:L('Ovde su dodatne opcije: svoja kategorija, mesečna pretplata i plaćanje iz koverte. Otvori ih.','Extra options live here: your own category, a monthly subscription and paying from an envelope. Open them.'),act:function(){var d=tq('#sheet details.more');return d&&d.open}},
+ {tab:0,t:'#e-go',pos:'up',c:L('Sad pritisni Zapiši trošak.','Now tap Log expense.'),init:function(){V.ne=S.exp.length},act:function(){return S.exp.length>V.ne}},
+ {tab:0,t:'#app section.bal-card',c:L('Vidiš? Dostupno se odmah smanjilo, a plamen je za danas upaljen.','See? Your free money dropped right away, and today’s flame is lit.')},
+ {tab:0,t:'section[data-fold=buy]',c:L('Mogu li to da kupim? Dodirni da otvoriš.','Can I afford it? Tap to open.'),act:function(){return tq('section[data-fold=buy]').classList.contains('open')}},
+ {tab:0,t:'section[data-fold=buy]',c:L('Upiši šta želiš i koliko košta, pa pritisni Proveri.','Type what you want and what it costs, then tap Check.'),init:function(){V.wo=$('w-out').innerHTML},act:function(){return $('w-out').innerHTML!==V.wo&&$('w-out').textContent.trim().length>0}},
+ {tab:0,t:'#w-out',c:L('Ovde vidiš da li to sebi možeš da priuštiš i koliko ti pomera ciljeve.','Here you see whether you can afford it and how much it pushes back your goals.')},
+ {t:'#nav button:nth-child(2)',pos:'up',c:L('Idemo na Potrošnju. Dodirni je dole.','Let’s go to Spending. Tap it below.'),act:function(){return curTab()===1}},
+ {tab:1,t:'#vzc',c:L('Ovo su tvoji grafikoni. Krug pokazuje na šta ti ide najviše para ovog meseca.','These are your charts. The ring shows where most of your money goes this month.')},
+ {tab:1,t:'#vzc',c:L('Prevuci prozor ulevo da vidiš sledeći grafikon.','Swipe the window to the left to see the next chart.'),act:function(){return HO.act===1}},
+ {tab:1,t:function(){return[$('ln'),$('ln-tip')]},c:L('Zadrži prst na grafikonu pa ga pomeraj, da vidiš dan po dan.','Hold your finger on the chart and slide it to see each day.'),init:function(){V.tip=$('ln-tip').textContent},act:function(){return $('ln-tip').textContent!==V.tip}},
+ {tab:1,t:'#vzc',c:L('Prevuci još jednom ulevo i dodirni neki dan u kalendaru.','Swipe left once more and tap any day in the calendar.'),init:function(){$('cal-day').textContent=''},act:function(){return HO.act===2&&$('cal-day').textContent.trim().length>0}},
+ {tab:1,t:function(){return[tq('section[data-fold=tx]>h2'),$('flt'),tq('#hist li:not(.dh)')]},c:L('Sve promene: tu je svaki unos. Olovkom menjaš unos, a iksom ga brišeš.','All changes: every entry is here. The pencil edits an entry, the cross deletes it.')},
+ {tab:1,t:'section[data-fold=lim]',c:L('Limiti: postavi koliko najviše želiš da potrošiš na neku kategoriju mesečno.','Limits: set the most you want to spend on a category each month.')},
+ {tab:1,t:'section[data-fold=rec]',c:L('Ponavljajući unosi: kirija, računi ili plata upisuju se sami svakog meseca.','Recurring entries: rent, bills or salary get logged by themselves every month.')},
+ {tab:1,t:'section[data-fold=subs]',c:L('Pretplate: sve mesečne pretplate na jednom mestu, i koliko te ukupno koštaju.','Subscriptions: all your monthly subscriptions in one place, and what they cost you in total.')},
+ {tab:1,t:'section[data-fold=pat]',c:L('Uočili smo: ovde ti aplikacija pokazuje navike koje primeti u tvojim troškovima.','Spotted: here the app shows you habits it notices in your spending.')},
+ {t:'#nav button:nth-child(3)',pos:'up',c:L('Sad Štednja.','Now Savings.'),act:function(){return curTab()===2}},
+ {tab:2,t:'section[data-fold=team]',c:L('Zajednički cilj: štedite zajedno sa drugarima ili partnerom za isti cilj.','Shared goal: save together with friends or your partner towards one goal.')},
+ {tab:2,t:function(){var e=tq('section[data-fold=env]');return e?[e.querySelector('h2'),e.querySelector('p.small'),e.querySelector('.envf')]:null},c:L('Koverte: razvrstaj novac po namenama, kao u fioci. Za raspoređivanje je novac koji još nije ni u jednoj koverti.','Envelopes: sort your money by purpose, like in a drawer. Free to assign is money not in any envelope yet.')},
+ {tab:2,t:'#env-new',c:L('Napravi svoju kovertu: otvori Nova koverta, upiši naziv i pritisni Napravi kovertu.','Make your own envelope: open New envelope, type a name and tap Create envelope.'),init:function(){V.nv=(S.env||[]).length},act:function(){return (S.env||[]).length>V.nv}},
+ {tab:2,t:'.fopen',skip:function(){return !tq('.fopen')},c:L('Koverta je izvađena iz fioke. Ubaci u nju malo para: Ubaci, upiši iznos, pa OK.','The envelope is out of the drawer. Put some money in: Add, type an amount, then OK.'),init:function(){var e=(S.env||[])[S.env.length-1];V.eid=e&&e.id},act:function(){var e=(S.env||[]).filter(function(x){return x.id===V.eid})[0];return !!e&&e.b>0}},
+ {tab:2,t:'.dfront',skip:function(){return !tq('.dfront')||S.drw==='c'},c:L('Povuci ručku fioke nagore ili je samo dodirni, da zatvoriš fioku.','Push the drawer handle up, or just tap it, to close the drawer.'),act:function(){return S.drw==='c'}},
+ {tab:2,t:'#env-dist',c:L('Ovim dugmetom odjednom rasporediš slobodan novac u više koverti.','With this button you spread your free money over several envelopes at once.')},
+ {tab:2,t:'section[data-fold=plan]',c:L('Plan meseca: upiši predviđene troškove i koliko želiš da uštediš, pa vidiš koliko smeš da potrošiš.','Monthly plan: enter your planned costs and how much you want to save, and see how much you can spend.')},
+ {t:'#nav button:nth-child(4)',pos:'up',c:L('I na kraju, Više.','And finally, More.'),act:function(){return curTab()===3}},
+ {tab:3,t:'section[data-fold=rep]',c:L('Izveštaj meseca: ceo mesec na jednom mestu, kao račun.','Monthly report: the whole month in one place, like a receipt.')},
+ {tab:3,t:'section[data-fold=bk]',c:L('Rezervna kopija: sačuvaj podatke pre nego što promeniš telefon ili obrišeš aplikaciju.','Backup: save your data before you change phones or delete the app.')},
+ {tab:3,t:'section[data-fold=set]',c:L('Podešavanja: plata, druga valuta, jezik, tema i podsetnik. Odavde možeš i ponovo da pokreneš ovaj obilazak.','Settings: salary, second currency, language, theme and reminder. You can also restart this tour from here.')},
+ {c:L('To je sve. Probne unose sad brišem, pa kreni da upisuješ prave troškove.','That’s it. I’m deleting the practice entries now, so start logging your real spending.'),btn:L('Završi','Finish'),end:1}]}
+function tutBuild(){var d=document.createElement('div');d.className='tut';d.setAttribute('role','dialog');d.setAttribute('aria-live','polite');
+ d.innerHTML='<i class="tpn"></i><i class="tpn"></i><i class="tpn"></i><i class="tpn"></i><i class="tring"></i><div class="tbub mid"><i class="tar"></i><span class="tcnt"></span><p class="ttx"></p><div class="tbr"><button type="button" class="tsk2"></button><button type="button" class="tnx"></button></div><i class="tpr"><b></b></i></div><button type="button" class="tsk"></button>';
+ document.body.appendChild(d);TUT.d=d;TUT.pn=[].slice.call(d.querySelectorAll('.tpn'));TUT.ring=d.querySelector('.tring');TUT.bub=d.querySelector('.tbub');TUT.tx=d.querySelector('.ttx');
+ d.querySelector('.tsk').textContent=L('Preskoči obilazak','Skip tour');d.querySelector('.tsk2').textContent=L('Preskoči korak','Skip step');
+ d.querySelector('.tsk').onclick=function(){tutEnd(false)};d.querySelector('.tnx').onclick=function(){var st=TUT.S[TUT.i];if(st&&st.end)tutEnd(true);else tutGo(TUT.i+1)};d.querySelector('.tsk2').onclick=function(){tutGo(TUT.i+1)};
+ requestAnimationFrame(function(){d.classList.add('on')})}
+function tutStart(){if(TUT.on||!(S.start>0))return;try{localStorage.setItem('lockin_tut',JSON.stringify(S))}catch(x){}
+ TUT.on=true;TUT.flag={};TUT.v={};TUT.k='';TUT.bk='';TUT.sk='';TUT.H=null;TUT.B=null;TUT.lt=0;TUT.ty=null;document.body.classList.add('tuton');sheet(false);pw(false);tutBuild();TUT.S=tutSteps();TUT.i=-1;if(curTab()!==0)tab(0);window.scrollTo(0,0);tutGo(0);cancelAnimationFrame(TUT.raf);TUT.raf=requestAnimationFrame(tutLoop)}
+function tutGo(i){clearInterval(TUT.poll);clearTimeout(TUT.wait);clearTimeout(TUT.nx);var A=TUT.S;
+ while(i<A.length&&((A[i].skip&&A[i].skip())||(A[i].t&&A[i].tab!=null&&curTab()===A[i].tab&&!tutEls(A[i]).length&&!A[i].act)))i++;
+ if(i>=A.length){tutEnd(true);return}var st=A[i];TUT.i=i;
+ if(st.tab!=null&&curTab()!==st.tab)tab(st.tab);if(st.pre)st.pre();if(st.init)st.init();
+ TUT.ease=performance.now()+1100;
+ var es=tutEls(st);if(es.length&&!/^#nav/.test(typeof st.t==='string'?st.t:'')){var r=tutRect(st),vh=innerHeight,bh=RM?'auto':'smooth';if(r.t<80||r.b>vh-150){
+  // tall parts start just under the skip button, the rest sit in the middle
+  if(es[0].closest('#sheet'))es[0].scrollIntoView({block:'center',behavior:bh});else window.scrollBy({top:(r.b-r.t)>vh*.55?r.t-74:(r.t+r.b)/2-vh*.45,behavior:bh})}}
+ var d=TUT.d,n=A.length;d.querySelector('.tcnt').textContent=(i+1)+' / '+n;d.querySelector('.tpr b').style.width=Math.round((i+1)/n*100)+'%';
+ var nb=d.querySelector('.tnx'),sk=d.querySelector('.tsk2');sk.classList.remove('on');
+ nb.style.display=st.act?'none':'';nb.textContent=st.btn||L('Dalje','Next');
+ tutText(st.c,false);
+ if(st.act){TUT.poll=setInterval(function(){if(!TUT.on||TUT.S[TUT.i]!==st)return;var ok=false;try{ok=!!st.act()}catch(x){}
+   if(ok){clearInterval(TUT.poll);clearTimeout(TUT.wait);sk.classList.remove('on');tutText((S.lang==='en'?'Nice. ':'Odlično. ')+st.c,true);TUT.nx=setTimeout(function(){if(TUT.S[TUT.i]===st)tutGo(TUT.i+1)},900)}},200);
+  TUT.wait=setTimeout(function(){sk.classList.add('on')},15000)}}
+function tutText(t,ok){var x=TUT.tx;x.classList.add('sw');setTimeout(function(){x.textContent=t;x.classList.toggle('ok',!!ok);x.classList.remove('sw')},RM?0:230)}
+function tutPanes(h,vw,vh,has){var P=TUT.pn,set=function(e,l,t,w,hh){e.style.left=l+'px';e.style.top=t+'px';e.style.width=Math.max(0,w)+'px';e.style.height=Math.max(0,hh)+'px'};
+ set(P[0],0,0,vw,h.t);set(P[1],0,h.b,vw,vh-h.b);set(P[2],0,h.t,h.l,h.b-h.t);set(P[3],h.r,h.t,vw-h.r,h.b-h.t);
+ set(TUT.ring,h.l,h.t,h.r-h.l,h.b-h.t);TUT.ring.style.opacity=has&&h.b-h.t>6?1:0}
+// The hole and the bubble glide to each new step (eased in JS), then follow the page 1:1 while it scrolls, so nothing lags behind.
+function tutLoop(now){if(!TUT.on)return;TUT.raf=requestAnimationFrame(tutLoop);var st=TUT.S[TUT.i];if(!st)return;
+ var vw=document.documentElement.clientWidth||innerWidth,vh=innerHeight,vv=window.visualViewport,vt=vv?Math.max(0,vv.offsetTop):0,vb=vv?Math.min(vh,vt+vv.height):vh,
+  r=st.t?tutRect(st):null,G=8,cl=function(v,a,c){return Math.max(a,Math.min(c,v))},T,q;
+ // keep the hole on screen: a part still below the fold grows in from the edge as it scrolls up
+ if(r){T={l:cl(r.l-G,4,vw-4),t:cl(r.t-G,2,vh-2),r:cl(r.r+G,4,vw-4),b:cl(r.b+G,2,vh-2)};if(T.b<T.t)T.b=T.t;if(T.r<T.l)T.r=T.l}else T={l:vw/2,t:vh*.45,r:vw/2,b:vh*.45};
+ var dt=TUT.lt?Math.min(64,now-TUT.lt):16;TUT.lt=now;var f=(!RM&&now<TUT.ease)?1-Math.exp(-dt/120):1,H=TUT.H||(TUT.H={l:T.l,t:T.t,r:T.r,b:T.b});
+ for(q in T){H[q]+=(T[q]-H[q])*f;if(Math.abs(T[q]-H[q])<.4)H[q]=T[q]}
+ var h={l:Math.round(H.l),t:Math.round(H.t),r:Math.round(H.r),b:Math.round(H.b)},k=[h.l,h.t,h.r,h.b,vw,vh,!!r].join(',');if(k!==TUT.k){TUT.k=k;tutPanes(h,vw,vh,!!r)}
+ // bubble above or below the highlighted part, wherever there is room (the keyboard counts as no room)
+ var b=TUT.bub,bw=b.offsetWidth,bh=b.offsetHeight,top0=vt+58,x,y,cls;
+ if(!r){x=(vw-bw)/2;y=Math.max(top0,vt+(vb-vt-bh)/2);cls='mid'}
+ else{var below=vb-12-(T.b+14),above=T.t-14-top0,cx=(T.l+T.r)/2;x=cl(cx-bw/2,12,vw-bw-12);
+  if(st.pos==='up'&&above>=bh){y=T.t-14-bh;cls='dn'}else if(below>=bh){y=T.b+14;cls='up'}else if(above>=bh){y=T.t-14-bh;cls='dn'}else{y=vb-bh-12;cls='mid'}}
+ var B=TUT.B||(TUT.B={x:x,y:y});B.x+=(x-B.x)*f;B.y+=(y-B.y)*f;if(Math.abs(x-B.x)<.4)B.x=x;if(Math.abs(y-B.y)<.4)B.y=y;
+ var ax=r?Math.round(cl((H.l+H.r)/2-B.x,18,bw-18)):0,bk=Math.round(B.x)+','+Math.round(B.y)+cls+ax;
+ if(bk!==TUT.bk){TUT.bk=bk;b.style.transform='translate('+Math.round(B.x)+'px,'+Math.round(B.y)+'px)';if(r)b.style.setProperty('--ax',ax+'px');if(!b.classList.contains(cls)){b.classList.remove('up','dn','mid');b.classList.add(cls)}}
+ // the skip button stays in the visible part of the screen even with the keyboard open or the page zoomed
+ var sx=vv?Math.round(Math.min(0,vv.offsetLeft+vv.width-vw)):0,sk=sx+','+Math.round(vt);if(sk!==TUT.sk){TUT.sk=sk;TUT.d.querySelector('.tsk').style.transform=(sx||vt)?'translate('+sx+'px,'+Math.round(vt)+'px)':''}
+ var tE=TUT.te||(TUT.te=$('toast'));{var th=tE.offsetHeight,yT=Math.round(vt+54),yB=Math.round(vb-th-16),
+  ov=function(z){return(r&&z<T.b+6&&z+th>T.t-6)||(z<y+bh+6&&z+th>y-6)},ty=!ov(yT)?yT:!ov(yB)?yB:yT;if(ty!==TUT.ty){TUT.ty=ty;tE.style.top=ty+'px'}}}
+function tutEnd(done){if(!TUT.on)return;TUT.on=false;clearInterval(TUT.poll);clearTimeout(TUT.wait);clearTimeout(TUT.nx);cancelAnimationFrame(TUT.raf);
+ var d=TUT.d;if(d){d.classList.remove('on');setTimeout(function(){if(d.parentNode)d.remove()},RM?0:420)}document.body.classList.remove('tuton');TUT.ty=null;$('toast').style.top='';
+ // everything typed during the tour was practice: put the real data back
+ try{var sn=localStorage.getItem('lockin_tut');if(sn)S=JSON.parse(sn)}catch(x){}S.tutSeen=1;try{localStorage.removeItem('lockin_tut')}catch(x){}save();
+ envOpen=-1;envMode={};$('e-amt').value='';$('e-note').value='';$('w-n').value='';$('w-p').value='';$('w-out').innerHTML='';$('cal-day').textContent='';
+ var md=tq('#sheet details.more');if(md)md.open=false;render();tab(0);window.scrollTo(0,0);
+ toast(done?L('Obilazak je gotov. Probni unosi su obrisani.','Tour finished. Practice entries were deleted.'):L('Obilazak možeš kad hoćeš da pokreneš u Više, Podešavanja.','You can start the tour any time in More, Settings.'))}
+$('chips').addEventListener('click',function(e){if(TUT.on&&e.target.closest('.chip'))TUT.flag.chip=1});
+$('tut-open').onclick=function(){tutStart()};
+window.__lk={tut:function(){return{on:TUT.on,i:TUT.i,n:TUT.S.length}},holo:function(){return{p:HO.p,t:HO.t,act:HO.act,sp:HO.sp,pw:hpw}},holoSet:function(v){hHalt();HO.p=v;HO.t=v;hLayout()},holoCfg:function(o){if('z' in o)HZ=o.z;if('zb' in o)HZB=o.zb;if('ry' in o)HRY=o.ry;if('cv' in o)HCV=o.cv;if('bf' in o)HBF=o.bf;hFit()},streakInfo:streakInfo,tank:tank,isNeed:isNeed,catStreak:catStreak,tierOf:tierOf,rateTo:rateTo,freeBal:freeBal};window.unsub=unsub;window.delExp=delExp;
 })();
 </script>
 </body>
