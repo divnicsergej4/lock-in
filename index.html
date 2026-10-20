@@ -655,7 +655,7 @@ html[data-theme=light] .fobody{background:linear-gradient(rgba(255,255,255,.4),r
 .tbr{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:36px}
 .tbr .tnx{margin:0 0 0 auto;width:auto;padding:9px 20px;border-radius:12px;font-weight:700;font-size:.9rem}
 .tbr .tsk2{background:none;border:0;box-shadow:none;color:var(--mute);padding:4px 0;margin:0;width:auto;font-size:.8rem;font-weight:500;text-decoration:underline;opacity:0;pointer-events:none;transition:opacity .4s}
-.tbr .tsk2.on{opacity:1;pointer-events:auto}
+.tbr .tsk2.on{opacity:1;pointer-events:auto}.tut .tbub{transition:opacity .25s ease}.tut.hid .tbub,.tut.hid .tring{opacity:0!important}.tut.hid .tbub{pointer-events:none}
 .tpr{display:block;height:3px;border-radius:2px;background:rgba(127,127,127,.2);margin-top:10px;overflow:hidden}.tpr b{display:block;width:0;height:100%;background:var(--pink);transition:width .5s ease}
 .tsk{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;pointer-events:auto;margin:0;width:auto;padding:8px 14px;border-radius:20px;background:rgba(10,24,16,.88);color:var(--ink);border:1px solid rgba(120,255,190,.25);font-size:.82rem;font-weight:600;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:none}
 html[data-theme=light] .tpn{background:rgba(232,240,235,.5)}
@@ -1535,7 +1535,7 @@ function tutSteps(){var V=TUT.v;return [
  {c:L('To je sve. Probne unose sad brišem, pa kreni da upisuješ prave troškove.','That’s it. I’m deleting the practice entries now, so start logging your real spending.'),btn:L('Završi','Finish'),end:1}]}
 function tutBuild(){var d=document.createElement('div');d.className='tut';d.setAttribute('role','dialog');d.setAttribute('aria-live','polite');
  d.innerHTML='<i class="tpn"></i><i class="tpn"></i><i class="tpn"></i><i class="tpn"></i><i class="tring"></i><div class="tbub mid"><i class="tar"></i><span class="tcnt"></span><p class="ttx"></p><div class="tbr"><button type="button" class="tsk2"></button><button type="button" class="tnx"></button></div><i class="tpr"><b></b></i></div><button type="button" class="tsk"></button>';
- document.body.appendChild(d);TUT.d=d;TUT.pn=[].slice.call(d.querySelectorAll('.tpn'));TUT.ring=d.querySelector('.tring');TUT.bub=d.querySelector('.tbub');TUT.tx=d.querySelector('.ttx');
+ document.body.appendChild(d);TUT.d=d;TUT.pn=[].slice.call(d.querySelectorAll('.tpn'));TUT.pn.forEach(function(e){e.addEventListener('touchmove',function(v){v.preventDefault()},{passive:false})});TUT.ring=d.querySelector('.tring');TUT.bub=d.querySelector('.tbub');TUT.tx=d.querySelector('.ttx');
  d.querySelector('.tsk').textContent=L('Preskoči obilazak','Skip tour');d.querySelector('.tsk2').textContent=L('Preskoči korak','Skip step');
  d.querySelector('.tsk').onclick=function(){tutEnd(false)};d.querySelector('.tnx').onclick=function(){var st=TUT.S[TUT.i];if(st&&st.end)tutEnd(true);else tutGo(TUT.i+1)};d.querySelector('.tsk2').onclick=function(){tutGo(TUT.i+1)};
  requestAnimationFrame(function(){d.classList.add('on')})}
@@ -1545,10 +1545,11 @@ function tutGo(i){clearInterval(TUT.poll);clearTimeout(TUT.wait);clearTimeout(TU
  while(i<A.length&&((A[i].skip&&A[i].skip())||(A[i].t&&A[i].tab!=null&&curTab()===A[i].tab&&!tutEls(A[i]).length&&!A[i].act)))i++;
  if(i>=A.length){tutEnd(true);return}var st=A[i];TUT.i=i;
  if(st.tab!=null&&curTab()!==st.tab)tab(st.tab);if(st.pre)st.pre();if(st.init)st.init();
- TUT.ease=performance.now()+1100;
+ TUT.ph=0;TUT.t0=performance.now();TUT.stab=0;TUT.lk='';if(TUT.d)TUT.d.classList.add('hid');
  var es=tutEls(st);if(es.length&&!/^#nav/.test(typeof st.t==='string'?st.t:'')){var r=tutRect(st),vh=innerHeight,bh=RM?'auto':'smooth';if(r.t<80||r.b>vh-150){
   // tall parts start just under the skip button, the rest sit in the middle
-  if(es[0].closest('#sheet'))es[0].scrollIntoView({block:'center',behavior:bh});else window.scrollBy({top:(r.b-r.t)>vh*.55?r.t-74:(r.t+r.b)/2-vh*.45,behavior:bh})}}
+  // scroll only while the bubble is faded out, in one jump: iPhone draws fixed layers a frame behind a smooth scroll, which made the highlight jump
+  clearTimeout(TUT.sc);TUT.sc=setTimeout(function(){if(TUT.S[TUT.i]!==st)return;var r=tutRect(st);if(r.t<80||r.b>vh-150){if(es[0].closest('#sheet'))es[0].scrollIntoView({block:'center'});else window.scrollBy(0,(r.b-r.t)>vh*.55?r.t-74:(r.t+r.b)/2-vh*.45)}},RM?0:240)}}
  var d=TUT.d,n=A.length;d.querySelector('.tcnt').textContent=(i+1)+' / '+n;d.querySelector('.tpr b').style.width=Math.round((i+1)/n*100)+'%';
  var nb=d.querySelector('.tnx'),sk=d.querySelector('.tsk2');sk.classList.remove('on');
  nb.style.display=st.act?'none':'';nb.textContent=st.btn||L('Dalje','Next');
@@ -1566,7 +1567,10 @@ function tutLoop(now){if(!TUT.on)return;TUT.raf=requestAnimationFrame(tutLoop);v
   r=st.t?tutRect(st):null,G=8,cl=function(v,a,c){return Math.max(a,Math.min(c,v))},T,q;
  // keep the hole on screen: a part still below the fold grows in from the edge as it scrolls up
  if(r){T={l:cl(r.l-G,4,vw-4),t:cl(r.t-G,2,vh-2),r:cl(r.r+G,4,vw-4),b:cl(r.b+G,2,vh-2)};if(T.b<T.t)T.b=T.t;if(T.r<T.l)T.r=T.l}else T={l:vw/2,t:vh*.45,r:vw/2,b:vh*.45};
- var dt=TUT.lt?Math.min(64,now-TUT.lt):16;TUT.lt=now;var f=(!RM&&now<TUT.ease)?1-Math.exp(-dt/120):1,H=TUT.H||(TUT.H={l:T.l,t:T.t,r:T.r,b:T.b});
+ var dt=TUT.lt?Math.min(64,now-TUT.lt):16;TUT.lt=now;if(TUT.ph===0){var tk=[T.l,T.t,T.r,T.b].map(Math.round).join(',');TUT.stab=tk===TUT.lk?TUT.stab+1:0;TUT.lk=tk;var el=now-TUT.t0;
+  // wait until the next part has stopped moving (scroll, sheet sliding up), then show the light and the bubble there
+  if(el<(RM?0:280)||(TUT.stab<4&&el<1600))return;TUT.ph=1;TUT.d.classList.remove('hid')}
+ var f=1,H=TUT.H||(TUT.H={l:T.l,t:T.t,r:T.r,b:T.b});
  for(q in T){H[q]+=(T[q]-H[q])*f;if(Math.abs(T[q]-H[q])<.4)H[q]=T[q]}
  var h={l:Math.round(H.l),t:Math.round(H.t),r:Math.round(H.r),b:Math.round(H.b)},k=[h.l,h.t,h.r,h.b,vw,vh,!!r].join(',');if(k!==TUT.k){TUT.k=k;tutPanes(h,vw,vh,!!r)}
  // bubble above or below the highlighted part, wherever there is room (the keyboard counts as no room)
