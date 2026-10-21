@@ -655,7 +655,7 @@ html[data-theme=light] .fobody{background:linear-gradient(rgba(255,255,255,.4),r
 .tbr{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:36px}
 .tbr .tnx{margin:0 0 0 auto;width:auto;padding:9px 20px;border-radius:12px;font-weight:700;font-size:.9rem}
 .tbr .tsk2{background:none;border:0;box-shadow:none;color:var(--mute);padding:4px 0;margin:0;width:auto;font-size:.8rem;font-weight:500;text-decoration:underline;opacity:0;pointer-events:none;transition:opacity .4s}
-.tbr .tsk2.on{opacity:1;pointer-events:auto}.tut .tbub{transition:opacity .25s ease}.tut.hid .tbub,.tut.hid .tring{opacity:0!important}.tut.hid .tbub{pointer-events:none}
+.tbr .tsk2.on{opacity:1;pointer-events:auto}.tut .tbub{transition:opacity .25s ease}.tut.hid .tbub,.tut.hid .tring{opacity:0!important}.tut.hid .tbub{pointer-events:none}.tut.pz .tpn{opacity:0;pointer-events:none}.tut.pz .tring{opacity:0!important}.tut.pz .tbub{opacity:1!important;pointer-events:auto}.tut.pz .tnx{display:none!important}.tut.pz .tsk{right:auto;left:12px}
 .tpr{display:block;height:3px;border-radius:2px;background:rgba(127,127,127,.2);margin-top:10px;overflow:hidden}.tpr b{display:block;width:0;height:100%;background:var(--pink);transition:width .5s ease}
 .tsk{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;pointer-events:auto;margin:0;width:auto;padding:8px 14px;border-radius:20px;background:rgba(10,24,16,.88);color:var(--ink);border:1px solid rgba(120,255,190,.25);font-size:.82rem;font-weight:600;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:none}
 html[data-theme=light] .tpn{background:rgba(232,240,235,.38)}
@@ -1540,7 +1540,7 @@ function tutBuild(){var d=document.createElement('div');d.className='tut';d.setA
  d.querySelector('.tsk').onclick=function(){tutEnd(false)};d.querySelector('.tnx').onclick=function(){var st=TUT.S[TUT.i];if(st&&st.end)tutEnd(true);else tutGo(TUT.i+1)};d.querySelector('.tsk2').onclick=function(){tutGo(TUT.i+1)};
  requestAnimationFrame(function(){d.classList.add('on')})}
 function tutStart(){if(TUT.on||!(S.start>0))return;try{localStorage.setItem('lockin_tut',JSON.stringify(S))}catch(x){}
- TUT.on=true;TUT.flag={};TUT.v={};TUT.k='';TUT.bk='';TUT.sk='';TUT.H=null;TUT.B=null;TUT.lt=0;TUT.ty=null;TUT.seenTab=null;TUT.clr=0;document.body.classList.add('tuton');sheet(false);pw(false);tutBuild();TUT.S=tutSteps();TUT.i=-1;if(curTab()!==0)tab(0);window.scrollTo(0,0);tutGo(0);cancelAnimationFrame(TUT.raf);TUT.raf=requestAnimationFrame(tutLoop)}
+ TUT.on=true;TUT.flag={};TUT.v={};TUT.k='';TUT.bk='';TUT.sk='';TUT.H=null;TUT.B=null;TUT.lt=0;TUT.ty=null;TUT.seenTab=null;TUT.clr=0;TUT.pz='';document.body.classList.add('tuton');sheet(false);pw(false);tutBuild();TUT.S=tutSteps();TUT.i=-1;if(curTab()!==0)tab(0);window.scrollTo(0,0);tutGo(0);cancelAnimationFrame(TUT.raf);TUT.raf=requestAnimationFrame(tutLoop)}
 function tutGo(i){clearInterval(TUT.poll);clearTimeout(TUT.wait);clearTimeout(TUT.nx);var A=TUT.S;
  while(i<A.length&&((A[i].skip&&A[i].skip())||(A[i].t&&A[i].tab!=null&&curTab()===A[i].tab&&!tutEls(A[i]).length&&!A[i].act)))i++;
  if(i>=A.length){tutEnd(true);return}var st=A[i];TUT.i=i;
@@ -1553,10 +1553,11 @@ function tutGo(i){clearInterval(TUT.poll);clearTimeout(TUT.wait);clearTimeout(TU
  var d=TUT.d,n=A.length;d.querySelector('.tcnt').textContent=(i+1)+' / '+n;d.querySelector('.tpr b').style.width=Math.round((i+1)/n*100)+'%';
  var nb=d.querySelector('.tnx'),sk=d.querySelector('.tsk2');sk.classList.remove('on');
  nb.style.display=st.act?'none':'';nb.textContent=st.btn||L('Dalje','Next');
- tutText(st.c,false);
- if(st.act){TUT.poll=setInterval(function(){if(!TUT.on||TUT.S[TUT.i]!==st)return;var ok=false;try{ok=!!st.act()}catch(x){}
+ tutText(st.c,false);if(TUT.pz){tutPause();return}
+ if(st.act){TUT.poll=setInterval(function(){if(!TUT.on||TUT.S[TUT.i]!==st||TUT.pz)return;var ok=false;try{ok=!!st.act()}catch(x){}
    if(ok){clearInterval(TUT.poll);clearTimeout(TUT.wait);sk.classList.remove('on');tutText((S.lang==='en'?'Nice. ':'Odlično. ')+st.c,true);TUT.nx=setTimeout(function(){if(TUT.S[TUT.i]===st)tutGo(TUT.i+1)},900)}},200);
   TUT.wait=setTimeout(function(){sk.classList.add('on')},15000)}}
+function tutPause(){clearTimeout(TUT.wait);TUT.d.querySelector('.tsk2').classList.remove('on');tutText(L('Prvo zatvori ovaj prozor, pa nastavljamo obilazak.','Close this window first, then we carry on with the tour.'),false)}
 function tutText(t,ok){var x=TUT.tx;x.classList.add('sw');setTimeout(function(){x.textContent=t;x.classList.toggle('ok',!!ok);x.classList.remove('sw')},RM?0:230)}
 function tutPanes(h,vw,vh,has){var P=TUT.pn,set=function(e,l,t,w,hh){e.style.left=l+'px';e.style.top=t+'px';e.style.width=Math.max(0,w)+'px';e.style.height=Math.max(0,hh)+'px'};
  set(P[0],0,0,vw,h.t);set(P[1],0,h.b,vw,vh-h.b);set(P[2],0,h.t,h.l,h.b-h.t);set(P[3],h.r,h.t,vw-h.r,h.b-h.t);
@@ -1564,6 +1565,9 @@ function tutPanes(h,vw,vh,has){var P=TUT.pn,set=function(e,l,t,w,hh){e.style.lef
 // The hole and the bubble glide to each new step (eased in JS), then follow the page 1:1 while it scrolls, so nothing lags behind.
 function tutNavTop(){var n=$('nav'),b=n&&n.getBoundingClientRect();return b&&b.height?b.top:innerHeight}
 function tutLoop(now){if(!TUT.on)return;TUT.raf=requestAnimationFrame(tutLoop);var st=TUT.S[TUT.i];if(!st)return;
+ var pz=!$('ed').classList.contains('hide2')?'ed':$('pw').classList.contains('open')?'pw':'';
+ if(pz!==TUT.pz){TUT.pz=pz;TUT.d.classList.toggle('pz',!!pz);if(pz)tutPause();else{TUT.H=null;TUT.B=null;tutGo(TUT.i)}}
+ if(pz){var pb=TUT.bub,px=Math.round(((document.documentElement.clientWidth||innerWidth)-pb.offsetWidth)/2),py=Math.round((window.visualViewport?visualViewport.offsetTop:0)+58),pk=px+','+py+'pz';if(TUT.bk!==pk){TUT.bk=pk;pb.style.transform='translate('+px+'px,'+py+'px)';pb.classList.remove('up','dn');pb.classList.add('mid')}return}
  var vw=document.documentElement.clientWidth||innerWidth,vh=innerHeight,vv=window.visualViewport,vt=vv?Math.max(0,vv.offsetTop):0,vb=vv?Math.min(vh,vt+vv.height):vh,
   r=st.t?tutRect(st):null,G=8,cl=function(v,a,c){return Math.max(a,Math.min(c,v))},T,q;
  // keep the hole on screen: a part still below the fold grows in from the edge as it scrolls up
@@ -1593,7 +1597,7 @@ function tutEnd(done){if(!TUT.on)return;TUT.on=false;clearInterval(TUT.poll);cle
  var d=TUT.d;if(d){d.classList.remove('on');setTimeout(function(){if(d.parentNode)d.remove()},RM?0:420)}document.body.classList.remove('tuton');TUT.ty=null;$('toast').style.top='';
  // everything typed during the tour was practice: put the real data back
  try{var sn=localStorage.getItem('lockin_tut');if(sn)S=JSON.parse(sn)}catch(x){}S.tutSeen=1;try{localStorage.removeItem('lockin_tut')}catch(x){}save();
- envOpen=-1;envMode={};$('e-amt').value='';$('e-note').value='';$('w-n').value='';$('w-p').value='';$('w-out').innerHTML='';$('cal-day').textContent='';
+ $('ed').classList.add('hide2');envOpen=-1;envMode={};$('e-amt').value='';$('e-note').value='';$('w-n').value='';$('w-p').value='';$('w-out').innerHTML='';$('cal-day').textContent='';
  var md=tq('#sheet details.more');if(md)md.open=false;render();tab(0);window.scrollTo(0,0);
  toast(done?L('Obilazak je gotov. Probni unosi su obrisani.','Tour finished. Practice entries were deleted.'):L('Obilazak možeš kad hoćeš da pokreneš u Više, Podešavanja.','You can start the tour any time in More, Settings.'))}
 $('chips').addEventListener('click',function(e){if(TUT.on&&e.target.closest('.chip'))TUT.flag.chip=1});
