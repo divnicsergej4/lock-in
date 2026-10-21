@@ -1633,7 +1633,8 @@ function demoData(){var now=new Date(),D=864e5,f=R.RSD/(R[S.cur]||R.RSD),sd=now.
   if(rnd()<.04)add(k,20,between(1000,3500),'Igrice','igrica','game');
   if(rnd()<.05)add(k,16,between(300,1500),'Ostalo','sitnice','bits and pieces')}
  ins.push({amt:A(5000),t:day(40,14),type:'Poklon',note:L('Rođendan','Birthday')});
- ex.sort(function(a,b){return a.t-b.t});ins.sort(function(a,b){return a.t-b.t});
+ ex.sort(function(a,b){return a.t-b.t});var sn={};for(var j=ex.length-1;j>=0;j--)if(ex[j].sub){if(sn[ex[j].note])delete ex[j].sub;else sn[ex[j].note]=1}// each subscription is listed once, by its latest payment
+ ins.sort(function(a,b){return a.t-b.t});
  var added=ins.reduce(function(t,x){return t+x.amt},0),spent=ex.reduce(function(t,x){return t+x.amt},0),
   env=[{id:'dm1',n:'Laptop',b:A(42000),t:A(150000),due:T+210*D},{id:'dm2',n:L('Letovanje','Summer trip'),b:A(18000),t:A(80000),due:T+130*D},{id:'dm3',n:L('Rođendan mame','Mom’s birthday'),b:A(6000),t:A(10000),due:T+28*D},{id:'dm4',n:L('Hitni slučaj','Emergency'),b:A(20000),t:0,due:0}],
   mo=mk(now),o={cur:S.cur,lang:S.lang,theme:S.theme,g:S.g,roast:S.roast,start:A(30000)+Math.max(0,spent-added+A(90000)),income:A(95000),added:added,
