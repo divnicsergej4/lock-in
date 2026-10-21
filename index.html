@@ -1251,6 +1251,15 @@ function applyLang(){document.querySelectorAll('[data-en]').forEach(function(e){
 function onb(on){applyLang();document.body.classList.toggle('inapp',!!on);document.documentElement.setAttribute('data-theme',on?(S.theme||'dark'):'light');$('s-lang').classList.toggle('hide',on||step!==0);$('s-intro').classList.toggle('hide',on||step!==1);$('land').classList.toggle('hide',on||step!==2);$('setup').classList.toggle('hide',on||step<3);$('hero0').classList.toggle('hide',!on&&step<3);if(!on&&step===2)cdSet(cdi);var k=on?'app':'s'+Math.min(step,3);if(k!==lastScr){lastScr=k;scrAnim(k)}}
 document.querySelectorAll('.lg').forEach(function(b){b.onclick=function(){var nl=b.getAttribute('data-l');if(S.lang==='en'&&nl==='sr'){S.lang='sr';save();location.reload();return}S.lang=nl;save();step=1;onb(false);window.scrollTo(0,0)}});
 $('go').onclick=function(){step=2;onb(false);window.scrollTo(0,0)};
+// the intro scene plays again every few seconds: after the padlock clicks he stays locked in for a moment, then the scene fades and starts over
+(function(){var st=qa('.stage2')[0];if(!st||RM)return;var tm=null;
+ st.addEventListener('animationend',function(e){if(e.animationName!=='c3ppk')return;clearTimeout(tm);tm=setTimeout(again,3200)});
+ function again(){var sv=st.querySelector('.chr3');if(!sv)return;if($('s-intro').classList.contains('hide')){tm=setTimeout(again,1500);return}
+  sv.style.transition='opacity .35s ease';sv.style.opacity='0';
+  setTimeout(function(){var nv=sv.cloneNode(true);nv.style.transition='none';nv.style.opacity='0';sv.parentNode.replaceChild(nv,sv);
+   var u=qa('#s-intro .scr path')[0];if(u){u.style.animation='none';void u.getBBox();u.style.animation=''}
+   void nv.getBBox();nv.style.transition='opacity .35s ease';nv.style.opacity='1'},380)}
+})();
 var lnH=176,lnLen=0,lnHold=null;
 function lnRender(){var el=$('ln');if(!el)return;var W=el.clientWidth||300,H=lnH,P=8,XL=16,n=30,d0=new Date(),D=[],c=0,ti=0,to=0,i;d0.setHours(0,0,0,0);
  for(i=n-1;i>=0;i--){var dt=new Date(d0.getFullYear(),d0.getMonth(),d0.getDate()-i),io=dayIO(dt.getFullYear(),dt.getMonth(),dt.getDate());c+=io.i-io.o;ti+=io.i;to+=io.o;D.push({d:dt,i:io.i,o:io.o,c:c})}
