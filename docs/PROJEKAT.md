@@ -155,6 +155,9 @@ na kraju, posle preskakanja i ako se aplikacija zatvori usred obilaska. Ponovo s
 Urađeno:
 - Prototip je završen po izgledu i funkcijama (Sergej: „završio sam skroz izgled i funkcije“).
 - Backend za naloge, prijatelje i zajednički cilj (Supabase migracija + testovi) na grani `aplikacija`.
+- Korak 1: kostur Expo aplikacije u `mobile/` (SDK 58, expo-router, 4 taba, tema i fontovi, čuvanje na telefonu,
+  logika iz prototipa sa testovima). Ekrani su još prazni osim kartice Available i plamena na Home i izbora teme na More.
+  Uputstvo: `mobile/README.md`. Repo je lokalno u `C:\dev\lock-in`.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
