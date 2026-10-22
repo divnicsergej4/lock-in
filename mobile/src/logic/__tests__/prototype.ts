@@ -246,6 +246,7 @@ const HANDLERS: [string, string][] = [
   ['env-list', 'onclick'],
   ['hist', 'onclick'],
   ['ed-ok', 'onclick'],
+  ['s-go', 'onclick'],
 ];
 
 const CODE =
@@ -331,6 +332,7 @@ export function prototype(now: number, rand: () => number = Math.random): Proto 
     cur2Render: noop,
     closeEnv: noop,
     flyBusy: null,
+    pw: noop,
     // translation happens in shown() / trT, like the browser's MutationObserver
     trDom: noop,
     fxDom: noop,

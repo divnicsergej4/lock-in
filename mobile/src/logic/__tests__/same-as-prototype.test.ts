@@ -23,6 +23,7 @@ import {
   upcomingFixed,
 } from '../money';
 import { planText } from '../plan';
+import { completeSetup } from '../setup';
 import { addRecurring, DONT_USE_IT, processRecurring, subscriptions } from '../recurring';
 import { monthReport, REPORT_EMPTY } from '../report';
 import { pickRoast } from '../roasts';
@@ -432,5 +433,42 @@ describe('envelopes', () => {
     p.click('env-list', { ['envv' + i]: amount }, { target: { closest: (q: string) => (q === '[data-ea]' ? btn : null) } });
     expect(p.toasts.map(trT)).toEqual([a.ok ? a.toast : a.error]);
     if (a.ok) expect(normEnv(a.state.env)).toEqual(normEnv(p.S.env));
+  });
+});
+
+describe('setup at the end of the intro', () => {
+  test.each(seeds)('seed %i', (seed) => {
+    const { now, p, r } = setup(seed);
+    const fresh = { ...initialState, theme: r() < 0.5 ? 'light' : 'dark' } as AppState;
+    p.S = toProto(fresh);
+    const pick = <T,>(a: T[]) => a[Math.floor(r() * a.length)];
+    const input = {
+      amount: pick(['1500', '0', '', '2,500.50', '1.250', 'abc', '75']),
+      cur: pick(['EUR', 'USD', 'RSD']),
+      cur2: pick(['', '', 'EUR', 'CHF']),
+      amount2: pick(['', '300', '1,000']),
+      income: pick(['', '900', '2,000', 'x']),
+      save: pick(['', '200', '0']),
+      age: pick(['', '21', '34', '9', '120', '17abc', ' 45']),
+    };
+    const a = completeSetup(fresh, input, now);
+    p.click('s-go', { 's-amt': input.amount, 's-cur': input.cur, 's-cur2': input.cur2, 's-amt2': input.amount2, 's-inc': input.income, 's-sav': input.save, 's-age': input.age, 's-g': '' });
+    if (!a.ok) {
+      expect([a.error]).toEqual(p.toasts.map(trT));
+      return;
+    }
+    const S = p.S;
+    expect({ start: a.state.start, cur: a.state.cur, cur2: a.state.cur2, start2: a.state.start2, income: a.state.income, age: a.state.age ?? null, plan: a.state.plan, t0: a.state.t0, tk0: a.state.tk0, chk: a.state.chk }).toEqual({
+      start: S.start,
+      cur: S.cur,
+      cur2: S.cur2,
+      start2: S.start2,
+      income: S.income,
+      age: S.age ?? null,
+      plan: S.plan,
+      t0: S.t0,
+      tk0: S.tk0,
+      chk: S.chk,
+    });
   });
 });

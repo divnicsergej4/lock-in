@@ -1,6 +1,7 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 
 import { TabIcon, type TabIconName } from '@/components/TabIcon';
+import { useStore } from '@/store/StoreProvider';
 import { fonts, useTheme } from '@/theme';
 
 const TABS: { name: string; title: string; icon: TabIconName }[] = [
@@ -12,6 +13,9 @@ const TABS: { name: string; title: string; icon: TabIconName }[] = [
 
 export default function TabLayout() {
   const { c } = useTheme();
+  const { state } = useStore();
+  // a new user (no starting balance yet) sees the intro first, like in the prototype
+  if (!(state.start > 0)) return <Redirect href="/welcome" />;
   return (
     <Tabs
       screenOptions={{

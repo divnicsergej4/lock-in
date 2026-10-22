@@ -50,6 +50,15 @@ export const fonts = {
   displayRegular: 'BricolageGrotesque_400Regular',
 } as const;
 
+/** Bricolage Grotesque by CSS weight (the intro and onboarding use it everywhere). */
+export const brico = {
+  400: 'BricolageGrotesque_400Regular',
+  500: 'BricolageGrotesque_500Medium',
+  600: 'BricolageGrotesque_600SemiBold',
+  700: 'BricolageGrotesque_700Bold',
+  800: 'BricolageGrotesque_800ExtraBold',
+} as const;
+
 export const radius = { card: 20, input: 16, button: 12 } as const;
 
 export function useTheme(): { name: ThemeName; c: Palette } {

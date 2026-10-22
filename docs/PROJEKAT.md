@@ -164,6 +164,10 @@ Urađeno:
   Svesno ispravljeno (prototip je grešio): „(oko N per day)“ u planu → „(about N per day)“; prag 30% gleda iznos u
   glavnoj valuti; raspoređivanje novca u koverte čita „12.5“ kao 12,5 (prototip kao 125).
   Nije preneto: grafikoni holo prstena (podaci za krug, liniju i kalendar), dugovi, demo podaci, nivoi/XP (sakriveni u prototipu).
+- Uvod u aplikaciji (`mobile/src/app/welcome.tsx`): ekran sa likom (Skia, ista animacija i ponavljanje na ~8 s),
+  tri ekrana koja se preskaču, podešavanje sa godinama. Mere upoređene sa prototipom u pregledaču (razlika ≤ 0,2 px).
+  Posle podešavanja ide se pravo na Home: ekran za plaćanje i vođeni obilazak još ne postoje.
+  Izbor valute je lista koja izlazi odozdo (prototip je koristio telefonski birač).
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

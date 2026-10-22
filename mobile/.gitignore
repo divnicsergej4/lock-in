@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Skia for web: copied by "npx setup-skia-web public", too big for git
+public/canvaskit.wasm
