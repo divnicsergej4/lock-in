@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { AppToastProvider } from '@/components/AppToast';
 import { StoreProvider, useStore } from '@/store/StoreProvider';
 import { useTheme } from '@/theme';
 
@@ -61,12 +62,12 @@ function App() {
   if (!done) return null;
 
   return (
-    <>
+    <AppToastProvider>
       <StatusBar style={name === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="welcome" options={{ animation: 'fade', contentStyle: { backgroundColor: '#f4f8f5' } }} />
       </Stack>
-    </>
+    </AppToastProvider>
   );
 }

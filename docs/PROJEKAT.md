@@ -168,6 +168,11 @@ Urađeno:
   tri ekrana koja se preskaču, podešavanje sa godinama. Mere upoređene sa prototipom u pregledaču (razlika ≤ 0,2 px).
   Posle podešavanja ide se pravo na Home: ekran za plaćanje i vođeni obilazak još ne postoje.
   Izbor valute je lista koja izlazi odozdo (prototip je koristio telefonski birač).
+- Home u aplikaciji: Available, plamen svih nivoa (sa animacijom i skokom na novi nivo), izazov nedelje, novi unos
+  (trošak/prihod, kategorije sa ikonicama, druga valuta, više opcija), poruke posle troška, „Can I afford this?“,
+  donja navigacija. Tamna i svetla tema; mere upoređene sa prototipom (razlika ≤ 0,2 px).
+  Svesno ispravljeno: klik na kategoriju u prototipu upisuje poslednji iznos sa zarezom („4,5“), pa se zapiše 45;
+  u aplikaciji se upisuje „4.5“.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

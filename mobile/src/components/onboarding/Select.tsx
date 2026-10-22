@@ -13,24 +13,35 @@ export interface Option {
   label: string;
 }
 
-export function Select({ value, options, onChange, style, label }: { value: string; options: Option[]; onChange: (v: string) => void; style?: ViewStyle; label: string }) {
+/** Colours of the field and the list (default: the light intro). */
+export interface SelectLook {
+  bg: string;
+  border: string;
+  ink: string;
+  mute: string;
+  sheet: string;
+  font: string;
+}
+const LIGHT: SelectLook = { bg: '#f3f7f4', border: '#dbe7df', ink: '#0d1f15', mute: '#5d7466', sheet: '#fff', font: brico[400] };
+
+export function Select({ value, options, onChange, style, label, look = LIGHT }: { value: string; options: Option[]; onChange: (v: string) => void; style?: ViewStyle; label: string; look?: SelectLook }) {
   const [open, setOpen] = useState(false);
   const insets = useSafeAreaInsets();
   const cur = options.find((o) => o.value === value) || options[0];
   return (
     <>
-      <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => setOpen(true)} style={[st.field, style]}>
-        <Text style={st.text} numberOfLines={1}>
+      <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => setOpen(true)} style={[st.field, { backgroundColor: look.bg, borderColor: look.border }, style]}>
+        <Text style={[st.text, { color: look.ink, fontFamily: look.font }]} numberOfLines={1}>
           {cur.label}
         </Text>
         <Svg width={12} height={12} viewBox="0 0 12 12">
-          <Path d="M2.5 4.5 6 8l3.5-3.5" stroke="#0d1f15" strokeWidth={1.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <Path d="M2.5 4.5 6 8l3.5-3.5" stroke={look.ink} strokeWidth={1.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />
         </Svg>
       </Pressable>
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <Pressable style={st.scrim} onPress={() => setOpen(false)} />
-        <View style={[st.sheet, { paddingBottom: 12 + insets.bottom }]}>
-          <Text style={st.title}>{label}</Text>
+        <View style={[st.sheet, { backgroundColor: look.sheet, paddingBottom: 12 + insets.bottom }]}>
+          <Text style={[st.title, { color: look.mute }]}>{label}</Text>
           <FlatList
             data={options}
             keyExtractor={(o) => o.value || '-'}
@@ -43,9 +54,9 @@ export function Select({ value, options, onChange, style, label }: { value: stri
                   onChange(item.value);
                   setOpen(false);
                 }}
-                style={[st.opt, item.value === value && st.optOn]}
+                style={[st.opt, item.value === value && { backgroundColor: look.bg }]}
               >
-                <Text style={[st.text, item.value === value && { fontFamily: brico[700] }]}>{item.label}</Text>
+                <Text style={[st.text, { color: look.ink, fontFamily: look.font }, item.value === value && { fontWeight: '700' }]}>{item.label}</Text>
               </Pressable>
             )}
           />

@@ -41,6 +41,6 @@ const variants = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  screen: { paddingHorizontal: 16, paddingBottom: 32, gap: 14 },
+  screen: { paddingHorizontal: 16, paddingBottom: 130, gap: 14 }, // the tab bar sits over the content
   card: { borderWidth: 1, borderRadius: radius.card, padding: 18, gap: 6 },
 });

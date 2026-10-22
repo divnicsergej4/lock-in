@@ -55,9 +55,9 @@ export function SetupScreen({ onStart }: { onStart: (input: SetupInput) => void 
               value={v.cur2 || ''}
               options={[{ value: '', label: 'No second currency' }, ...CUR_OPTIONS]}
               onChange={set('cur2')}
-              style={{ flex: 1, height: 47.2 }}
+              style={{ flex: 1, flexBasis: 0, minWidth: 0, height: 47.2 }}
             />
-            <Field value={v.amount2} onChangeText={set('amount2')} placeholder="Balance" keyboardType="decimal-pad" style={{ flex: 1 }} accessibilityLabel="How much you have in the second currency" />
+            <Field value={v.amount2} onChangeText={set('amount2')} placeholder="Balance" keyboardType="decimal-pad" style={{ flex: 1, flexBasis: 0, minWidth: 0 }} accessibilityLabel="How much you have in the second currency" />
           </View>
         )}
 

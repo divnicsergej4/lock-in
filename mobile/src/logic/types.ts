@@ -66,6 +66,7 @@ export interface AppState {
   tk0: number; // first day the streak counts from
   plan: Plan;
   tierSeen?: number; // highest flame tier already celebrated
+  fold?: Record<string, boolean>; // which foldable sections are open (e.g. "buy": Can I afford this?)
 }
 
 export interface Plan {

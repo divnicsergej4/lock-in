@@ -24,8 +24,8 @@ export function Toast({ text }: { text: string }) {
   if (!text) return null;
   return (
     <View pointerEvents="none" style={[st.toast, { bottom: 98 + insets.bottom }]} accessibilityLiveRegion="polite">
-      {/* textContent collapses line breaks into spaces */}
-      <Text style={st.t}>{text.replace(/\s*\n\s*/g, ' ')}</Text>
+      {/* white-space: pre-line: line breaks are kept */}
+      <Text style={st.t}>{text}</Text>
     </View>
   );
 }
