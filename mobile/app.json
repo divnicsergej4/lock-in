@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#050b08",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "CADisableMinimumFrameDurationOnPhone": true
+      }
     },
     "android": {
       "adaptiveIcon": {

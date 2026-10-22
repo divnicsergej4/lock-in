@@ -7,14 +7,16 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from '
 
 import { Enter } from '@/components/onboarding/Enter';
 import { useStore } from '@/store/StoreProvider';
-import { inter, useTheme } from '@/theme';
+import { inter, sectionTints, useTheme } from '@/theme';
 
-export type SectionKind = 'plain' | 'hot' | 'amber';
+export type SectionKind = 'plain' | 'hot' | 'amber' | 'teal' | 'rose';
 
 export function Section({ kind = 'plain', style, children }: { kind?: SectionKind; style?: ViewStyle; children: ReactNode }) {
-  const { c } = useTheme();
-  const look: ViewStyle =
-    kind === 'hot'
+  const { c, name } = useTheme();
+  const tint = kind === 'teal' || kind === 'rose' ? sectionTints[name][kind] : null;
+  const look: ViewStyle = tint
+    ? { backgroundImage: tint[0], borderColor: tint[1] }
+    : kind === 'hot'
       ? { backgroundImage: c.hotBg, borderColor: c.hotBorder }
       : kind === 'amber'
         ? { backgroundImage: c.amberBg, borderColor: c.amberBorder }
@@ -50,9 +52,10 @@ function Chevron({ open }: { open: boolean }) {
  * A foldable section (prototype section.fold): tap the title to open or close it; whether it is open
  * is remembered. When it opens, its contents pop in one after another (40 ms apart).
  */
-export function Fold({ id, title, kind = 'plain', children }: { id: string; title: string; kind?: SectionKind; children: ReactNode }) {
+export function Fold({ id, title, kind = 'plain', defaultOpen = false, children }: { id: string; title: string; kind?: SectionKind; defaultOpen?: boolean; children: ReactNode }) {
   const { state, update } = useStore();
-  const open = !!(state.fold || {})[id];
+  const saved = (state.fold || {})[id];
+  const open = saved == null ? defaultOpen : !!saved;
   const toggle = () => update((s) => ({ ...s, fold: { ...(s.fold || {}), [id]: !open } }));
   return (
     <Section kind={kind} style={open ? undefined : { paddingTop: 16, paddingBottom: 16 }}>
@@ -95,7 +98,7 @@ export function Button({ title, onPress, style }: { title: string; onPress: () =
 }
 
 /** Outlined button (prototype button.ghost). */
-export function Ghost({ title, onPress, style, textStyle }: { title: string; onPress: () => void; style?: ViewStyle; textStyle?: TextStyle }) {
+export function Ghost({ title, onPress, style, textStyle }: { title: string; onPress: () => void; style?: ViewStyle | ViewStyle[]; textStyle?: TextStyle }) {
   const { c } = useTheme();
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [st.ghost, { borderColor: c.line }, pressed && { opacity: 0.7 }, style]}>

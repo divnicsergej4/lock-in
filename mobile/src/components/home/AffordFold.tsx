@@ -38,7 +38,7 @@ export function AffordFold() {
       </View>
       <Button title="Check" onPress={check} />
       <View style={{ marginTop: 10 }}>
-        {noPrice && <Small>{AFFORD_NO_PRICE}</Small>}
+        {noPrice && <Small style={{ marginTop: 2.8, marginBottom: 12.8 }}>{AFFORD_NO_PRICE}</Small>}
         {out && (
           <View style={[st.tip, { backgroundColor: c.tipBg, borderColor: c.line }]}>
             <Text style={[st.tipT, { color: c.ink }]}>

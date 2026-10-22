@@ -1,16 +1,15 @@
 import { Redirect, Tabs } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, type ComponentProps } from 'react';
+import { AppState as RNAppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TabIcon, type TabIconName } from '@/components/TabIcon';
+import { processRecurring } from '@/logic/recurring';
 import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
 
-/** The part of the tab bar props this bar uses. */
-interface NavProps {
-  state: { index: number; routes: { key: string; name: string }[] };
-  navigation: { emit: (e: { type: 'tabPress'; target: string; canPreventDefault: true }) => { defaultPrevented: boolean }; navigate: (name: string) => void };
-}
+/** Props Tabs passes to tabBar (state, emitter, navigateToTab; there is no `navigation` here). */
+type NavProps = Parameters<NonNullable<ComponentProps<typeof Tabs>['tabBar']>>[0];
 
 const TABS: { name: string; title: string; icon: TabIconName }[] = [
   { name: 'index', title: 'Home', icon: 'home' },
@@ -20,7 +19,7 @@ const TABS: { name: string; title: string; icon: TabIconName }[] = [
 ];
 
 /** Bottom navigation (prototype #nav): over the content, line on top, icon + label per tab. */
-function NavBar({ state, navigation }: NavProps) {
+function NavBar({ state, emitter, navigateToTab }: NavProps) {
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
   return (
@@ -36,8 +35,9 @@ function NavBar({ state, navigation }: NavProps) {
             accessibilityState={{ selected: on }}
             accessibilityLabel={tab.title}
             onPress={() => {
-              const e = navigation.emit({ type: 'tabPress', target: r.key, canPreventDefault: true });
-              if (!on && !e.defaultPrevented) navigation.navigate(r.name);
+              // same as the built-in tab bar; a tap on the current tab only emits tabPress
+              const e = emitter.emit({ type: 'tabPress', target: r.key, canPreventDefault: true });
+              if (!on && !e.defaultPrevented) navigateToTab(r.key);
             }}
             style={st.btn}
           >
@@ -52,11 +52,19 @@ function NavBar({ state, navigation }: NavProps) {
 
 export default function TabLayout() {
   const { c } = useTheme();
-  const { state } = useStore();
+  const { state, update } = useStore();
+  // recurring entries whose day has come are logged when the app opens and when it comes back
+  // (prototype: recProcess at every render)
+  useEffect(() => {
+    const run = () => update((s) => processRecurring(s, Date.now()));
+    run();
+    const sub = RNAppState.addEventListener('change', (st) => st === 'active' && run());
+    return () => sub.remove();
+  }, [update]);
   // a new user (no starting balance yet) sees the intro first, like in the prototype
   if (!(state.start > 0)) return <Redirect href="/welcome" />;
   return (
-    <Tabs screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: c.bg } }} tabBar={(p) => <NavBar {...(p as unknown as NavProps)} />}>
+    <Tabs screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: c.bg } }} tabBar={(p) => <NavBar {...p} />}>
       {TABS.map((t) => (
         <Tabs.Screen key={t.name} name={t.name} options={{ title: t.title }} />
       ))}

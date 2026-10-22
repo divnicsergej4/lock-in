@@ -68,6 +68,52 @@ export const palettes = {
 
 export type Palette = (typeof palettes)[ThemeName];
 
+/** The holographic ring on Spending (prototype .hst / .vzp, dark and light). */
+export const holo = {
+  dark: {
+    hc: 'rgba(130,255,195,0.5)', // corner marks
+    hb: '#22e07a', // glow under the ring
+    hr: 'rgba(130,255,195,0.55)', // ring lines
+    panelBg: 'linear-gradient(162deg, #1b3e2c, #0b1d14 46%, #07120c)',
+    panelBorder: 'rgba(120,255,190,0.18)',
+    panelShadow: 'inset 0 1px 0 rgba(190,255,220,0.09), 0 0 30px rgba(34,224,122,0.09), 0 34px 44px -28px rgba(0,0,0,0.85)',
+    grid: 'rgba(130,255,195,0.045)',
+    dim: 'rgba(3,9,6,0.8)',
+    scan: 'linear-gradient(180deg, rgba(34,224,122,0), rgba(34,224,122,0.06) 55%, rgba(140,255,200,0.2) 95%, rgba(215,255,232,0.95) 98.6%, rgba(34,224,122,0))',
+    statBorder: 'rgba(130,255,195,0.14)',
+    statBg: 'rgba(130,255,195,0.04)',
+    cellBg: 'rgba(130,255,195,0.045)',
+    cellBorder: 'rgba(130,255,195,0.07)',
+    rowOn: 'rgba(130,255,195,0.07)',
+    dot: 'rgba(130,255,195,0.18)',
+    dotOnGlow: '0 0 10px rgba(34,224,122,0.65)',
+  },
+  light: {
+    hc: 'rgba(18,184,95,0.5)',
+    hb: '#12b85f',
+    hr: 'rgba(18,160,85,0.5)',
+    panelBg: 'linear-gradient(162deg, #ffffff, #f7fcf9 50%, #ecf7f1)',
+    panelBorder: 'rgba(18,184,95,0.22)',
+    panelShadow: 'inset 0 1px 0 #ffffff, 0 0 26px rgba(18,184,95,0.10), 0 30px 40px -28px rgba(13,31,21,0.38)',
+    grid: 'rgba(18,140,80,0.05)',
+    dim: 'rgba(238,245,240,0.8)',
+    scan: 'linear-gradient(180deg, rgba(18,184,95,0), rgba(18,184,95,0.05) 55%, rgba(18,184,95,0.16) 95%, rgba(18,184,95,0.7) 98.6%, rgba(18,184,95,0))',
+    statBorder: 'rgba(18,120,70,0.14)',
+    statBg: 'rgba(18,120,70,0.04)',
+    cellBg: 'rgba(18,120,70,0.045)',
+    cellBorder: 'rgba(18,120,70,0.08)',
+    rowOn: 'rgba(18,120,70,0.06)',
+    dot: 'rgba(18,120,70,0.18)',
+    dotOnGlow: '0 0 8px rgba(18,184,95,0.45)',
+  },
+} as const;
+
+/** Section colour variants (prototype section.teal / .rose). */
+export const sectionTints = {
+  dark: { teal: ['linear-gradient(160deg, #0b2726, #0d1812 70%)', '#1f4a49'], rose: ['linear-gradient(160deg, #261218, #0d1812 75%)', '#4a2029'] },
+  light: { teal: ['linear-gradient(160deg, #e3f7f5, #ffffff 70%)', '#c7ebe6'], rose: ['linear-gradient(160deg, #ffe8ec, #ffffff 75%)', '#f6ccd5'] },
+} as const;
+
 /** Flame tier colour for its label and progress bar (prototype TCD / TCL). */
 export const tierColors = {
   dark: { or: '#ff8a00', bl: '#2fb8ff', rd: '#ff5a5a', gd: '#f2c200', pu: '#c77dff', gr: '#3ee08f', di: '#a8dcff', rb: '#ffb300', lg: '#ffd23f' },

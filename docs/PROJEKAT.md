@@ -163,7 +163,7 @@ Urađeno:
   plan meseca, „We noticed“, fore. Test poredi rezultat sa pravim kodom prototipa na nasumičnim podacima.
   Svesno ispravljeno (prototip je grešio): „(oko N per day)“ u planu → „(about N per day)“; prag 30% gleda iznos u
   glavnoj valuti; raspoređivanje novca u koverte čita „12.5“ kao 12,5 (prototip kao 125).
-  Nije preneto: grafikoni holo prstena (podaci za krug, liniju i kalendar), dugovi, demo podaci, nivoi/XP (sakriveni u prototipu).
+  Nije preneto: dugovi, demo podaci, nivoi/XP (sakriveni u prototipu). Grafikoni holo prstena su preneti uz Spending.
 - Uvod u aplikaciji (`mobile/src/app/welcome.tsx`): ekran sa likom (Skia, ista animacija i ponavljanje na ~8 s),
   tri ekrana koja se preskaču, podešavanje sa godinama. Mere upoređene sa prototipom u pregledaču (razlika ≤ 0,2 px).
   Posle podešavanja ide se pravo na Home: ekran za plaćanje i vođeni obilazak još ne postoje.
@@ -173,6 +173,14 @@ Urađeno:
   donja navigacija. Tamna i svetla tema; mere upoređene sa prototipom (razlika ≤ 0,2 px).
   Svesno ispravljeno: klik na kategoriju u prototipu upisuje poslednji iznos sa zarezom („4,5“), pa se zapiše 45;
   u aplikaciji se upisuje „4.5“.
+- Spending u aplikaciji: holo prsten sa tri panela (krug top 5 kategorija, linija 30 dana sa držanjem prsta, kalendar),
+  sve promene (filteri, ✎ izmena, ✕ brisanje), limiti, ponavljajući unosi, pretplate („Don't use it“), „We noticed“,
+  ulazak sekcija pri promeni taba. Prevlačenje, opruga i 3D položaj panela rade na UI niti (Reanimated, opruga se
+  računa u koracima od 1/120 s); `app.json` ima `CADisableMinimumFrameDurationOnPhone` da iPhone sme na 120 Hz.
+  Podaci grafikona testirani prema pravom kodu prototipa; mere upoređene u pregledaču (tamna i svetla, razlika ≤ 1 px).
+  Ponavljajući unosi se sad upisuju čim se otvori bilo koji tab (ranije samo Home).
+  Nije provereno na pravom telefonu: prevlačenje prstom, držanje na liniji i 120 Hz. Podešavanje za 120 Hz iz `app.json`
+  važi tek u pravom build-u (development build / TestFlight); u Expo Go-u zavisi od samog Expo Go-a.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

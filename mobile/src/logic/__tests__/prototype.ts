@@ -140,8 +140,10 @@ export class El {
   set textContent(t: string) {
     this.innerHTML = String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   }
+  clientWidth = 292;
   querySelector() {
-    return null;
+    // enough of an element for code that wires up events on what it just drew
+    return { addEventListener() {}, setAttribute() {}, getBoundingClientRect: () => ({ left: 0, top: 0 }), querySelector: () => null, style: {} };
   }
   querySelectorAll() {
     return [];
@@ -233,7 +235,7 @@ const FUNCS = [
   'L', 'fmt', 'fmt0', 'esc', 'pick', 'day0', 'dAdd', 'dk', 'mk', 'dn', 'den', 'tkStart', 'tank', 'streakInfo', 'streak',
   'catStreak', 'checkIn', 'curBal', 'envSum', 'freeBal', 'getInc', 'totalSpent', 'dys', 'isNeed', 'mcat', 'monthSpent',
   'todayCount', 'pickM', 'ageDec', 'upcomingFixed', 'rateTo', 'rateTxt', 'dd', 'tierOf', 'streakCard', 'extra', 'more',
-  'lims', 'todayCard', 'dayIO', 'recProcess', 'planCalc', 'planRender', 'conv', 'bal2', 'envGoal', 'pace', 'envCard', 'num', 'cats', 'migrate',
+  'lims', 'todayCard', 'dayIO', 'dnRender', 'lnRender', 'cal', 'txRender', 'cc', 'recProcess', 'planCalc', 'planRender', 'conv', 'bal2', 'envGoal', 'pace', 'envCard', 'num', 'cats', 'migrate',
 ].map(fnSource);
 
 const HANDLERS: [string, string][] = [
@@ -332,6 +334,15 @@ export function prototype(now: number, rand: () => number = Math.random): Proto 
     cur2Render: noop,
     closeEnv: noop,
     flyBusy: null,
+    isvg: () => '<svg></svg>',
+    dsel: null,
+    dks: [],
+    lnH: 176,
+    lnLen: 0,
+    lnHold: null,
+    tf: 'all',
+    cy: 2026,
+    cm0: 0,
     pw: noop,
     // translation happens in shown() / trT, like the browser's MutationObserver
     trDom: noop,

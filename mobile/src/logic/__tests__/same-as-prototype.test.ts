@@ -4,9 +4,10 @@
 
 import { AFFORD_NO_PRICE, canIAfford } from '../afford';
 import { BASE_CATEGORIES } from '../categories';
+import { calendar, donut, DONUT_EMPTY, lineChart, lineTip, transactions, TX_EMPTY } from '../charts';
 import { addExpense, addIncome, deleteExpense, deleteIncome, editEntry } from '../entries';
 import { createEnvelope, envelopeCard, putIn, takeOut } from '../envelopes';
-import { parseAmount } from '../format';
+import { fmt, parseAmount } from '../format';
 import { PATTERNS_EMPTY, patterns, weeklyChallenge } from '../insights';
 import { LIMITS_EMPTY, LIMITS_HINT, limitRows, setLimit } from '../limits';
 import {
@@ -470,5 +471,79 @@ describe('setup at the end of the intro', () => {
       tk0: S.tk0,
       chk: S.chk,
     });
+  });
+});
+
+describe('Spending: the donut, the 30-day line, the calendar and all transactions', () => {
+  const attrs = (html: string, tag: string) =>
+    [...html.matchAll(new RegExp('<' + tag + ' ([^>]*)>', 'g'))].map((m) => Object.fromEntries([...m[1].matchAll(/([\w-]+)="([^"]*)"/g)].map((a) => [a[1], a[2]])));
+
+  test.each(seeds)('donut, seed %i', (seed) => {
+    const { s, now, p, r } = setup(seed);
+    const top = Object.keys(monthByCategory(s, 0, now).byCat);
+    const sel = top.length && r() < 0.5 ? top[Math.floor(r() * top.length)] : undefined;
+    p.set('dsel', sel ? sr(sel) : null);
+    p.call('dnRender');
+    const d = donut(s, now, sel);
+    const html = p.el('dn').innerHTML;
+    if (d.empty) {
+      expect(shown(html)).toEqual([DONUT_EMPTY]);
+      return;
+    }
+    const circles = attrs(html, 'circle');
+    expect(circles.map((c) => [c['stroke-width'], c['stroke-dasharray'], c['stroke-dashoffset'], c['stroke-linecap']])).toEqual(
+      d.arcs.map((a) => [String(a.width), a.dash.toFixed(1) + ' ' + a.gap.toFixed(1), a.offset.toFixed(1), a.round ? 'round' : 'butt']),
+    );
+    expect(squash(shown(html).join(''))).toBe(squash(fmt(d.selectedAmount) + s.cur + d.selected + d.caption));
+    expect(shown(p.el('dn-list').innerHTML)).toEqual(d.rows.map((x) => x.cat + ' ' + x.pct + '%' + fmt(x.amount) + ' ' + s.cur));
+    expect(p.el('dn-m').textContent).toBe(d.month);
+  });
+
+  test.each(seeds)('line, seed %i', (seed) => {
+    const { s, now, p } = setup(seed);
+    p.call('lnRender');
+    const L = lineChart(s, now, 292, 176);
+    const html = p.el('ln').innerHTML;
+    const lines = attrs(html, 'polyline');
+    expect(lines[1].points).toBe(L.points.map((q) => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' '));
+    expect(attrs(html, 'line')[0].y1).toBe(L.zeroY.toFixed(1));
+    expect(shown(html)).toEqual([L.labels.map((l) => l.text).join('')]);
+    expect(squash(shown(p.el('ln-st').innerHTML).join(''))).toBe(
+      squash('Received' + fmt(L.received) + 'Spent' + fmt(L.spent) + (L.saved >= 0 ? 'Saved' : 'In the red') + fmt(Math.abs(L.saved))),
+    );
+    const tip = lineTip(L.days[29]);
+    expect(shown(p.el('ln-tip').innerHTML).join('')).toBe(tip.date + ' received ' + tip.received + ', spent ' + tip.spent + ', ' + tip.label + ' ' + tip.net);
+  });
+
+  test.each(seeds)('calendar, seed %i', (seed) => {
+    const { s, now, p, r } = setup(seed);
+    const d = new Date(now);
+    const back = Math.floor(r() * 3);
+    const y = new Date(d.getFullYear(), d.getMonth() - back, 1).getFullYear();
+    const m = new Date(d.getFullYear(), d.getMonth() - back, 1).getMonth();
+    p.set('cy', y);
+    p.set('cm0', m);
+    p.call('cal');
+    const c = calendar(s, y, m, now);
+    const html = p.el('cal').innerHTML;
+    const cells = [...html.matchAll(/<div class="d( e| t)?"( data-d="(\d+)")?( style="([^"]*)")?>(?:<span>(\d+)<\/span><b>([^<]*)<\/b>)?<\/div>/g)].map((x) => ({
+      day: x[3] ? +x[3] : 0,
+      today: x[1] === ' t',
+      bg: x[5] || '',
+      label: x[7] || '',
+    }));
+    expect(cells).toEqual(c.cells.map((q) => ({ day: q.day, today: q.today, bg: q.alpha ? 'background:rgba(34,224,122,' + q.alpha.toFixed(2) + ')' : '', label: q.label })));
+    expect(p.el('cal-t').textContent).toBe(c.title);
+  });
+
+  test.each(seeds)('all transactions, seed %i', (seed) => {
+    const { s, p } = setup(seed);
+    for (const f of ['all', 'in', 'out'] as const) {
+      p.set('tf', f);
+      p.call('txRender');
+      const rows = transactions(s, f);
+      const ours = rows.length ? rows.map((x) => (x.kind === 'date' ? x.text : x.cat + (x.note ? ' ' + x.note : '') + (x.auto ? ' 🔁' : '') + x.amount + '✎✕')) : [TX_EMPTY];
+      expect(shown(p.el('hist').innerHTML).map(squash)).toEqual(ours.map(squash));
+    }
   });
 });
