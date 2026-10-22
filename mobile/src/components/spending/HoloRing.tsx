@@ -5,7 +5,7 @@
 
 import { useIsFocused } from 'expo-router';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -26,9 +26,11 @@ import { bezier } from '@/components/intro/cssAnim';
 import { holo, useTheme } from '@/theme';
 
 import { HoloPanel } from './HoloPanel';
-import { HN, holoLayout, hm, hPose, HPB, HPT, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
+import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
 
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
+// iOS orders the panels by real depth (see poseMatrix); Android and the web follow zIndex
+const IOS = Platform.OS === 'ios';
 
 /** What a panel's content is given. */
 export interface PanelProps {
@@ -66,7 +68,8 @@ function RingPanel({
 }) {
   const style = useAnimatedStyle(() => {
     const q = hPose(i, p.value, sp.value, L);
-    return { opacity: q.opacity, transform: poseTransform(q) };
+    if (!IOS) return { opacity: q.opacity, transform: poseTransform(q) };
+    return { opacity: q.opacity, transform: [{ matrix: poseMatrix(q, i === hm(Math.round(p.value))) }] };
   });
   const dim = useDerivedValue(() => hPose(i, p.value, sp.value, L).dim);
   // .vzf: @keyframes hfl 7s ease-in-out infinite (0 → −5 px → 0), panels offset by −2.4 s and −4.7 s

@@ -5,7 +5,7 @@ import vm from 'vm';
 
 import { fnSource, stmtSource } from '@/logic/__tests__/prototype';
 
-import { HP, holoLayout, hPose, springStep, SPRING_DT, settled, SPRING_MAX_S, swipeTarget } from '../holo';
+import { HP, holoLayout, hm, hPose, poseMatrix, springStep, SPRING_DT, settled, SPRING_MAX_S, swipeTarget } from '../holo';
 
 /** The prototype's ring code with its layout for a given screen width. */
 function prototypeRing(W: number) {
@@ -64,6 +64,40 @@ describe('the ring sits like the prototype', () => {
         const q = hPose(i, p, 1, L);
         for (let X = -L.pw / 2; X <= L.pw / 2; X += 20) expect(project(q, X, true)).toBeCloseTo(project(q, X, false), 9);
       }
+  });
+
+  /** A point (X, Y) of a panel through the iOS matrix (row vector): screen x, y and depth. */
+  function viaMatrix(m: number[], X: number, Y: number) {
+    const w = X * m[3] + Y * m[7] + m[15];
+    return { x: (X * m[0] + Y * m[4] + m[12]) / w, y: (X * m[1] + Y * m[5] + m[13]) / w, d: (X * m[2] + Y * m[6] + m[14]) / w };
+  }
+
+  test('iOS matrix: same picture as the CSS, and panels never cut into each other', () => {
+    for (const W of [375, 390, 430]) {
+      const L = holoLayout(W);
+      for (let p = -1; p <= 3; p += 0.01) {
+        const cur = hm(Math.round(p));
+        const q = [0, 1, 2].map((i) => hPose(i, p, 1, L));
+        const span = q.map((qi, i) => {
+          const m = poseMatrix(qi, i === cur);
+          const ds: number[] = [];
+          for (let X = -L.pw / 2; X <= L.pw / 2; X += L.pw / 8) {
+            const r = viaMatrix(m, X, 37);
+            expect(r.x).toBeCloseTo(project(qi, X, false), 6);
+            expect(r.y).toBeCloseTo((37 * HP) / (HP - (-X * Math.sin((qi.ry * Math.PI) / 180) + qi.z)), 6);
+            ds.push(r.d);
+          }
+          return { min: Math.min(...ds), max: Math.max(...ds) };
+        });
+        // the front panel is entirely ahead of both others; the rest follow the prototype's z-index
+        for (let i = 0; i < 3; i++)
+          for (let j = 0; j < 3; j++) {
+            if (i === j) continue;
+            const ahead = i === cur || (j !== cur && q[i].depth > q[j].depth);
+            if (ahead) expect(span[i].min).toBeGreaterThan(span[j].max);
+          }
+      }
+    }
   });
 });
 

@@ -77,6 +77,31 @@ export function poseTransform(q: Pose) {
   return [{ scale: HP / (HP - q.z) }, { perspective: HP - q.z }, { translateX: q.x }, { rotateY: q.ry + 'deg' }];
 }
 
+/**
+ * iOS: Core Animation stacks sibling 3D layers by their real depth, not by zIndex, so panels that only
+ * look pushed back (poseTransform) poke through the front one. Here the prototype's exact
+ * "perspective(P) translate3d(x, 0, z) rotateY(ry)" is one matrix (row vectors, React Native / CATransform3D
+ * layout), followed by a depth shift that leaves every projected point where it was and only orders the
+ * panels: the hPose depth (60 − 40·distance), and the front panel ahead of any tie. DEPTH_STEP is far larger
+ * than the depth spread inside one panel (< 500), so no two panels ever cut into each other.
+ */
+export const DEPTH_STEP = 2000;
+export function poseMatrix(q: Pose, front: boolean): number[] {
+  'worklet';
+  const r = (q.ry * Math.PI) / 180;
+  const c = Math.cos(r);
+  const s = Math.sin(r);
+  const b = (q.depth + 10) * DEPTH_STEP + (front ? DEPTH_STEP / 2 : 0);
+  const w = 1 - q.z / HP;
+  // prettier-ignore
+  return [
+    c, 0, -s + (b * s) / HP, s / HP,
+    0, 1, 0, 0,
+    s, 0, c - (b * c) / HP, -c / HP,
+    q.x, 0, q.z + b * w, w,
+  ];
+}
+
 /** One 1/120 s step of the settling spring (prototype hGo: a = −190·(p − t) − 24·v). */
 export const SPRING_DT = 1 / 120;
 export function springStep(p: number, v: number, t: number): [number, number] {
