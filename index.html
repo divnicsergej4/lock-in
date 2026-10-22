@@ -961,20 +961,22 @@ var M={
  Namirnice:["hell yeahh, groceries! cooking at home is the strongest move 💪","smart. a home meal is half the price 🗿","an expense I approve, just don't throw half of it out of the fridge"],
  Hrana:["you're cooking today, you ate expensive enough yesterday 🥀","did you know that home cooking is a free glitch, try it","delivery AGAIN? your stove feels neglected🥀","food is a need, but that price was a choice bro..."],
  Kafić:["that coffee could've been part of your goal gng","third coffee today? you aren't sleeping but neither is your money🥀"],
- Odeća:["bro you didn't need that🥀you have enough mf clothes","more shirts? your closet already has its own zip code😭","do you wear the same shirt 4 days straight and buy a new one? 🥀"],
+ Odeća:["bro you didn't need that🥀you have enough mf clothes","more shirts? your closet already has its own zip code😭","!do you wear the same shirt 4 days straight and buy a new one? smh"],
  Obuća:["more sneakers? you only have two feet bro🥀","your old sneakers are still breathing, let them live...","you own 5 pairs and wear 1, math doesn't lie"],
  Teretana:["the only expense I approve 💪 just actually go","the gym is the only expense your body pays back. respect","PROTEIN PROTEIN PROTEIN!! JUST GIVE ME PROTEEEIINN"],
  Prevoz:["fuel or a ticket, ok. but a taxi for 500 meters?","transport is necessary, just don't be lazy on short trips and walk instead","you do remember you have legs... do you?"],
- Računi:["bills aren't fun, but at least they're honest. paid, moving on","a paid bill is peace of mind, this is a good expense"],
- Izlasci:["going out is expensive, and tomorrow your head hurts too","a night out without a plan is money with no return","if you spent that much money i hope that youwill  be drunk...at least","Jarvis, more alcohol..."],
+ Računi:["what must be done isn’t hard, right?","a paid bill is peace of mind, this is a good expense"],
+ Izlasci:["going out is expensive, and tomorrow your head hurts too","a night out without a plan is money with no return","!if you spent that much money i hope that you will  be drunk...at least","Jarvis, more alcohol..."],
  // {age} = the user's age rounded down to tens (20, 30, 40...); under 20 or no age given, this one is never shown
- Igrice:["a grown ahh man buying games at {age}+ years old?😭✌️ just ask yourself what are you doing with your life and LOCK IN","a $15 skin? you're literally watching money disappear","buying a game you won't finish, i know you bruh...","your backlog is already as long as a loan gang"],
- _:["you spent today like money grows in your backyard or sum","bro, the goal won't wait","every small purchase is a big one by the end of the month, remember that","logged. not pretty, but honest.","brooo you DON'T need that shi🥀🥀🥀"]
+ Igrice:["!a grown ahh man buying games at {age}+ years old?😭✌️ just ask yourself what are you doing with your life and LOCK IN","a $15 skin? you're literally watching money disappear","!buying a game you won't finish, i know you bruh...","your backlog is already as long as a loan gang"],
+ _:["you spent today like money grows in your backyard or sum","bro, the goal won't wait","every small purchase is a big one by the end of the month, remember that","logged. not pretty, but honest.","!brooo you DON'T need that shi🥀🥀🥀"]
 };
 M.Ostalo=M._;
 M.C=["{c}? again? that's a permanent budget line by now 🥀","{c} is your favorite way to make money vanish","gng, {c} doesn't build savings, just so you know...","I know you love {c}, but your goal is watching from the dark, disappointed"];
 function ageDec(){var a=+S.age;return a>=20&&a<120?Math.floor(a/10)*10:0}
-function pickM(c){var A=(M[c]||[]).filter(function(x){return x.indexOf('{age}')<0||ageDec()});if(!A.length)return pick(M.C).replace('{c}',c);return pick(A).replace('{age}',ageDec())}
+// lines starting with ! are the hard ones: only in "No mercy", and there they come up most of the time
+function pickM(c){var nm=S.roast===2,A=(M[c]||[]).filter(function(x){return x.indexOf('{age}')<0||ageDec()}),H=A.filter(function(x){return x[0]==='!'}),N=A.filter(function(x){return x[0]!=='!'});
+ var src=nm&&H.length&&(Math.random()<.7||!N.length)?H:N;if(!src.length)return pick(M.C).replace('{c}',c);return pick(src).replace(/^!/,'').replace('{age}',ageDec())}
 function todayCount(){var d=new Date();d.setHours(0,0,0,0);return S.exp.filter(function(x){return !x.auto&&x.t>=d.getTime()}).length}
 function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 function week(){var d=[],mx=1,i,now=new Date();now.setHours(0,0,0,0);
