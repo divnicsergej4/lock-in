@@ -158,6 +158,12 @@ Urađeno:
 - Korak 1: kostur Expo aplikacije u `mobile/` (SDK 58, expo-router, 4 taba, tema i fontovi, čuvanje na telefonu,
   logika iz prototipa sa testovima). Ekrani su još prazni osim kartice Available i plamena na Home i izbora teme na More.
   Uputstvo: `mobile/README.md`. Repo je lokalno u `C:\dev\lock-in`.
+- Sva logika prototipa prenesena u `mobile/src/logic/` (bez ekrana): stanje i saldo, unosi (dodaj/izmeni/obriši),
+  koverte, plamen i nivoi, izazov nedelje, limiti, ponavljajući unosi i pretplate, „Can I afford it?“, izveštaj meseca,
+  plan meseca, „We noticed“, fore. Test poredi rezultat sa pravim kodom prototipa na nasumičnim podacima.
+  Svesno ispravljeno (prototip je grešio): „(oko N per day)“ u planu → „(about N per day)“; prag 30% gleda iznos u
+  glavnoj valuti; raspoređivanje novca u koverte čita „12.5“ kao 12,5 (prototip kao 125).
+  Nije preneto: grafikoni holo prstena (podaci za krug, liniju i kalendar), dugovi, demo podaci, nivoi/XP (sakriveni u prototipu).
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

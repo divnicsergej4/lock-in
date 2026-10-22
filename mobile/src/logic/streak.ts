@@ -81,3 +81,66 @@ export function canCheckInNoSpend(s: AppState, now: number): boolean {
 export function checkIn(s: AppState, now: number): AppState['chk'] {
   return { ...(s.chk || {}), [dayKey(now)]: 1 };
 }
+
+/** Days in a row (today included) without spending on `cat`, counted back to the streak start. */
+export function categoryStreak(s: AppState, cat: string, now: number): number {
+  const t0 = streakStart(s, now);
+  const has: Record<number, 1> = {};
+  s.exp.forEach((x) => {
+    if (!x.auto && x.cat === cat) has[day0(x.t)] = 1;
+  });
+  let n = 0;
+  let t = day0(now);
+  while (t >= t0 && n < 400) {
+    if (has[t]) break;
+    n++;
+    t = dAdd(t, -1);
+  }
+  return n;
+}
+
+const days = (n: number) => (n === 1 ? 'day' : 'days');
+
+export interface StreakCard {
+  n: number;
+  label: string; // "days in a row"
+  tier: Tier;
+  tierName: string;
+  progress: number; // 0..100 toward the next tier
+  message: string;
+  showNoSpend: boolean; // "I didn’t spend anything today" button
+}
+
+export const NO_SPEND_BUTTON = 'I didn’t spend anything today';
+
+export function streakCard(s: AppState, now: number): StreakCard {
+  const si = streakInfo(s, now);
+  const st = si.n;
+  const k = tierIndex(st);
+  const T = TIERS[k];
+  const N = TIERS[k + 1];
+  return {
+    n: st,
+    label: days(st) + ' in a row',
+    tier: T,
+    tierName: T.name,
+    progress: Math.round((N ? (st - T.from) / (N.from - T.from) : 1) * 100),
+    message: !si.todayChecked
+      ? 'Log today’s spending. Skip a day and the flame goes out.'
+      : N
+        ? N.from - st + ' more ' + days(N.from - st) + ' to: ' + N.name
+        : 'A whole year in a row. Legend.',
+    showNoSpend: !si.todayChecked && new Date(now).getHours() >= NO_SPEND_FROM_HOUR,
+  };
+}
+
+/**
+ * Celebrating a new flame tier. Returns the tier to remember as seen, and a toast when a higher
+ * tier was just reached (a lower tier after a lost streak is remembered silently).
+ */
+export function tierUp(s: AppState, now: number): { tierSeen: number; toast: string | null } {
+  const st = streakInfo(s, now).n;
+  const k = tierIndex(st);
+  if (s.tierSeen == null || k <= s.tierSeen) return { tierSeen: k, toast: null };
+  return { tierSeen: k, toast: '🔥 ' + TIERS[k].name + '! ' + st + ' ' + days(st) + ' in a row' };
+}

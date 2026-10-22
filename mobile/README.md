@@ -32,3 +32,7 @@ npx expo-doctor     # zavisnosti i podešavanja
 | `src/components/` | Zajednički delovi ekrana. |
 
 Fore su u `src/logic/roasts.ts` i moraju biti identične `docs/FORE.md`; test `roasts.test.ts` to proverava slovo po slovo.
+
+`src/logic/__tests__/same-as-prototype.test.ts` pokreće pravi kod prototipa (`index.html` u korenu repoa) na
+nasumičnim podacima i proverava da TypeScript daje isti rezultat i isti tekst koji korisnik vidi. Svesna odstupanja
+su opisana u tom testu i u `features.test.ts`.

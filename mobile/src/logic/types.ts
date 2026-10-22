@@ -64,6 +64,23 @@ export interface AppState {
   chk: Record<string, 1>; // "I didn't spend anything today" check-ins, by day key
   t0: number; // when the app was set up
   tk0: number; // first day the streak counts from
+  plan: Plan;
+  tierSeen?: number; // highest flame tier already celebrated
+}
+
+export interface Plan {
+  items: Record<string, number>; // planned spending per category this month
+  save: number; // savings goal for the month
+}
+
+/** Result of a user action: the new state and the toast to show, or the error to show. */
+export type ActionResult = { ok: true; state: AppState; toast: string } | { ok: false; error: string };
+
+export const fail = (error: string): ActionResult => ({ ok: false, error });
+
+/** Deep copy, so actions never change the state they were given. */
+export function clone<T>(v: T): T {
+  return JSON.parse(JSON.stringify(v));
 }
 
 export const initialState: AppState = {
@@ -85,4 +102,5 @@ export const initialState: AppState = {
   chk: {},
   t0: 0,
   tk0: 0,
+  plan: { items: {}, save: 0 },
 };

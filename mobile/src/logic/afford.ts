@@ -41,6 +41,8 @@ export function rateText(r: { a?: number; u?: 'd' | 'w' | 'm' }, cur: string): s
   return fmt0(Math.ceil(r.a || 0)) + ' ' + cur + ' ' + { d: 'a day', w: 'a week', m: 'a month' }[r.u || 'd'];
 }
 
+export const AFFORD_NO_PRICE = 'Enter the price.';
+
 export function canIAfford(s: AppState, price: number, name: string, now: number): { verdict: string; lines: string[] } {
   const p = price;
   const n = name.trim() || 'That';

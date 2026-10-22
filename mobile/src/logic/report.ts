@@ -1,5 +1,6 @@
-// Monthly report grade (More tab). Texts: docs/FORE.md, section 5.
+// Monthly report (More tab). Texts: docs/FORE.md, section 5.
 
+import { fmt } from './format';
 import { monthByCategory, monthlyIncome } from './money';
 import type { AppState } from './types';
 
@@ -13,6 +14,8 @@ export const GRADE_LINES: Record<Grade, string> = {
   F: 'You spent more than you earned. stop.',
   '–': 'I need more data for a real verdict.',
 };
+
+export const REPORT_EMPTY = 'No expenses this month.';
 
 /**
  * With an income: share of it spent this month. Without one: compared to last month.
@@ -32,4 +35,32 @@ export function monthGrade(s: AppState, now: number): { grade: Grade; line: stri
     g = r <= 0.9 ? 'A' : r <= 1 ? 'B' : r <= 1.2 ? 'C' : 'D';
   } else g = '–';
   return { grade: g, line: GRADE_LINES[g] };
+}
+
+export interface MonthReport {
+  grade: Grade;
+  spent: string; // "Spent 420 EUR (+12% vs last month)."
+  topCat: string;
+  top: string; // "Most goes to Coffee (85)."
+  left: string | null; // "You have left 380." (only with a monthly income)
+  verdict: string;
+}
+
+/** The whole report card; null when nothing was spent this month (show REPORT_EMPTY). */
+export function monthReport(s: AppState, now: number): MonthReport | null {
+  const g = monthGrade(s, now);
+  if (!g) return null;
+  const a = monthByCategory(s, 0, now);
+  const b = monthByCategory(s, -1, now);
+  const inc = monthlyIncome(s);
+  const ks = Object.keys(a.byCat).sort((x, y) => a.byCat[y] - a.byCat[x]);
+  const topCat = ks[0];
+  return {
+    grade: g.grade,
+    spent: 'Spent ' + fmt(a.total) + ' ' + s.cur + (b.total > 0 ? ' (' + (a.total >= b.total ? '+' : '') + Math.round((a.total / b.total - 1) * 100) + '% vs last month)' : '') + '.',
+    topCat,
+    top: 'Most goes to ' + topCat + ' (' + fmt(a.byCat[topCat]) + ').',
+    left: inc > 0 ? 'You have left ' + fmt(inc - a.total) + '.' : null,
+    verdict: g.line,
+  };
 }
