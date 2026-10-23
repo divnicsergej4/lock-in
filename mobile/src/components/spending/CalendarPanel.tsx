@@ -2,7 +2,7 @@
 // totals; ‹ › change the month. On arrival the days ripple in from the top-left (prototype cal + calWave).
 
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { PixelRatio, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 import { InlineIcon } from '@/components/CategoryIcon';
@@ -15,6 +15,7 @@ import type { PanelProps } from './HoloRing';
 import { Arrive, Column, PanelHead, Spare, useNaturalHeight } from './PanelParts';
 
 const POP = [0.2, 0.9, 0.25, 1.15];
+const PR = PixelRatio.get();
 
 /** Today's cell sends out one green pulse after the ripple (box-shadow 0 → 12 px, fading). */
 function Pulse({ play }: { play: number }) {
@@ -34,25 +35,39 @@ function Pulse({ play }: { play: number }) {
 function Cell({ cell, row, col, wave, rowH, onPress }: { cell: CalendarCell; row: number; col: number; wave: number; rowH: number; onPress: () => void }) {
   const { c, name } = useTheme();
   const k = holo[name];
+  // arrival ripple: from transparent, 10 px lower and 70 % size, 420 ms with a little overshoot
+  const a = useSharedValue(1);
+  useEffect(() => {
+    if (!wave) return;
+    a.value = 0;
+    a.value = withDelay(60 + (row + col) * 26, withTiming(1, { duration: 420, easing: Easing.bezier(POP[0], POP[1], POP[2], POP[3]) }));
+  }, [wave, row, col, a]);
+  const box = useAnimatedStyle(() => ({
+    opacity: Math.min(1, Math.max(0, a.value)),
+    transform: [{ translateY: 10 * (1 - a.value) }, { scale: 0.7 + 0.3 * a.value }],
+  }));
+  // the numbers fade and rise with the box but are never scaled and move only in whole screen pixels:
+  // iOS moves text as an already drawn bitmap, so scaled or half-pixel text stays blurry until it stops
+  const nums = useAnimatedStyle(() => ({
+    opacity: Math.min(1, Math.max(0, a.value)),
+    transform: [{ translateY: Math.round(10 * (1 - a.value) * PR) / PR }],
+  }));
   if (!cell.day) return <View style={{ flex: 1, height: rowH }} />;
   return (
-    <Arrive play={wave} delay={60 + (row + col) * 26} duration={420} from={{ opacity: 0, y: 10, scale: 0.7 }} ease={POP} style={{ flex: 1, height: rowH }}>
-      {cell.today && <Pulse play={wave} />}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={'Day ' + cell.day}
-        onPress={onPress}
-        style={[
-          st.d,
-          { height: rowH, backgroundColor: cell.alpha ? `rgba(34,224,122,${cell.alpha.toFixed(2)})` : k.cellBg, borderColor: k.cellBorder },
-        ]}
-      >
-        <Text style={[st.dn, { color: c.ink }]}>{cell.day}</Text>
-        <Text style={[st.da, { color: c.ink }]}>{cell.label}</Text>
+    <View style={{ flex: 1, height: rowH }}>
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, box]}>
+        {cell.today && <Pulse play={wave} />}
+        <View style={[StyleSheet.absoluteFill, st.box, { backgroundColor: cell.alpha ? `rgba(34,224,122,${cell.alpha.toFixed(2)})` : k.cellBg, borderColor: k.cellBorder }]} />
+        {/* outline: 2px solid, outside the cell */}
+        {cell.today && <View style={[st.today, { borderColor: c.accent }]} />}
+      </Animated.View>
+      <Pressable accessibilityRole="button" accessibilityLabel={'Day ' + cell.day} onPress={onPress} style={[st.d, { height: rowH }]}>
+        <Animated.View style={[st.dIn, nums]}>
+          <Text style={[st.dn, { color: c.ink }]}>{cell.day}</Text>
+          <Text style={[st.da, { color: c.ink }]}>{cell.label}</Text>
+        </Animated.View>
       </Pressable>
-      {/* outline: 2px solid, outside the cell */}
-      {cell.today && <View pointerEvents="none" style={[st.today, { borderColor: c.accent }]} />}
-    </Arrive>
+    </View>
   );
 }
 
@@ -131,7 +146,10 @@ const st = StyleSheet.create({
   grid: { gap: 4 },
   row: { flexDirection: 'row', gap: 4 },
   h: { fontFamily: inter[400], fontSize: 10.4, lineHeight: 15.08, textAlign: 'center' },
-  d: { borderRadius: 10, borderWidth: 1, paddingVertical: 4, paddingHorizontal: 2, justifyContent: 'space-between', alignItems: 'center' },
+  // the cell's look (box) and its numbers (d, with the same 1 px border space) are separate layers
+  box: { borderRadius: 10, borderWidth: 1 },
+  d: { borderWidth: 1, borderColor: 'transparent', paddingVertical: 4, paddingHorizontal: 2 },
+  dIn: { flex: 1, justifyContent: 'space-between', alignItems: 'center' },
   dn: { fontFamily: inter[400], fontSize: 9.92, lineHeight: 14.384 },
   da: { fontFamily: inter[700], fontSize: 11.52, lineHeight: 16.7 },
   today: { position: 'absolute', left: -2, right: -2, top: -2, bottom: -2, borderRadius: 12, borderWidth: 2 },
