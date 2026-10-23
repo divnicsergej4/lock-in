@@ -91,29 +91,42 @@ export function HoloPanel({
     flash.value = withSequence(withTiming(1, { duration: 118 }), withTiming(0.72, { duration: 59 }), withTiming(1, { duration: 243 }));
   }, [activation, h, scanY, scanO, flash]);
 
-  const scanStyle = useAnimatedStyle(() => ({ opacity: scanO.value, transform: [{ translateY: scanY.value }] }));
+  // the opacity sits on the clipping box, so when the scan is not running the whole box is skipped
+  const scanBox = useAnimatedStyle(() => ({ opacity: scanO.value }));
+  const scanStyle = useAnimatedStyle(() => ({ transform: [{ translateY: scanY.value }] }));
   const flashStyle = useAnimatedStyle(() => ({ opacity: flash.value }));
   const dimStyle = useAnimatedStyle(() => ({ opacity: dim.value }));
 
   return (
-    <View style={[st.vzp, { width: w, height: h, backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: k.panelShadow }]}>
-      {!!h && (
-        <View style={[StyleSheet.absoluteFill, { borderRadius: 21, overflow: 'hidden' }]} pointerEvents="none">
-          <Grid w={w - 2} h={inner} color={k.grid} />
-        </View>
-      )}
-      <Corners color={k.hc} />
-      <Animated.View style={[st.vzi, flashStyle]}>{children}</Animated.View>
-      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 21, overflow: 'hidden' }]}>
-        <Animated.View style={[st.scan, { backgroundImage: k.scan }, scanStyle]} />
+    <View style={[st.vzp, { width: w, height: h }]}>
+      {/* the panel's still look (gradient, border, grid, corner marks and its three shadows) is drawn once
+          and kept as a bitmap; otherwise iOS redraws the masked shadows on every frame of a scroll */}
+      <View
+        pointerEvents="none"
+        shouldRasterizeIOS
+        renderToHardwareTextureAndroid
+        style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: k.panelShadow }]}
+      >
+        {!!h && (
+          <View style={[StyleSheet.absoluteFill, { borderRadius: 21, overflow: 'hidden' }]}>
+            <Grid w={w - 2} h={inner} color={k.grid} />
+          </View>
+        )}
+        <Corners color={k.hc} />
       </View>
+      <Animated.View style={[st.vzi, flashStyle]}>{children}</Animated.View>
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 21, overflow: 'hidden' }, scanBox]}>
+        <Animated.View style={[st.scan, { backgroundImage: k.scan }, scanStyle]} />
+      </Animated.View>
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 21, backgroundColor: k.dim }, dimStyle]} />
     </View>
   );
 }
 
 const st = StyleSheet.create({
-  vzp: { borderRadius: 22, borderWidth: 1, paddingTop: 16, paddingHorizontal: 16, paddingBottom: 14 },
+  // the 1 px border is drawn by `chrome`, so it is part of the padding here (16 + 1, 14 + 1)
+  vzp: { borderRadius: 22, paddingTop: 17, paddingHorizontal: 17, paddingBottom: 15 },
+  chrome: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 22, borderWidth: 1 },
   vzi: { flexGrow: 1 },
   scan: { position: 'absolute', left: 0, right: 0, top: 0, height: 70 },
 });

@@ -5,7 +5,7 @@
 import { Canvas, Circle, DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { bezier } from '@/components/intro/cssAnim';
@@ -15,6 +15,7 @@ import { useStore } from '@/store/StoreProvider';
 import { holo, inter, useTheme } from '@/theme';
 
 import type { PanelProps } from './HoloRing';
+import { useHoloClock } from './holoClock';
 import { Arrive, Column, PanelHead, useNaturalHeight } from './PanelParts';
 
 const SIZE = 176; // the donut box; the drawing is 240 × 240 scaled into it
@@ -41,11 +42,9 @@ function Arc({ a, i, clock }: { a: DonutArc; i: number; clock: SharedValue<numbe
 
 /** Empty month: a dashed circle turning slowly (24 s a turn). */
 function EmptyDonut({ color }: { color: string }) {
-  const r = useSharedValue(0);
-  useEffect(() => {
-    r.value = withRepeat(withTiming(360, { duration: 24000, easing: Easing.linear }), -1);
-  }, [r]);
-  const spin = useAnimatedStyle(() => ({ transform: [{ rotate: r.value + 'deg' }] }));
+  // on the ring's clock: it rests while the page scrolls or the ring is off screen
+  const t = useHoloClock();
+  const spin = useAnimatedStyle(() => ({ transform: [{ rotate: ((t.value % 24000) / 24000) * 360 + 'deg' }] }));
   return (
     <Animated.View style={[StyleSheet.absoluteFill, spin]}>
       <Canvas style={{ width: SIZE, height: SIZE }}>

@@ -3,19 +3,23 @@
 
 import { useEffect, useRef, type ReactNode } from 'react';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
+import { bezier } from '@/components/intro/cssAnim';
 import { inter, useTheme } from '@/theme';
+
+import { useHoloClock } from './holoClock';
 
 /** Panel title and its tag ("● OCT 2026", the dot blinking: @keyframes hbl 2.6s). */
 export function PanelHead({ title, tag }: { title: string; tag?: string }) {
   const { c } = useTheme();
-  const o = useSharedValue(1);
-  useEffect(() => {
-    const half = { duration: 1300, easing: Easing.bezier(0.42, 0, 0.58, 1) };
-    o.value = withRepeat(withSequence(withTiming(0.25, half), withTiming(1, half)), -1);
-  }, [o]);
-  const blink = useAnimatedStyle(() => ({ opacity: o.value }));
+  // 1 → .25 → 1 over 2.6 s, each half ease-in-out; on the ring's clock, so it rests while scrolling
+  const t = useHoloClock();
+  const blink = useAnimatedStyle(() => {
+    const ph = (t.value % 2600) / 2600;
+    const k = bezier([0.42, 0, 0.58, 1], ph < 0.5 ? ph / 0.5 : (ph - 0.5) / 0.5);
+    return { opacity: ph < 0.5 ? 1 - 0.75 * k : 0.25 + 0.75 * k };
+  });
   return (
     <View style={st.hh}>
       <Text style={[st.h2, { color: c.ink }]} numberOfLines={1}>
@@ -23,7 +27,8 @@ export function PanelHead({ title, tag }: { title: string; tag?: string }) {
       </Text>
       {!!tag && (
         <View style={st.tag}>
-          <Animated.View style={[st.tagDot, { backgroundColor: c.accent, boxShadow: `0 0 6px ${c.accent}` }, blink]} />
+          {/* the glow is drawn once and kept as a bitmap; only its opacity changes */}
+          <Animated.View shouldRasterizeIOS renderToHardwareTextureAndroid style={[st.tagDot, { backgroundColor: c.accent, boxShadow: `0 0 6px ${c.accent}` }, blink]} />
           <Text style={[st.tagT, { color: c.accent }]}>{tag.toUpperCase()}</Text>
         </View>
       )}

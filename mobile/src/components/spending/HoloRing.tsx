@@ -4,13 +4,15 @@
 // refresh rate (120 Hz on ProMotion) and never waits for JavaScript.
 
 import { useIsFocused } from 'expo-router';
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
+  measure,
   runOnJS,
   useAnimatedProps,
+  useAnimatedRef,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -25,6 +27,7 @@ import Svg, { Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import { bezier } from '@/components/intro/cssAnim';
 import { holo, useTheme } from '@/theme';
 
+import { HoloClock } from './holoClock';
 import { HoloPanel } from './HoloPanel';
 import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
 
@@ -91,8 +94,20 @@ function RingPanel({
   );
 }
 
-export function HoloRing({ panels, rows }: { panels: ((p: PanelProps) => ReactNode)[]; rows: number }) {
-  const { width: W } = useWindowDimensions();
+/**
+ * `scrolling`: true while the page is being dragged or is gliding (set on the UI thread by the page's
+ * scroll handler). The ring's endless animations stand still then, and while the ring is off screen.
+ */
+export const HoloRing = memo(function HoloRing({
+  panels,
+  rows,
+  scrolling,
+}: {
+  panels: ((p: PanelProps) => ReactNode)[];
+  rows: number;
+  scrolling: SharedValue<boolean>;
+}) {
+  const { width: W, height: screenH } = useWindowDimensions();
   const L = holoLayout(W);
   const { name } = useTheme();
   const k = holo[name];
@@ -112,6 +127,21 @@ export function HoloRing({ panels, rows }: { panels: ((p: PanelProps) => ReactNo
   const p0 = useSharedValue(0);
   const ringOffset = useSharedValue(0);
   const stepCarry = useSharedValue(0);
+
+  // ---- is anything worth animating? on screen, tab open, page not scrolling ----
+  const liveT = useSharedValue(0); // the clock of the endless animations (see holoClock)
+  const visible = useSharedValue(true);
+  const focusedSV = useSharedValue(true);
+  const box = useAnimatedRef<Animated.View>();
+  // when a scroll ends, check (on the UI thread) whether the ring is still on screen
+  useAnimatedReaction(
+    () => scrolling.value,
+    (s, prev) => {
+      if (s || !prev) return;
+      const m = measure(box);
+      visible.value = !!m && m.pageY + m.height > 0 && m.pageY < screenH;
+    },
+  );
 
   // ---- JS state: which panel is in front (stacking, taps) and the arrival animations ----
   const [cur, setCur] = useState(0);
@@ -155,8 +185,11 @@ export function HoloRing({ panels, rows }: { panels: ((p: PanelProps) => ReactNo
   // the spring, stepped in exact 1/120 s steps however long each frame was
   useFrameCallback((f) => {
     const dt = (f.timeSincePreviousFrame ?? 16.7) / 1000;
+    // the clocks only move while the ring is live; a ring at rest then changes nothing per frame
+    const live = !scrolling.value && visible.value && focusedSV.value;
+    if (live) liveT.value += dt * 1000;
     if (!springOn.value) {
-      if (!moving.value) floatT.value += dt * 1000;
+      if (live && !moving.value) floatT.value += dt * 1000;
       return;
     }
     stepCarry.value += dt;
@@ -192,6 +225,7 @@ export function HoloRing({ panels, rows }: { panels: ((p: PanelProps) => ReactNo
 
   // the ring unfolds from the front panel each time the tab opens, then the front panel lights up
   useEffect(() => {
+    focusedSV.value = focused;
     if (!focused) return;
     const c = hm(Math.round(p.value));
     activate(c);
@@ -201,7 +235,7 @@ export function HoloRing({ panels, rows }: { panels: ((p: PanelProps) => ReactNo
     }
     sp.value = 0;
     sp.value = withTiming(1, { duration: 760, easing: Easing.out(Easing.cubic) });
-  }, [focused, reduce, activate, p, sp]);
+  }, [focused, reduce, activate, p, sp, focusedSV]);
 
   // ---- the finger ----
   const pan = Gesture.Pan()
@@ -252,7 +286,8 @@ export function HoloRing({ panels, rows }: { panels: ((p: PanelProps) => ReactNo
   const ringProps = useAnimatedProps(() => ({ strokeDashoffset: ringOffset.value }));
 
   return (
-    <View>
+    <HoloClock.Provider value={liveT}>
+    <Animated.View ref={box}>
       <GestureDetector gesture={pan}>
         <View style={{ height: (ph ?? 472) + HPT + HPB, overflow: 'hidden' }}>
           <View pointerEvents="none" style={[st.base, { width: bw, marginLeft: -bw / 2 }]}>
@@ -295,9 +330,10 @@ export function HoloRing({ panels, rows }: { panels: ((p: PanelProps) => ReactNo
           <Dot key={j} on={j === cur} color={k.dot} glow={k.dotOnGlow} onPress={() => dotTo(j)} />
         ))}
       </View>
-    </View>
+    </Animated.View>
+    </HoloClock.Provider>
   );
-}
+});
 
 function Dot({ on, color, glow, onPress }: { on: boolean; color: string; glow: string; onPress: () => void }) {
   const { c } = useTheme();
@@ -308,7 +344,8 @@ function Dot({ on, color, glow, onPress }: { on: boolean; color: string; glow: s
   const anim = useAnimatedStyle(() => ({ width: w.value }));
   return (
     <Pressable accessibilityRole="button" accessibilityState={{ selected: on }} onPress={onPress} hitSlop={8}>
-      <Animated.View style={[st.dot, { backgroundColor: on ? c.accent : color, boxShadow: on ? glow : undefined }, anim]} />
+      {/* the glow is kept as a bitmap instead of a shadow redrawn every frame */}
+      <Animated.View shouldRasterizeIOS renderToHardwareTextureAndroid style={[st.dot, { backgroundColor: on ? c.accent : color, boxShadow: on ? glow : undefined }, anim]} />
     </Pressable>
   );
 }
