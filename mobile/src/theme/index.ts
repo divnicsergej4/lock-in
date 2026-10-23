@@ -110,8 +110,16 @@ export const holo = {
 
 /** Section colour variants (prototype section.teal / .rose). */
 export const sectionTints = {
-  dark: { teal: ['linear-gradient(160deg, #0b2726, #0d1812 70%)', '#1f4a49'], rose: ['linear-gradient(160deg, #261218, #0d1812 75%)', '#4a2029'] },
-  light: { teal: ['linear-gradient(160deg, #e3f7f5, #ffffff 70%)', '#c7ebe6'], rose: ['linear-gradient(160deg, #ffe8ec, #ffffff 75%)', '#f6ccd5'] },
+  dark: {
+    teal: ['linear-gradient(160deg, #0b2726, #0d1812 70%)', '#1f4a49'],
+    rose: ['linear-gradient(160deg, #261218, #0d1812 75%)', '#4a2029'],
+    pro: ['linear-gradient(160deg, #2a2209, #0d1812 70%)', '#5a4a16'], // section.pro (gold, the shared goal)
+  },
+  light: {
+    teal: ['linear-gradient(160deg, #e3f7f5, #ffffff 70%)', '#c7ebe6'],
+    rose: ['linear-gradient(160deg, #ffe8ec, #ffffff 75%)', '#f6ccd5'],
+    pro: ['linear-gradient(160deg, #fff4d1, #ffffff 70%)', '#efd88f'],
+  },
 } as const;
 
 /** Flame tier colour for its label and progress bar (prototype TCD / TCL). */

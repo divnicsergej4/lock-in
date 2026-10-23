@@ -9,11 +9,11 @@ import { Enter } from '@/components/onboarding/Enter';
 import { useStore } from '@/store/StoreProvider';
 import { inter, sectionTints, useTheme } from '@/theme';
 
-export type SectionKind = 'plain' | 'hot' | 'amber' | 'teal' | 'rose';
+export type SectionKind = 'plain' | 'hot' | 'amber' | 'teal' | 'rose' | 'pro';
 
 export function Section({ kind = 'plain', style, children }: { kind?: SectionKind; style?: ViewStyle; children: ReactNode }) {
   const { c, name } = useTheme();
-  const tint = kind === 'teal' || kind === 'rose' ? sectionTints[name][kind] : null;
+  const tint = kind === 'teal' || kind === 'rose' || kind === 'pro' ? sectionTints[name][kind] : null;
   const look: ViewStyle = tint
     ? { backgroundImage: tint[0], borderColor: tint[1] }
     : kind === 'hot'
@@ -88,11 +88,11 @@ export function Field(props: TextInputProps) {
 }
 
 /** Main green button (prototype button: 12 px corners, 700). */
-export function Button({ title, onPress, style }: { title: string; onPress: () => void; style?: ViewStyle }) {
+export function Button({ title, onPress, style, textStyle }: { title: string; onPress: () => void; style?: ViewStyle; textStyle?: TextStyle }) {
   const { c } = useTheme();
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [st.btn, { backgroundColor: c.accent }, pressed && { opacity: 0.85 }, style]}>
-      <Text style={[st.btnT, { color: c.onAccent }]}>{title}</Text>
+      <Text style={[st.btnT, { color: c.onAccent }, textStyle]}>{title}</Text>
     </Pressable>
   );
 }

@@ -181,6 +181,14 @@ Urađeno:
   Ponavljajući unosi se sad upisuju čim se otvori bilo koji tab (ranije samo Home).
   Nije provereno na pravom telefonu: prevlačenje prstom, držanje na liniji i 120 Hz. Podešavanje za 120 Hz iz `app.json`
   važi tek u pravom build-u (development build / TestFlight); u Expo Go-u zavisi od samog Expo Go-a.
+  Posle probe na iPhone-u: skrol je gladak i dok je prsten na ekranu (senke panela se čuvaju kao slika, stalne animacije
+  stoje tokom skrola), brojevi u kalendaru više nisu mutni dok ćelije uleću.
+- Savings u aplikaciji: zajednički cilj (primer „Summer trip to Greece“ i „Sign in to get started“, koje za sada kaže
+  „Accounts are coming soon“), koverte u fioci (izvlačenje koverte, „Put it back“ sa letom nazad, padom i odskokom,
+  ručka fioke na dodir i prevlačenje, ulazak fascikli pri otvaranju taba, Add / Take out / brisanje uz „Sure?“,
+  raspoređivanje slobodnog novca, nova koverta sa ciljem i rokom koja se odmah izvuče), plan meseca. Tamna i svetla tema;
+  mere upoređene sa prototipom (razlika ≤ 0,4 px), animacije na UI niti, statični delovi fioke čuvaju se kao slika.
+  Vibracija iz prototipa (navigator.vibrate) nije preneta: na iPhone-u ni u prototipu nije radila.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

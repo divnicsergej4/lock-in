@@ -67,6 +67,7 @@ export interface AppState {
   plan: Plan;
   tierSeen?: number; // highest flame tier already celebrated
   fold?: Record<string, boolean>; // which foldable sections are open (e.g. "buy": Can I afford this?)
+  drw?: 'o' | 'c'; // the envelope drawer: open or closed (shut)
 }
 
 export interface Plan {
