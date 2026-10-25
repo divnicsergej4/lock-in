@@ -1,7 +1,7 @@
 # Zaštita od zloupotrebe i troškova
 
 Šta je urađeno u kodu i šta Sergej mora sam da podesi po dashboard-ima. Nikome (ni Claude-u) ne šalji
-`service_role` ključ, lozinku baze, Resend ključ, RevenueCat tajnu ni AI ključ. Sve tajne se lepe samo u
+`service_role` ključ, lozinku baze, Resend ključ, ni RevenueCat tajnu. Sve tajne se lepe samo u
 dashboard tog servisa ili u Supabase > Edge Functions > Secrets.
 
 ---
@@ -140,26 +140,7 @@ zaboravljenoj lozinki.
    uključenih build kredita. Pogledaj Billing > **Usage** pre svakog većeg build-ovanja. Build-uj samo `production`
    kad treba, a za probu koristi Expo Go.
 
-### 3.9 AI provajder (kad dođe AI funkcija)
-1. Napravi poseban workspace samo za Lock In (npr. Anthropic Console > Settings > **Workspaces**).
-2. Console > Settings > **Limits**: mesečni limit potrošnje za taj workspace (npr. $20 na početku) i obaveštenje
-   mejlom na 50% i 80%.
-3. Ključ za taj workspace ide samo u Supabase > Edge Functions > Secrets (`ANTHROPIC_API_KEY`), nikad u aplikaciju.
-
-## 4. Plan za AI funkciju (nije rađeno)
-
-- Aplikacija nikad ne zove AI direktno i nikad nema AI ključ. Poziva Edge Function `ai-advice` sa svojom prijavom;
-  funkcija zove AI sa ključem iz Secrets.
-- Pre svakog poziva funkcija pita bazu (kao `claim_invite_email`): dva nova reda u `app.rate_limits`:
-  `ai_request` 20 dnevno po korisniku i `ai_request` npr. 2.000 dnevno za celu aplikaciju.
-- Ukupni dnevni limit troška: tabela sa potrošenim tokenima po danu; funkcija posle svakog odgovora upiše
-  trošak (ulazni + izlazni tokeni × cena modela), a pre poziva odbije ako je današnji trošak prešao npr. $3.
-  Kad se pređe: „AI is resting for today. Try again tomorrow.“
-- Svaki poziv ima `max_tokens` (npr. 400), skraćen ulaz (npr. do 500 znakova opisa) i najjeftiniji model koji daje
-  dobre odgovore (npr. Claude Haiku). Bez istorije razgovora, samo jedno pitanje i jedan odgovor.
-- Treći sloj: mesečni limit u dashboard-u AI provajdera (3.9).
-
-## 5. Kad se prave ekrani za prijavu i registraciju (aplikacija)
+## 4. Kad se prave ekrani za prijavu i registraciju (aplikacija)
 
 - CAPTCHA: Turnstile (Invisible) preko WebView-a na registraciji, zaboravljenoj lozinki i prijavi lozinkom;
   token se šalje kao `options.captchaToken` u `signUp`, `resetPasswordForEmail` i `signInWithPassword`.
@@ -169,7 +150,7 @@ zaboravljenoj lozinki.
 - Supabase adresa i javni ključ u aplikaciji preko `EXPO_PUBLIC_SUPABASE_URL` i `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
   Javni (anon / `sb_publishable_…`) ključ sme u aplikaciju; `service_role` / `sb_secret_…` nikad.
 
-## 6. Provera ključeva i RLS (25. oktobar 2026)
+## 5. Provera ključeva i RLS (25. oktobar 2026)
 
 - Pregledan ceo repo i cela git istorija svih grana: nema `service_role` / `sb_secret_` ključa, lozinke baze,
   Resend, RevenueCat ni AI ključa. Jedini ključ je javni `sb_publishable_…` u prototipu (`index.html`), za brojanje

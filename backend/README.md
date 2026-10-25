@@ -25,7 +25,7 @@ Ovde je baza za naloge, prijatelje i zajednički cilj. Lična potrošnja se ne �
 3. Isto za `supabase/migrations/0002_limits_and_quotas.sql` (uvek redom, posle 0001).
 
 Serverske funkcije (`supabase/functions/`: RevenueCat webhook i slanje mejla sa pozivom) i sve što treba
-kliknuti po dashboard-ima (Auth limiti, CAPTCHA, spend cap, Resend, RevenueCat, Expo, AI): `docs/ZASTITA.md`.
+kliknuti po dashboard-ima (Auth limiti, CAPTCHA, spend cap, Resend, RevenueCat, Expo): `docs/ZASTITA.md`.
 
 Nikome ne šalji `service_role` ključ ni lozinku baze, pa ni meni. Aplikacija koristi samo javni (anon) ključ,
 a sva zaštita je u pravilima u samoj bazi.

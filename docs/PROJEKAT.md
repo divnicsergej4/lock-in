@@ -57,7 +57,8 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
 - Pretplata ide preko App Store-a i Google Play-a. Predlog (nije još potvrđen): RevenueCat za oba.
 - Cene na ekranu za plaćanje su za sada probne: $6.99 mesečno, $45 godišnje, $69 doživotno. Konačne cene
   Sergej dogovara sa kolegom.
-- Ideja za kasnije (nije rađeno): AI koji te odgovara od skupe ili glupe kupovine i nađe jeftiniju alternativu.
+- AI funkcija (odgovaranje od skupe ili glupe kupovine i jeftinija alternativa) se **ne pravi u prvoj verziji**:
+  Sergej je odlučio da je izbaci. Izbačena je i iz plana u `docs/ZASTITA.md`.
 
 ## 5. Tehnička odluka za pravu aplikaciju
 
@@ -165,7 +166,7 @@ Urađeno:
   `send-invite-email` (Resend); još nisu postavljene. Testovi: 49 starih + 59 novih provera baze, 15 provera funkcija.
   Provereno: u repou i git istoriji nema tajnih ključeva (samo javni ključ prototipa), RLS je na svakoj tabeli.
   Aplikacija (`mobile/`) nije menjana. Šta Sergej klikće po dashboard-ima (Supabase Auth, Turnstile, spend cap,
-  Resend, RevenueCat, Expo, AI): `docs/ZASTITA.md`, deo 3.
+  Resend, RevenueCat, Expo): `docs/ZASTITA.md`, deo 3.
 - Korak 1: kostur Expo aplikacije u `mobile/` (SDK 58, expo-router, 4 taba, tema i fontovi, čuvanje na telefonu,
   logika iz prototipa sa testovima). Ekrani su još prazni osim kartice Available i plamena na Home i izbora teme na More.
   Uputstvo: `mobile/README.md`. Repo je lokalno u `C:\dev\lock-in`.
