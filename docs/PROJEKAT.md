@@ -65,8 +65,10 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
 - Predlog alata: Expo (TypeScript, expo-router sa 4 taba), react-native-reanimated + react-native-gesture-handler
   za animacije, @shopify/react-native-skia za holo prsten i lika na uvodu, lokalno čuvanje podataka na telefonu.
 - **Lična potrošnja ostaje samo na telefonu.** Na serveru je samo ono što mora: nalozi, prijatelji, zajednički ciljevi, pretplata.
-- **Backend: Supabase.** Migracija je u `backend/supabase/migrations/0001_accounts_friends_shared_goals.sql`,
-  testovi u `backend/tests/` (49 provera, svi prolaze). Detalji u `backend/README.md`.
+- **Backend: Supabase.** Migracije su u `backend/supabase/migrations/` (`0001` nalozi, prijatelji, zajednički cilj;
+  `0002` limiti i kvote), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
+  (`npm test` u folderu `backend`, radi i na Windows-u bez Postgres-a). Detalji u `backend/README.md`,
+  zaštita i podešavanja po dashboard-ima u `docs/ZASTITA.md`.
 - **Prototip je specifikacija.** `index.html` na grani `razvoj` je tačan izgled i ponašanje svakog ekrana. Pri prenosu u
   React Native gledaj kod prototipa i prenesi isto ponašanje, isti tekst, iste boje.
 
@@ -155,6 +157,15 @@ na kraju, posle preskakanja i ako se aplikacija zatvori usred obilaska. Ponovo s
 Urađeno:
 - Prototip je završen po izgledu i funkcijama (Sergej: „završio sam skroz izgled i funkcije“).
 - Backend za naloge, prijatelje i zajednički cilj (Supabase migracija + testovi) na grani `aplikacija`.
+- Zaštita od zloupotrebe i troškova (`backend/supabase/migrations/0002_limits_and_quotas.sql`, `docs/ZASTITA.md`):
+  limiti po korisniku u bazi (pozivi 10/sat, 30/dan, ista adresa 3/nedeljno; odgovori, novi ciljevi i dodavanje u cilj
+  30/sat; izmene cilja i uplate 60/sat; mejlovi sa pozivom 30/dan po korisniku i 100/dan za celu aplikaciju) i kvote
+  (10 ciljeva po osobi, 20 ljudi po cilju, 200 prijatelja, 50 poziva na čekanju), sa porukom na engleskom.
+  Napisane serverske funkcije `revenuecat-webhook` (prima samo zahteve sa tajnim Authorization zaglavljem) i
+  `send-invite-email` (Resend); još nisu postavljene. Testovi: 49 starih + 59 novih provera baze, 15 provera funkcija.
+  Provereno: u repou i git istoriji nema tajnih ključeva (samo javni ključ prototipa), RLS je na svakoj tabeli.
+  Aplikacija (`mobile/`) nije menjana. Šta Sergej klikće po dashboard-ima (Supabase Auth, Turnstile, spend cap,
+  Resend, RevenueCat, Expo, AI): `docs/ZASTITA.md`, deo 3.
 - Korak 1: kostur Expo aplikacije u `mobile/` (SDK 58, expo-router, 4 taba, tema i fontovi, čuvanje na telefonu,
   logika iz prototipa sa testovima). Ekrani su još prazni osim kartice Available i plamena na Home i izbora teme na More.
   Uputstvo: `mobile/README.md`. Repo je lokalno u `C:\dev\lock-in`.
@@ -194,12 +205,17 @@ Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
    fontovi (Bricolage Grotesque, Inter), lokalno čuvanje podataka, prenos logike iz prototipa sa testovima.
 2. Supabase projekat: Sergej primeni migraciju u SQL Editor-u; prijava e-mailom + Google + **Sign in with Apple**
-   (Apple to traži čim postoji Google prijava).
+   (Apple to traži čim postoji Google prijava). Pre puštanja podesiti sve iz `docs/ZASTITA.md` (Auth limiti, potvrda
+   mejla, lozinka, SMTP, spend cap). **CAPTCHA (Cloudflare Turnstile, nevidljiv) ugraditi u ekrane za registraciju,
+   zaboravljenu lozinku i prijavu lozinkom kad se budu pravili**, pa je tek onda uključiti u Supabase-u.
+   Sign in with Apple i Google ne traže CAPTCHA.
 3. Pretplata: 7 dana probe preko App Store-a / Google Play-a (predlog RevenueCat) + webhook koji puni tabelu
-   `subscriptions`; zaključavanje aplikacije kad proba istekne.
+   `subscriptions` (napisan: `backend/supabase/functions/revenuecat-webhook`, treba ga postaviti); zaključavanje
+   aplikacije kad proba istekne.
 4. Prenos ekrana iz prototipa jedan po jedan (Home, Spending sa holo prstenom, Savings sa fiokom, More, uvod sa likom,
    obilazak, demo).
-5. Zajednički cilj vezan za backend; slanje mejla sa pozivom (serverska funkcija + servis za mejlove, npr. Resend).
+5. Zajednički cilj vezan za backend; slanje mejla sa pozivom (napisano: `backend/supabase/functions/send-invite-email`,
+   preko Resend-a; treba postaviti i podesiti domen).
 6. Kad zajednički cilj počne da radi preko servera, dopuniti tekst o privatnosti („…stay on your phone only, except shared
    goals, which sync with the people you share them with“).
 

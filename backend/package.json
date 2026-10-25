@@ -1,0 +1,14 @@
+{
+  "name": "lock-in-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:db && npm run test:functions",
+    "test:db": "node tests/shared_goals.test.mjs && node tests/limits.test.mjs",
+    "test:functions": "deno test --node-modules-dir=none supabase/functions && deno check --node-modules-dir=none supabase/functions/*/index.ts"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.11",
+    "deno": "2.9.6"
+  }
+}

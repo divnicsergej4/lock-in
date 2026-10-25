@@ -6,7 +6,7 @@ usage: python3 test_shared_goals.py <psql connection args...>
 import os, subprocess, sys, uuid
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MIG = os.path.join(HERE, '..', 'supabase', 'migrations', '0001_accounts_friends_shared_goals.sql')
+MIGS = os.path.join(HERE, '..', 'supabase', 'migrations')
 CONN = sys.argv[1:]
 DB = 'lockin_test_' + uuid.uuid4().hex[:8]
 fails = 0
@@ -20,7 +20,7 @@ def psql(sql, db=DB, ok_codes=(0,)):
 
 def setup():
     subprocess.run(['psql', *CONN, '-d', 'postgres', '-qc', f'create database {DB}'], check=True)
-    for f in (os.path.join(HERE, 'supabase_shim.sql'), MIG):
+    for f in [os.path.join(HERE, 'supabase_shim.sql')] + [os.path.join(MIGS, m) for m in sorted(os.listdir(MIGS)) if m.endswith('.sql')]:
         r = subprocess.run(['psql', *CONN, '-d', DB, '-v', 'ON_ERROR_STOP=1', '-q', '-f', f], capture_output=True, text=True)
         if r.returncode:
             print(r.stderr); sys.exit(1)
