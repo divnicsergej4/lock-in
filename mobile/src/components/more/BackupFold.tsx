@@ -62,6 +62,7 @@ export function BackupFold() {
         <Ghost title="Make backup" onPress={make} style={st.half} />
         <Ghost title="Import" onPress={load} style={st.half} />
       </View>
+      <Small style={{ marginTop: 8 }}>This backup has all your spending in it. Don’t send it to anyone.</Small>
     </Fold>
   );
 }

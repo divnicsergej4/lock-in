@@ -70,6 +70,9 @@ počinje od nule, i da svaki budući FK na `auth.users` mora biti `cascade` ili 
 2. Isto za `backend/supabase/migrations/0003_no_passwords.sql` (posle `0002`): niko nikad nema lozinku (vidi 4).
    Provera u SQL Editor-u, mora da bude `0`:
    `select count(*) from auth.users where coalesce(encrypted_password, '') <> '';`
+3. Isto za `backend/supabase/migrations/0004_privacy_and_input_checks.sql` (posle `0003`): ko šta vidi i provere
+   unosa (vidi 7). Ako javi grešku „violates check constraint“, u bazi već postoji red koji ne prolazi novu proveru
+   (npr. naziv cilja sa razmakom na kraju): javi mi koji, ne briši ništa sam.
 
 ### 3.2 Supabase: Auth (prijava bez lozinke)
 Prijava je samo: **kod od 6 cifara na mejl**, **Google** i **Sign in with Apple** (iPhone). Lozinke nema nigde
@@ -131,19 +134,37 @@ Prijava je samo: **kod od 6 cifara na mejl**, **Google** i **Sign in with Apple*
       prijavu na samom iPhone-u, kojoj ključ ne treba (i ne ističe na 6 meseci). Save.
    Na Android-u nema Apple dugmeta: Apple to traži samo za App Store, a na Android-u bi trebao i tajni ključ koji ističe.
 9. **Authentication > Attack Protection** (u starijem izgledu „Bot and Abuse Protection“):
-   - „Enable CAPTCHA protection“: **isključeno dok Turnstile nije ugrađen** u aplikaciju (`mobile/src/auth/captcha.ts`).
-     Kad bude: uključi, izaberi **Cloudflare Turnstile**, nalepi **Secret key** iz Cloudflare-a (vidi 3.3).
-     Ako se uključi pre toga, „Send code“ prestaje da radi za sve.
+   - „Enable CAPTCHA protection“: Turnstile je ugrađen u aplikaciju (25. oktobra 2026). Uključuje se **tek posle**
+     3.3 i provere da build koji ljudi koriste šalje token (inače „Send code“ prestaje da radi za sve):
+     uključi, Provider **Turnstile by Cloudflare**, „Captcha secret“ = **Secret key** iz Cloudflare-a (lepiš samo
+     ovde, nikome ne šalješ), Save.
 
 **O CAPTCHA kod prijave bez lozinke:** Supabase je traži za slanje koda na mejl (`signInWithOtp`) i za registraciju
 lozinkom. Ne traži je za proveru koda, za Apple i Google (oni idu preko `id_token` / PKCE) ni za osvežavanje prijave.
-Turnstile u **nevidljivom** režimu: token se uzme u pozadini kad korisnik pritisne „Send code“, izazov se pojavi samo
-kad Cloudflare posumnja na bota.
+Widget je **Managed** sa `appearance: interaction-only`: korisnik obično ništa ne vidi, a kad Cloudflare traži klik,
+widget se pojavi ispod „Send code“ sa „Quick check that you’re human:“. (Potpuno nevidljiv widget ne bi mogao da
+pokaže ni taj klik, pa bi sumnjiv, a pravi korisnik ostao zaglavljen.)
 
 ### 3.3 Cloudflare Turnstile (besplatno)
-1. dash.cloudflare.com > **Turnstile** > Add widget.
-2. Naziv „Lock In“, hostname: domen aplikacije (onaj sa kog idu mejlovi), Widget mode: **Invisible**.
-3. **Site key** ide u aplikaciju (javan je, kao anon ključ). **Secret key** nalepi samo u Supabase (3.2, korak 9).
+1. dash.cloudflare.com > **Turnstile** > **Add widget**.
+2. Widget name „Lock In“. Hostname Management > Add hostnames: **tvoj domen** (npr. onaj sa kog idu mejlovi,
+   `lockintracker.com`; bez `https://` i bez putanje). Widget Mode: **Managed**. Pre-clearance: **No**. Create.
+3. **Site key** (javan) i taj isti hostname idu u `mobile/.env.local`:
+   `EXPO_PUBLIC_TURNSTILE_SITE_KEY=<site key>` i `EXPO_PUBLIC_TURNSTILE_HOSTNAME=<tvoj domen>`; za build preko EAS-a
+   isto u EAS > Environment variables. **Secret key** lepiš samo u Supabase (3.2, korak 9).
+4. Redosled: (a) ključevi u `.env.local`, `npx expo start`, „Send code“ mora i dalje da radi (Supabase još ne traži
+   CAPTCHA i ne gleda token); (b) tek onda uključi CAPTCHA u Supabase-u (3.2, korak 9); (c) ponovo „Send code“:
+   mora da stigne kod. Ako javi „Couldn’t check that you’re human“, isključi CAPTCHA u Supabase-u i javi mi.
+5. Za probu bez pravog domena Cloudflare ima javne test ključeve (prolaze uvek, bilo koji hostname): site key
+   `1x00000000000000000000AA` u `.env.local` i secret `1x0000000000000000000000000000000AA` u Supabase. Pre objave
+   ih zameni pravim (deo 6).
+
+Kako aplikacija to radi: stranica sa widgetom se učitava u WebView kao da dolazi sa `https://<tvoj domen>/` (zato
+taj domen mora biti u hostname listi; stranica se ne postavlja nigde, nalazi se u aplikaciji). WebView sme da učita
+samo tu stranicu i `challenges.cloudflare.com`; svaki token važi jednom i 300 s, pa se za svako slanje radi nova
+provera. **Nije provereno na telefonu:** da Cloudflare prihvata ovakvo učitavanje (umesto stranice sa pravog domena).
+Ako ne prihvati (greška 110200 / „Couldn’t check that you’re human“ i sa pravim ključevima), sledeće rešenje je da
+se ista stranica postavi na tvoj domen i WebView je otvori odatle; to je mala izmena.
 
 ### 3.4 Supabase: troškovi
 1. Organizacija > **Billing** > **Cost Control** > „Spend Cap“: **uključeno** (postoji na Pro planu; na Free planu
@@ -212,9 +233,11 @@ Aplikacija i dalje radi bez naloga: lična potrošnja je samo na telefonu, nalog
 - Isti mejl preko koda i preko Google-a je isti nalog (Supabase spaja potvrđene mejlove). Apple „Hide my email“ daje
   drugu adresu, pa je to poseban nalog.
 - Poruke greške su kratke, na engleskom, nikad sirov tekst servera.
-- CAPTCHA: `mobile/src/auth/captcha.ts` je pripremljeno mesto za Turnstile; `getCaptchaToken()` se već šalje kao
-  `options.captchaToken` u `signInWithOtp`, a dok Turnstile nije ugrađen vraća `undefined` (zato CAPTCHA u Supabase-u
-  mora da ostane isključena).
+- CAPTCHA: Turnstile je ugrađen (`mobile/src/auth/turnstile.ts`, `captcha.ts`, `components/TurnstileHost.tsx` na
+  ekranu za prijavu). `getCaptchaToken()` daje nov token za svako slanje koda (`options.captchaToken` u
+  `signInWithOtp`); bez site key-a i hostname-a u `.env.local` vraća `undefined` i CAPTCHA u Supabase-u mora da
+  ostane isključena. Ako provera ne uspe (greška, nema mreže, 60 s bez odgovora), kod se ne šalje i piše
+  „Couldn’t check that you’re human. Try again.“ Podešavanje: 3.3.
 
 **Čuvanje prijave:** supabase-js ne koristi običan AsyncStorage. Šema koju Supabase preporučuje za Expo
 („LargeSecureStore“): sesija je šifrovana (AES-256, `aes-js`) u AsyncStorage, a ključ je u **SecureStore**
@@ -302,3 +325,72 @@ Sve ovo služi samo za probu (Expo Go, test nalozi). Pre slanja na App Store / G
    (ne probnog, ako ih ima dva) i pravi RevenueCat javni ključevi. Nikad `service_role` / `sb_secret_`.
 9. Tabela `events` iz prototipa (vidi 5): ako je u istom projektu kao aplikacija, obrisati je ili joj dodati limit.
 10. Pokrenuti proveru iz dela 4 (lozinke) i SQL iz 3.1, korak 2 na pravom projektu.
+11. Turnstile: Cloudflare test ključevi (`1x000…`) zamenjeni pravim, u `.env.local` / EAS i u Supabase-u (3.3).
+12. GitHub > Settings > Code security: „Dependabot alerts“ i „Dependabot security updates“ uključeni (deo 7).
+
+## 7. Bezbednosna provera pre objave (25. oktobar 2026)
+
+**Mejl sa pozivom** (`send-invite-email`): mejl je samo običan tekst, bez HTML dela, pa HTML ne može ni da se
+ubaci. Ime pošiljaoca je ranije išlo skoro kakvo jeste (sklanjali su se samo novi redovi), a kad imena nema, slao
+se **mejl pošiljaoca**. Ispravljeno:
+- u imenu ostaju samo slova, cifre, razmaci, apostrof i crtica: nema `< > " &`, tačaka, dvotačke, kosih crta ni `@`,
+  pa ime ne može da postane HTML, link (mejl programi i u običnom tekstu od „evil.com“ i „https://…“ prave link) ni
+  adresa; sklanjaju se i nevidljivi i znakovi koji okreću tekst; slova koja liče na druga („ｅｖｉｌ．ｃｏｍ“) se prvo
+  svedu na obična, pa se i ona uhvate; najviše **40** znakova;
+- bez imena piše „A friend“, mejl pošiljaoca se nikad ne šalje (baza vraća samo `display_name`);
+- adresa primaoca mora biti obična mejl adresa, inače se ništa ne šalje (400).
+Testovi: 3 nove i 1 dopunjena provera u `send-invite-email/handler_test.ts` (imena sa `<a href>`, `<script>`, URL-om, `www.`, `@`, `javascript:`,
+full-width slovima, okretanjem teksta; prava imena sa đ, š, ćirilicom ostaju; dužina; loše adrese).
+
+**Ko šta vidi** (`0004_privacy_and_input_checks.sql`). Bilo je: prijatelji i članovi zajedničkog cilja čitali su
+ceo profil, **uključujući mejl**; pošiljalac poziva je mogao da pročita `to_user` i tako sazna da li za neki mejl
+postoji nalog. Izabrano strožije, jer ništa u aplikaciji ne traži tuđi mejl: **mejl ne vidi niko osim vlasnika**
+(i on ga ima iz prijave, ne iz tabele). Sada:
+- `profiles`: drugi vide samo `id` i `display_name`, i to: prijatelji, članovi istog cilja i onaj ko ti je poslao
+  poziv koji čeka (da znaš ko te zove); `email` aplikacija ne može da pročita ni za sebe; `select *` je odbijen, pa
+  aplikacija uvek navodi kolone;
+- `friend_requests`: `to_user` se ne čita; poziv nalogu i poziv nepostojećem mejlu izgledaju isto pošiljaocu;
+- ostale tabele i `goal_totals`: bez mejlova; RPC-ovi: samo `claim_invite_email` vraća mejl, i to adresu koju si
+  ti upisao u svoj poziv; Realtime šalje samo kolone na koje korisnik ima pravo, pa važi i za izmene uživo;
+- pomoćne funkcije u šemi `app` (`are_friends`, `shares_goal`…) nisu dostupne preko API-ja (Supabase API vidi
+  samo `public`).
+Testovi: `backend/tests/privacy.test.mjs` (20 provera), uključujući **tačan spisak svih kolona i RPC-ova** koje
+aplikacija sme da čita i zove: nova kolona sa mejlom ili nov RPC bi odmah oborio test.
+
+**Provera unosa u bazi** (isto `0004`). Bilo je: naziv cilja nije smeo biti prazan, ali je smeo da ima razmake na
+krajevima, novi red, nevidljive znakove; `display_name` je smeo biti samo razmaci; napomena uz uplatu je smela biti
+prazna; iznosi bez gornje granice (do ~10^12). Sada:
+- svaki tekst (naziv cilja do 60, ime do 40, napomena do 80): nije prazan, nije samo razmaci, nema razmak na
+  početku/kraju, nema kontrolnih ni nevidljivih znakova i znakova koji okreću tekst (`app.clean_text`);
+- „još nema imena“ i „nema napomene“ su `NULL`, ne prazan tekst;
+- iznos cilja i uplate: veći od 0 i najviše **1.000.000.000** (dovoljno i za VND/IDR); valuta tačno 3 velika slova
+  (bilo je i ranije);
+- adresa u pozivu: obična mejl adresa, najviše 254 znaka.
+- SQL od stringova: nijedna funkcija ne koristi `EXECUTE` (dinamički SQL); jedini `format()` sastavlja poruku o
+  limitu iz serverske tabele, ne SQL. Svaka `security definer` funkcija ima zaključan `search_path`.
+Testovi: `backend/tests/input_checks.test.mjs` (68 provera; test pada ako se ikad pojavi `EXECUTE` ili `security
+definer` funkcija bez `search_path`).
+
+**Turnstile**: ugrađen, vidi 3.3 i 4. Testovi: `mobile/src/auth/__tests__/turnstile.test.ts` (9 provera: stranica,
+site key ne može da „probije“ skriptu, poruke iz WebView-a, nov token za svako slanje, greška / 60 s).
+
+**Zavisnosti** (`npm audit`):
+- `backend/`: 0 ranjivosti.
+- `mobile/`: 8 (6 visokih, 2 srednje), sve u alatima za razvoj, ne u aplikaciji na telefonu (provereno u
+  izvezenom paketu): `node-forge` i `zod` u Expo CLI-ju (`@expo/cli`, potpisivanje i čitanje podešavanja na tvom
+  računaru), `uuid` u `@expo/ngrok` (tunel za `--tunnel`). Ostale stavke (`expo`, `datetimepicker`) su samo „preko
+  njih“. Nije popravljeno, jer ne može bez kvara: za `node-forge` ispravka još ne postoji, a `zod` je ispravljen samo
+  u verziji 4, koju Expo CLI ne podržava; `npm audit fix --force` bi vratio Expo na SDK 44. Rešiće se sa sledećim
+  Expo SDK-om ili zakrpom; Dependabot će javiti.
+- `.github/dependabot.yml`: npm za `mobile/` i `backend/`, nedeljno (ponedeljkom), na granu `aplikacija`. Za
+  `mobile/` bot ne predlaže nove minor/major verzije paketa koje određuje Expo SDK (expo, react, react-native…):
+  njih menja `npx expo install expo@<sledeći SDK> --fix`, namerno. Zakrpe (patch) dolaze grupisane.
+
+**Tajne u istoriji**: pregledana cela istorija svih 8 grana (64 commit-a, svaka dodata linija): nema JWT-a
+(`service_role`/`anon`), `sb_secret_`, Stripe/RevenueCat `sk_`, Resend `re_`, GitHub, AWS, Google `GOCSPX-`/`AIza`,
+Turnstile secret, privatnih ključeva, lozinki u adresi baze ni dodela tipa `password = "…"`; nikad nije bio
+commit-ovan `.env`, `.p8`, `.p12`, `.pem`, `.key` ni `google-services` fajl. Jedini ključ je javni
+`sb_publishable_…` u prototipu (dozvoljeno). gitleaks nije instaliran; pretraga je rađena kroz `git log --all -p`.
+
+**Rezervna kopija**: ispod „Make backup / Import“ piše „This backup has all your spending in it. Don’t send it to
+anyone.“ Ništa drugo na tom ekranu nije menjano.

@@ -1,5 +1,5 @@
 import { assertEquals, assertStringIncludes } from 'jsr:@std/assert@1';
-import { type ClaimError, handle, inviteEmail } from './handler.ts';
+import { type ClaimError, handle, inviteEmail, MAX_NAME, safeName } from './handler.ts';
 
 const RID = '6f1c2a3b-1234-4abc-8def-0123456789ab';
 
@@ -62,6 +62,54 @@ Deno.test('the email provider failing gives 502', async () => {
 });
 
 Deno.test('names cannot break the subject line', () => {
-  assertEquals(inviteEmail('a@b.co', 'Ana\r\nBcc: x@y.z').subject, 'Ana  Bcc: x@y.z invited you to Lock In');
+  assertEquals(inviteEmail('a@b.co', 'Ana\r\nBcc: x@y.z').subject, 'Ana Bcc x y z invited you to Lock In');
   assertEquals(inviteEmail('a@b.co', '   ').subject, 'A friend invited you to Lock In');
+  assertEquals(inviteEmail('a@b.co', null).subject, 'A friend invited you to Lock In');
+});
+
+Deno.test('a name can never become HTML, a link or an address', () => {
+  const evil = [
+    '<a href="https://evil.com/login">Click here</a>',
+    '<script>alert(document.cookie)</script>',
+    'https://evil.com/free-money',
+    'www.evil.com',
+    'Ana visit evil.com now',
+    'ana@evil.com',
+    'ｅｖｉｌ．ｃｏｍ', // full-width look-alikes
+    'Ana‮moc.live', // right-to-left override
+    '<img src=x onerror=alert(1)>',
+    'Ana &lt;b&gt;',
+    'javascript:alert(1)',
+  ];
+  for (const name of evil) {
+    const e = inviteEmail('eva@example.com', name);
+    const sender = e.subject.replace(' invited you to Lock In', '');
+    assertEquals(/[<>"&@:/\\.‮]/.test(sender), false, `${name} -> ${sender}`);
+    assertEquals(/[\r\n]/.test(e.subject), false, name);
+    assertEquals(e.text.includes('evil.com'), false, name);
+    assertEquals(e.text.includes('<'), false, name);
+    assertEquals(e.text.includes('://'), false, name);
+    assertEquals('html' in e, false); // plain text only
+  }
+  assertEquals(safeName('<a href="https://evil.com/login">Click here</a>'), 'a href https evil com login Click here a');
+  assertEquals(safeName('<script>alert(1)</script>'), 'script alert 1 script');
+  assertEquals(safeName('ｅｖｉｌ．ｃｏｍ'), 'evil com');
+});
+
+Deno.test("real names stay as they are, cut to 40 characters", () => {
+  assertEquals(safeName('Ana-Marija O’Brien'), 'Ana-Marija O’Brien');
+  assertEquals(safeName('Đorđe Šaković'), 'Đorđe Šaković');
+  assertEquals(safeName('Сергеј'), 'Сергеј');
+  assertEquals(safeName('  Ana   \n Marko  '), 'Ana Marko');
+  const long = safeName('A'.repeat(30) + ' ' + 'B'.repeat(30));
+  assertEquals(Array.from(long).length <= MAX_NAME, true);
+  assertEquals(long, 'A'.repeat(30) + ' ' + 'B'.repeat(9));
+});
+
+Deno.test('an address that is not a plain email is not sent to', async () => {
+  for (const to of ['eva@example.com<script>', '"eva"@example.com', 'eva@exa mple.com', 'eva@localhost']) {
+    const t = setup({ to_email: to, from_name: 'Ana' });
+    assertEquals((await handle(post({ request_id: RID }), t.deps)).status, 400, to);
+    assertEquals(t.sent.length, 0);
+  }
 });

@@ -13,6 +13,7 @@ import { sendCode, signInWithApple, signInWithGoogle, verifyCode, type SignInRes
 import { supabase } from '@/auth/supabase';
 import { useAppToast } from '@/components/AppToast';
 import { Button, Field, Ghost, Small } from '@/components/home/Section';
+import { TurnstileHost } from '@/components/TurnstileHost';
 import { inter, useTheme } from '@/theme';
 
 // Kept while the app runs, so closing and reopening this screen does not unlock "Send code" early.
@@ -168,6 +169,7 @@ export default function SignIn() {
         onSubmitEditing={send}
       />
       <Button title={busy === 'send' ? 'Sending…' : wait ? `Send again in ${wait}s` : otp.sentAt ? 'Send a new code' : 'Send code'} onPress={send} demoOk style={wait ? { opacity: 0.5 } : undefined} />
+      <TurnstileHost />
 
       {codeOpen && (
         <View style={{ marginTop: 18 }}>

@@ -14,3 +14,5 @@ Na početku svake sesije pročitaj `docs/PROJEKAT.md` (sve odluke i stanje) i `d
 - Radi tačno ono što je tražio. Ne briši i ne menjaj ono što nije pomenuo. Ne pitaj ponovo ono što je već rekao.
 - Njegove tekstove (fore, poruke) prepisuj tačno, sa njegovim greškama, razmacima i emodžijima.
 - Aplikacija je samo na engleskom. 7 dana probe, posle toga se plaća sve (nema besplatne verzije, nema „Pro“ dela).
+- U shell komandama nikad ne koristi backtick-ove (`) u tekstu: shell ih izvršava kao komande. Fajlove menjaj alatom
+  za izmenu fajlova (Edit/Write), ne preko shell-a (sed, echo, node -e, heredoc u fajl).

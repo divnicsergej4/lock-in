@@ -15,9 +15,16 @@ const hex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '
 
 /** Emails a 6-digit code (the "Magic Link" email template shows {{ .Token }}, no link). New emails get an account. */
 export async function sendCode(client: SupabaseClient, email: string): Promise<SignInResult> {
+  let captchaToken: string | undefined;
+  try {
+    captchaToken = await getCaptchaToken();
+  } catch {
+    // no token: timed out, no connection, or Cloudflare said no; nothing is sent
+    return { ok: false, error: authMessage({ code: 'captcha_failed' }) };
+  }
   const { error } = await client.auth.signInWithOtp({
     email,
-    options: { shouldCreateUser: true, captchaToken: await getCaptchaToken() },
+    options: { shouldCreateUser: true, captchaToken },
   });
   return error ? { ok: false, error: authMessage(error) } : { ok: true };
 }
@@ -66,7 +73,8 @@ export async function signInWithApple(client: SupabaseClient): Promise<SignInRes
   const { data, error } = await client.auth.signInWithIdToken({ provider: 'apple', token: credential.identityToken, nonce });
   if (error) return { ok: false, error: authMessage(error) };
   // Apple gives the name only the first time: keep it as the name friends see, if there is none yet.
-  const name = [credential.fullName?.givenName, credential.fullName?.familyName].filter(Boolean).join(' ').slice(0, 40);
-  if (name && data.user) await client.from('profiles').update({ display_name: name }).eq('id', data.user.id).eq('display_name', '');
+  // (No name yet is NULL; the database refuses names with spaces at the ends, see migration 0004.)
+  const name = [credential.fullName?.givenName, credential.fullName?.familyName].filter(Boolean).join(' ').slice(0, 40).trim();
+  if (name && data.user) await client.from('profiles').update({ display_name: name }).eq('id', data.user.id).is('display_name', null);
   return { ok: true };
 }

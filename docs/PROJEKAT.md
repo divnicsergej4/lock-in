@@ -67,7 +67,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   za animacije, @shopify/react-native-skia za holo prsten i lika na uvodu, lokalno čuvanje podataka na telefonu.
 - **Lična potrošnja ostaje samo na telefonu.** Na serveru je samo ono što mora: nalozi, prijatelji, zajednički ciljevi, pretplata.
 - **Backend: Supabase.** Migracije su u `backend/supabase/migrations/` (`0001` nalozi, prijatelji, zajednički cilj;
-  `0002` limiti i kvote; `0003` bez lozinki), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
+  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
   (`npm test` u folderu `backend`, radi i na Windows-u bez Postgres-a). Detalji u `backend/README.md`,
   zaštita i podešavanja po dashboard-ima u `docs/ZASTITA.md`.
 - **Prototip je specifikacija.** `index.html` na grani `razvoj` je tačan izgled i ponašanje svakog ekrana. Pri prenosu u
@@ -253,6 +253,13 @@ Urađeno:
   Testovi: 23 provere (`backend/tests/no_passwords.test.mjs`), uz kontrolu da napad bez `0003` uspeva. Pravi Supabase
   Auth nije pokrenut (nema Docker-a): Sergej jednom proverava na projektu (`docs/ZASTITA.md`, deo 4).
   „Confirm email“ mora ostati uključeno. Lista stvari koje se sklanjaju pre objave: `docs/ZASTITA.md`, deo 6.
+- Bezbednosna provera pre objave (`docs/ZASTITA.md`, deo 7): mejl sa pozivom samo običan tekst, ime pošiljaoca
+  očišćeno (ne može postati HTML ni link, do 40 znakova), bez imena „A friend“ umesto mejla pošiljaoca; migracija
+  `0004`: **tuđ mejl ne vidi niko** (izabrano strožije; drugi vide samo `display_name`), poziv ne otkriva da li nalog
+  postoji, provere unosa (tekstovi bez praznih/razmaka/nevidljivih znakova, iznosi do 1.000.000.000, „nema imena“ je
+  NULL); Turnstile ugrađen na ekranu za prijavu (Managed + interaction-only, u WebView-u); Dependabot nedeljno;
+  istorija svih grana bez tajni; upozorenje ispod rezervne kopije. `npm audit` u `mobile/`: 8 ranjivosti u Expo
+  alatima za razvoj (ne u aplikaciji), bez ispravke koja ne kvari Expo; čeka se Expo zakrpa.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
