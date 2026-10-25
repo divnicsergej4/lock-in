@@ -119,11 +119,11 @@ Prijava je samo: **kod od 6 cifara na mejl**, **Google** i **Sign in with Apple*
    3. Supabase > **Authentication > Sign In / Providers > Google**: uključi, nalepi **Client ID** i **Client Secret**
       (Secret lepiš samo ovde, nikome ga ne šalješ), „Skip nonce check“ **isključeno**, Save.
 8. **Apple** (treba Apple Developer nalog):
-   1. developer.apple.com > Certificates, IDs & Profiles > **Identifiers** > App ID aplikacije (bundle identifier,
-      npr. `com.tvojeime.lockin`; još nije upisan u `mobile/app.json`, javi mi koji si izabrao) > uključi
+   1. developer.apple.com > Certificates, IDs & Profiles > **Identifiers** > App ID aplikacije (Explicit, Bundle ID
+      `com.lockintracker.app`, isti kao `ios.bundleIdentifier` u `mobile/app.json`) > uključi
       **Sign In with Apple** > Save.
    2. Supabase > **Authentication > Sign In / Providers > Apple**: uključi; u „Client IDs“ upiši `host.exp.Exponent`
-      (Expo Go) i bundle identifier, odvojene zarezom. **Secret Key ostavi prazno**: aplikacija koristi samo
+      (Expo Go) i `com.lockintracker.app`, odvojene zarezom. **Secret Key ostavi prazno**: aplikacija koristi samo
       prijavu na samom iPhone-u, kojoj ključ ne treba (i ne ističe na 6 meseci). Save.
    Na Android-u nema Apple dugmeta: Apple to traži samo za App Store, a na Android-u bi trebao i tajni ključ koji ističe.
 9. **Authentication > Attack Protection** (u starijem izgledu „Bot and Abuse Protection“):

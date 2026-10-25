@@ -238,6 +238,8 @@ Urađeno:
   - Google ide preko pregledača (PKCE), ne preko posebne Google biblioteke, da bi radio i u Expo Go;
   - za šifrovanje je uzet `aes-js` (AES-256-CTR, tačno kako Supabase preporučuje), nasumični ključ iz `expo-crypto`;
   - „Sign out“ odjavljuje samo taj telefon; brisanje naloga ne dira podatke na telefonu (za to je Reset everything);
+  - identifikator aplikacije (Sergej: "neka bude lockintracker"): `com.lockintracker.app` za iOS (`bundleIdentifier`) i
+    Android (`package`, Android traži bar dva dela pa je dodato `com.` i `.app`); šema linkova ostaje `lockin`;
   - RevenueCat entitlement se zove `access`; ime sa Apple-a se upisuje kao ime koje prijatelji vide, ako ga nema.
   Testovi: 24 provere u `mobile/src/auth/__tests__/` (šifrovanje i brisanje sesije i sa pravim supabase-js,
   60 s / 5 kodova, prava), 25 provera brisanja naloga u bazi i 4 provere funkcije `delete-account`.

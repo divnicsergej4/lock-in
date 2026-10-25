@@ -13,7 +13,8 @@
       "infoPlist": {
         "CADisableMinimumFrameDurationOnPhone": true
       },
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "bundleIdentifier": "com.lockintracker.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +23,8 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.lockintracker.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
