@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { AuthProvider } from '@/auth/AuthProvider';
 import { AppToastProvider } from '@/components/AppToast';
 import { StoreProvider, useStore } from '@/store/StoreProvider';
 import { useTheme } from '@/theme';
@@ -26,7 +27,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StoreProvider>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </StoreProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
@@ -67,6 +70,8 @@ function App() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="welcome" options={{ animation: 'fade', contentStyle: { backgroundColor: '#f4f8f5' } }} />
+        <Stack.Screen name="sign-in" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="auth-callback" options={{ animation: 'none' }} />
       </Stack>
     </AppToastProvider>
   );

@@ -1,8 +1,10 @@
 // "Shared goal" (prototype section[data-fold=team], gold): what saving together looks like, with a
-// sample goal, and the button that will start sign-in. Accounts are not there yet, so it says so.
+// sample goal, and the button that opens sign-in. The shared goal itself does not sync yet.
 
+import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useAuth } from '@/auth/AuthProvider';
 import { useAppToast } from '@/components/AppToast';
 import { Button, Field, Fold, Ghost, Small } from '@/components/home/Section';
 import { teamSummary } from '@/logic/demo';
@@ -67,6 +69,7 @@ export function SharedGoal() {
   const { c } = useTheme();
   const toast = useAppToast();
   const { demo } = useStore();
+  const { available, session } = useAuth();
   if (demo) return <DemoTeam />;
   return (
     <Fold id="team" title="Shared goal" kind="pro" defaultOpen tourId="team">
@@ -102,12 +105,16 @@ export function SharedGoal() {
           ))}
         </View>
       </View>
-      <Button
-        title="Sign in to get started"
-        onPress={() => toast('Accounts are coming soon. For now this is a preview.')}
-        style={{ backgroundColor: '#f5c84b' }}
-        textStyle={{ color: '#1a1000' }}
-      />
+      {session ? (
+        <Small style={{ marginTop: 12 }}>You’re signed in. Shared goals with friends are coming soon.</Small>
+      ) : (
+        <Button
+          title="Sign in to get started"
+          onPress={() => (available ? router.push('/sign-in') : toast('Accounts are coming soon. For now this is a preview.'))}
+          style={{ backgroundColor: '#f5c84b' }}
+          textStyle={{ color: '#1a1000' }}
+        />
+      )}
     </Fold>
   );
 }

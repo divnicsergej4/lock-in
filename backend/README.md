@@ -12,7 +12,8 @@ Ovde je baza za naloge, prijatelje i zajednički cilj. Lična potrošnja se ne �
 - Cilj: svi članovi su jednaki, nema vlasnika. Svako može da promeni naziv i iznos i da doda svoje prijatelje.
 - Svako upisuje i menja samo svoje uplate.
 - Ko izađe iz cilja, njegove uplate se brišu. Cilj ostaje ostalima. Kad izađe poslednji, cilj se briše.
-- Brisanje naloga briše i osobu iz svih ciljeva, njene uplate i prijateljstva.
+- Brisanje naloga briše i osobu iz svih ciljeva, njene uplate i prijateljstva. Iz aplikacije ide preko serverske
+  funkcije `delete-account` (briše samo onoga čiji je token).
 - Zaštita od zloupotrebe (`0002`): limiti po korisniku za svaku radnju (npr. najviše 10 poziva na sat, 30 dnevno,
   ista adresa 3 puta nedeljno; uplate 60 na sat), kvote (10 ciljeva po osobi, 20 ljudi po cilju, 200 prijatelja,
   50 poziva na čekanju) i dnevni limit mejlova sa pozivom za celu aplikaciju. Sve brojke i kako se menjaju:
@@ -24,7 +25,7 @@ Ovde je baza za naloge, prijatelje i zajednički cilj. Lična potrošnja se ne �
 2. Nalepi ceo fajl `supabase/migrations/0001_accounts_friends_shared_goals.sql` i pokreni ga.
 3. Isto za `supabase/migrations/0002_limits_and_quotas.sql` (uvek redom, posle 0001).
 
-Serverske funkcije (`supabase/functions/`: RevenueCat webhook i slanje mejla sa pozivom) i sve što treba
+Serverske funkcije (`supabase/functions/`: RevenueCat webhook, slanje mejla sa pozivom i brisanje naloga) i sve što treba
 kliknuti po dashboard-ima (Auth limiti, CAPTCHA, spend cap, Resend, RevenueCat, Expo): `docs/ZASTITA.md`.
 
 Nikome ne šalji `service_role` ključ ni lozinku baze, pa ni meni. Aplikacija koristi samo javni (anon) ključ,
@@ -39,7 +40,9 @@ Postgres i Python nisu potrebni).
   mu istekne pretplata), sa svim migracijama.
 - `tests/limits.test.mjs`: 59 provera limita i kvota (normalno korišćenje prolazi, preterano se odbija), upis
   pretplate sa servera, da su brojači nedostupni aplikaciji i da je RLS uključen na svakoj tabeli.
-- `supabase/functions/*/handler_test.ts`: 15 provera serverskih funkcija (Deno).
+- `tests/delete_account.test.mjs`: 25 provera brisanja naloga (šta se briše, šta ostaje drugima, aplikacija ne može
+  sama da briše korisnike, svaki FK na `auth.users` je `cascade` ili `set null`).
+- `supabase/functions/*/handler_test.ts`: 19 provera serverskih funkcija (Deno).
 - `tests/test_shared_goals.py`: ista 49 provera na pravom Postgres-u (`python3 tests/test_shared_goals.py -h … -p … -U …`).
 
 ## Šta još fali

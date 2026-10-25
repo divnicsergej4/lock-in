@@ -224,14 +224,34 @@ Urađeno:
   iznos → opis, „Guitar“ → cena), a kad prođe korak u kom se kuca, skloni se.
   Provereno u pregledaču od 1. do 38. koraka; na pravom telefonu nije provereno. Iz teksta koraka 37 izbačeno je „language“,
   jer izbora jezika nema (jedina namerna razlika od prototipa).
+- Prijava u aplikaciji (`mobile/src/auth/`, ekran `mobile/src/app/sign-in.tsx`, detalji u `docs/ZASTITA.md` deo 4).
+  Dogovoreno (Sergej): **prijava bez lozinke**, nigde nema polja za lozinku: kod od 6 cifara na mejl (ne magic link),
+  Google i Sign in with Apple. „Send code“ se zaključa na 60 s, posle 5 pogrešnih kodova traži se novi kod.
+  Sesija je šifrovana u AsyncStorage, a ključ u SecureStore (Keychain/Keystore); odjava i brisanje naloga brišu oba.
+  Prava (proba/pretplata) se uvek pitaju od servera (`my_access`) i RevenueCat-a, nikad se ne čuvaju na telefonu;
+  sve na serveru i dalje štiti baza. Brisanje naloga: Settings > Danger zone > Delete account → serverska funkcija
+  `delete-account` (briše samo onoga čiji je token; baza briše ostalo). Turnstile ima pripremljeno mesto
+  (`mobile/src/auth/captcha.ts`), još nije ugrađen.
+  Odluke koje sam doneo jer nisu bile rečene (Sergej može da promeni):
+  - aplikacija radi i bez naloga (lična potrošnja je samo na telefonu); prijava se otvara iz Shared goal i Settings > Account;
+  - Apple dugme samo na iPhone-u (Apple ga traži samo za App Store; na Android-u bi trebao tajni ključ koji ističe na 6 meseci);
+  - Google ide preko pregledača (PKCE), ne preko posebne Google biblioteke, da bi radio i u Expo Go;
+  - za šifrovanje je uzet `aes-js` (AES-256-CTR, tačno kako Supabase preporučuje), nasumični ključ iz `expo-crypto`;
+  - „Sign out“ odjavljuje samo taj telefon; brisanje naloga ne dira podatke na telefonu (za to je Reset everything);
+  - RevenueCat entitlement se zove `access`; ime sa Apple-a se upisuje kao ime koje prijatelji vide, ako ga nema.
+  Testovi: 24 provere u `mobile/src/auth/__tests__/` (šifrovanje i brisanje sesije i sa pravim supabase-js,
+  60 s / 5 kodova, prava), 25 provera brisanja naloga u bazi i 4 provere funkcije `delete-account`.
+  Nije provereno na pravom telefonu ni sa pravim Supabase projektom (nema ključeva u repou): to je sledeći korak.
+  Sergej podešava: `docs/ZASTITA.md` 3.2 (Email, šabloni mejla, SMTP, Rate Limits, URL-ovi, Google, Apple),
+  3.5 (postaviti `delete-account`), 3.6 (entitlement `access`), i javne ključeve u `mobile/.env.local`.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
    fontovi (Bricolage Grotesque, Inter), lokalno čuvanje podataka, prenos logike iz prototipa sa testovima.
-2. Supabase projekat: Sergej primeni migraciju u SQL Editor-u; prijava e-mailom + Google + **Sign in with Apple**
-   (Apple to traži čim postoji Google prijava). Pre puštanja podesiti sve iz `docs/ZASTITA.md` (Auth limiti, potvrda
-   mejla, lozinka, SMTP, spend cap). **CAPTCHA (Cloudflare Turnstile, nevidljiv) ugraditi u ekrane za registraciju,
-   zaboravljenu lozinku i prijavu lozinkom kad se budu pravili**, pa je tek onda uključiti u Supabase-u.
+2. Supabase projekat: Sergej primeni migraciju u SQL Editor-u. Prijava (kod na mejl + Google + **Sign in with Apple**)
+   je napravljena u aplikaciji; ostaje podešavanje iz `docs/ZASTITA.md` (3.2: Email, šabloni, SMTP, Rate Limits,
+   URL-ovi, Google, Apple; spend cap) i provera na telefonu. **CAPTCHA (Cloudflare Turnstile, nevidljiv) ugraditi u
+   `mobile/src/auth/captcha.ts`** (traži se samo kad se šalje kod na mejl), pa je tek onda uključiti u Supabase-u.
    Sign in with Apple i Google ne traže CAPTCHA.
 3. Pretplata: 7 dana probe preko App Store-a / Google Play-a (predlog RevenueCat) + webhook koji puni tabelu
    `subscriptions` (napisan: `backend/supabase/functions/revenuecat-webhook`, treba ga postaviti); zaključavanje

@@ -1,6 +1,6 @@
 // "Settings" (prototype section[data-fold=set]): grouped rows with an icon, a title and a hint, like a
 // phone's settings: Money (salary, second currency), You & look (age, theme, roast level), Reminder,
-// Help, Subscription, Privacy and the Danger zone.
+// Help, Account (sign in / out, delete account), Subscription, Privacy and the Danger zone.
 
 import { router } from 'expo-router';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -8,6 +8,8 @@ import { Pressable, StyleSheet, Text, View, type TextStyle, type ViewStyle } fro
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SvgXml } from 'react-native-svg';
 
+import { accessText } from '@/auth/access';
+import { useAuth } from '@/auth/AuthProvider';
 import { useAppToast } from '@/components/AppToast';
 import { DEMO_FADE, useDemoGuard } from '@/components/demoGuard';
 import { Button, Field, Fold, Ghost } from '@/components/home/Section';
@@ -37,6 +39,8 @@ const ICONS = {
   star: '<path d="m12 4 2.4 5 5.4.7-4 3.7 1 5.4L12 16.2l-4.8 2.6 1-5.4-4-3.7 5.4-.7Z"/>',
   lock: '<rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
   trash: '<path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10.2 10.5v5.5M13.8 10.5v5.5"/>',
+  user: '<circle cx="12" cy="9" r="3.6"/><path d="M5.5 19.5c.9-3.4 3.4-5.3 6.5-5.3s5.6 1.9 6.5 5.3"/><circle cx="12" cy="12" r="9"/>',
+  out: '<path d="M14 4.5H6.5v15H14"/><path d="M10.5 12h9"/><path d="m16.5 9 3 3-3 3"/>',
 };
 type IconName = keyof typeof ICONS;
 
@@ -199,6 +203,31 @@ export function SettingsFold() {
     }
   };
 
+  // Account: sign out, and delete the account (Apple requires it in the app); also a second tap within 4 s
+  const auth = useAuth();
+  const [sureDel, setSureDel] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const delT = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => void (delT.current && clearTimeout(delT.current)), []);
+  const signOut = async () => {
+    await auth.signOut();
+    toast('Signed out');
+  };
+  const deleteAccount = async () => {
+    if (deleting) return;
+    if (!sureDel) {
+      setSureDel(true);
+      delT.current = setTimeout(() => setSureDel(false), 4000);
+      return;
+    }
+    if (delT.current) clearTimeout(delT.current);
+    setSureDel(false);
+    setDeleting(true);
+    const r = await auth.deleteAccount();
+    setDeleting(false);
+    toast(r.ok ? 'Account deleted' : r.error);
+  };
+
   const half = { flex: 1, flexBasis: 0, minWidth: 0 } as const;
   // .srow.inl select / input[type=time]: as wide as the browser makes them (a select fits its longest option)
   const inline = { maxWidth: '46%', paddingVertical: 8, paddingHorizontal: 10, height: 40, justifyContent: 'space-between' } as ViewStyle;
@@ -317,6 +346,19 @@ export function SettingsFold() {
         <Row icon="demo" title="Demo" hint="See the app filled with sample data" right={<Arrow />} onPress={demoOn} top />
       </Group>
 
+      {auth.available && (
+        <Group label="Account">
+          {auth.session ? (
+            <>
+              <Row icon="user" title={auth.session.user.email || 'Signed in'} hint={accessText(auth.access, Date.now())} />
+              <Row icon="out" title="Sign out" hint="Only on this phone" right={<Arrow />} onPress={signOut} top />
+            </>
+          ) : (
+            <Row icon="user" title="Sign in" hint="For shared goals and your plan. No password." right={<Arrow />} onPress={() => router.push('/sign-in')} />
+          )}
+        </Group>
+      )}
+
       <Group label="Subscription">
         <Row icon="star" title="Lock-in Pro" hint="See plans (demo)" right={<Arrow />} onPress={soon} />
       </Group>
@@ -332,6 +374,16 @@ export function SettingsFold() {
 
       <Group label="Danger zone">
         <Row icon="trash" title={sure ? 'Tap again to delete everything' : 'Reset everything'} hint="Deletes all data from this phone" danger onPress={reset} />
+        {auth.session && (
+          <Row
+            icon="trash"
+            title={deleting ? 'Deleting…' : sureDel ? 'Tap again to delete your account' : 'Delete account'}
+            hint="Deletes your account, friends and shared goals for good. Data on this phone stays. An App Store or Google Play subscription is not cancelled by this."
+            danger
+            onPress={deleteAccount}
+            top
+          />
+        )}
       </Group>
     </Fold>
   );

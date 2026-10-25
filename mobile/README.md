@@ -30,6 +30,16 @@ Prva komanda kopira `canvaskit.wasm` (8 MB, nije u gitu) koji Skia traži na web
 - `src/components/intro/cssAnim.ts` izvršava CSS animacije na UI niti; test `cssAnim.test.ts` ga poredi sa
   vrednostima koje je izračunao sam pregledač za prototip (`character.browser.json`).
 
+## Prijava (nalog)
+
+Bez lozinke: kod od 6 cifara na mejl, Google i Sign in with Apple (iPhone). Kod je u `src/auth/`, ekran u
+`src/app/sign-in.tsx`; šta se gde podešava i zašto: `docs/ZASTITA.md` (3.2 i 4).
+
+Da bi prijava radila, kopiraj `.env.example` u `.env.local` (nije u gitu) i upiši **samo javne** vrednosti
+(Supabase URL i anon / `sb_publishable_…` ključ, RevenueCat `appl_…` / `goog_…`). Posle izmene `.env.local`
+ponovo pokreni `npx expo start`. Bez ključeva aplikacija radi kao i pre, samo bez naloga.
+Prijava ne radi u pregledaču (web pregled nema Keychain), samo na telefonu.
+
 ## Provere
 
 ```bash
@@ -45,6 +55,7 @@ npx expo-doctor     # zavisnosti i podešavanja
 | `src/app/` | Ekrani (expo-router). `(tabs)/` su 4 taba. |
 | `src/logic/` | Logika prenesena iz prototipa (`index.html` na `razvoj`): fore, plamen, novac, „Can I afford it?“, ocena meseca. Bez React-a, sve pokriveno testovima. |
 | `src/store/` | Stanje aplikacije i čuvanje na telefonu (AsyncStorage, ključ `lockin`). |
+| `src/auth/` | Prijava, šifrovano čuvanje sesije (ključ u SecureStore), prava preko servera i RevenueCat-a, odjava i brisanje naloga. |
 | `src/theme/` | Boje (tamna/svetla) i fontovi iz prototipa. |
 | `src/components/` | Zajednički delovi ekrana. |
 
