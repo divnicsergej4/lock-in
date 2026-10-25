@@ -2,15 +2,18 @@
 // and "Can I afford this?".
 
 import { useEffect, useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppToast } from '@/components/AppToast';
+import { useTabPage } from '@/components/tabPage';
 import { Sections, TabEntrance } from '@/components/TabEntrance';
 import { AffordFold } from '@/components/home/AffordFold';
 import { BalanceCard } from '@/components/home/BalanceCard';
 import { Hero } from '@/components/home/Hero';
 import { NewEntry } from '@/components/home/NewEntry';
+import { ReminderCard } from '@/components/home/ReminderCard';
 import { StreakCard } from '@/components/home/StreakCard';
 import { tierUp } from '@/logic/streak';
 import { useStore } from '@/store/StoreProvider';
@@ -20,6 +23,7 @@ export default function Home() {
   const { state, update } = useStore();
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
+  const { ref, anchor, top, onContentSizeChange } = useTabPage(0);
   const toast = useAppToast();
   const [levelUp, setLevelUp] = useState(0);
 
@@ -41,21 +45,26 @@ export default function Home() {
 
   // bottom padding: the tab bar sits over the content (prototype main padding-bottom 130px)
   return (
-    <ScrollView
+    <Animated.ScrollView
+      ref={ref}
+      onContentSizeChange={onContentSizeChange}
       style={{ flex: 1, backgroundColor: c.bg }}
-      contentContainerStyle={{ paddingTop: insets.top, paddingHorizontal: 16, paddingBottom: 130 + insets.bottom }}
+      contentContainerStyle={{ paddingTop: top, paddingHorizontal: 16, paddingBottom: 130 + insets.bottom }}
       keyboardShouldPersistTaps="handled"
       automaticallyAdjustKeyboardInsets
     >
+      {/* the top of the content, for the guided tour's measurements */}
+      <View ref={anchor} collapsable={false} />
       <TabEntrance index={0}>
         <Hero />
         <Sections>
+          <ReminderCard />
           <BalanceCard />
           <StreakCard levelUp={levelUp} />
           <NewEntry />
           <AffordFold />
         </Sections>
       </TabEntrance>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }

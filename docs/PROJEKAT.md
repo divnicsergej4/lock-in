@@ -174,7 +174,7 @@ Urađeno:
   plan meseca, „We noticed“, fore. Test poredi rezultat sa pravim kodom prototipa na nasumičnim podacima.
   Svesno ispravljeno (prototip je grešio): „(oko N per day)“ u planu → „(about N per day)“; prag 30% gleda iznos u
   glavnoj valuti; raspoređivanje novca u koverte čita „12.5“ kao 12,5 (prototip kao 125).
-  Nije preneto: dugovi, demo podaci, nivoi/XP (sakriveni u prototipu). Grafikoni holo prstena su preneti uz Spending.
+  Nije preneto: dugovi, nivoi/XP (sakriveni u prototipu). Grafikoni holo prstena su preneti uz Spending, demo podaci uz demo.
 - Uvod u aplikaciji (`mobile/src/app/welcome.tsx`): ekran sa likom (Skia, ista animacija i ponavljanje na ~8 s),
   tri ekrana koja se preskaču, podešavanje sa godinama. Mere upoređene sa prototipom u pregledaču (razlika ≤ 0,2 px).
   Posle podešavanja ide se pravo na Home: ekran za plaćanje i vođeni obilazak još ne postoje.
@@ -200,6 +200,29 @@ Urađeno:
   raspoređivanje slobodnog novca, nova koverta sa ciljem i rokom koja se odmah izvuče), plan meseca. Tamna i svetla tema;
   mere upoređene sa prototipom (razlika ≤ 0,4 px), animacije na UI niti, statični delovi fioke čuvaju se kao slika.
   Vibracija iz prototipa (navigator.vibrate) nije preneta: na iPhone-u ni u prototipu nije radila.
+- More u aplikaciji: izveštaj meseca (ocena), rezervna kopija (tekst za kopiranje i uvoz), Settings: plata, druga valuta,
+  godine, tema, jačina poruka (Mild / Normal / No mercy, kao u prototipu), podsetnik (prekidač + vreme preko telefonskog
+  birača; kad prođe vreme, a ništa nije upisano, na Home se pojavi žuta kartica kao u prototipu), privatnost, reset.
+  „Lock-in Pro / See plans“ za sada kaže „Coming soon.“ (ekran za plaćanje još ne postoji).
+  Mere upoređene sa prototipom (razlika ≤ 0,8 px). Podsetnik je samo u aplikaciji (kartica na Home), ne prava notifikacija.
+  Tekst o privatnosti (Settings i podešavanje na uvodu) je skraćen na „Amounts, descriptions and categories stay on your
+  phone only.“: rečenica da se anonimno beleži korišćenje je izbačena jer aplikacija ništa ne beleži (beleženje postoji
+  samo u prototipu na javnom linku). Ako se beleženje doda u aplikaciju, rečenica se vraća.
+- Demo u aplikaciji: Settings > Help > Demo. Isti izmišljeni podaci kao u prototipu (test poredi sa pravim kodom prototipa),
+  traka „DEMO … Exit demo“, polja za unos zaključana i prigušena, pokušaj unosa daje poruku kao u prototipu; ništa se ne
+  čuva, a izlazak ili ponovno otvaranje vraća prave podatke. Uključivanje i isključivanje vodi na Home (kao u prototipu).
+  Zajednički cilj u demu pokazuje primer sa 3 osobe iz prototipa. Sa ekrana za plaćanje se još ne pali (ekran ne postoji).
+- Vođeni obilazak u aplikaciji: svih 38 koraka sa tekstom iz prototipa (test poredi tekst, tab, dugme i uslove), korisnik sam
+  upisuje, prevlači i dodiruje; osvetljen deo, ostalo zamagljeno (expo-blur) i zatamnjeno; „Skip step“ posle 15 s,
+  „Skip tour“ uvek vidljivo; prozor za izmenu unosa pauzira obilazak. Probni unosi se brišu na kraju, posle preskakanja i ako
+  se aplikacija zatvori usred obilaska; posle toga se ide na Home. Pokreće se sam kod korisnika koji ga nije video (i kod
+  postojećih podataka bez oznake, npr. Sergejevih, jednom) i ponovo iz Settings > Help > App tour.
+  Stranica se skroluje prevlačenjem bilo gde po ekranu, i preko zamagljenog dela (tap na zamagljeno i dalje ne radi ništa,
+  kao u prototipu). Korak u kom se kuca završava se tek kad korisnik 2 s ne pritisne nijedan taster (ne čim upiše
+  prvu cifru ili dva slova). Posle te pauze tastatura pređe na sledeće prazno polje koraka (tekst ili broj, npr.
+  iznos → opis, „Guitar“ → cena), a kad prođe korak u kom se kuca, skloni se.
+  Provereno u pregledaču od 1. do 38. koraka; na pravom telefonu nije provereno. Iz teksta koraka 37 izbačeno je „language“,
+  jer izbora jezika nema (jedina namerna razlika od prototipa).
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

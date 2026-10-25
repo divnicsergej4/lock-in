@@ -7,6 +7,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from '
 
 import { useAppToast } from '@/components/AppToast';
 import { InlineIcon } from '@/components/CategoryIcon';
+import { useDemoGuard } from '@/components/demoGuard';
 import { Flame, type FlameTier } from '@/components/intro/Flame';
 import { categoryColor } from '@/logic/categories';
 import { days } from '@/logic/format';
@@ -14,6 +15,7 @@ import { weeklyChallenge } from '@/logic/insights';
 import { checkIn, streakCard, streakInfo } from '@/logic/streak';
 import { useStore } from '@/store/StoreProvider';
 import { inter, tierColors, useTheme } from '@/theme';
+import { useTourTarget } from '@/tour/registry';
 
 import { Section, Small } from './Section';
 
@@ -31,6 +33,7 @@ export function StreakCard({ levelUp }: { levelUp: number }) {
   const { state, update } = useStore();
   const { c, name } = useTheme();
   const toast = useAppToast();
+  const { guard } = useDemoGuard();
   const now = useMinute();
   const card = streakCard(state, Date.now());
   const tier = card.tier.key as FlameTier;
@@ -53,28 +56,33 @@ export function StreakCard({ levelUp }: { levelUp: number }) {
   };
 
   const ch = weeklyChallenge(state, now);
+  // the tour lights up the flame part ('streak', prototype #streak) and the challenge ('chal') apart
+  const streakRef = useTourTarget('streak');
+  const chalRef = useTourTarget('chal');
   return (
     <Section kind="hot">
-      <View style={st.sk}>
-        <Flame tier={tier} levelUp={levelUp} />
-        <View style={{ flex: 1 }}>
-          <View style={st.skn}>
-            <Text style={[st.sn, { color: c.ink }]}>{card.n}</Text>
-            <Text style={[st.skl, { color: c.ink }]}>{card.label}</Text>
-          </View>
-          <Text style={[st.tchip, { color: tc }]}>{card.tierName}</Text>
-          <View style={[st.tbar, { backgroundColor: c.line }]} onLayout={(e) => setBarW(e.nativeEvent.layout.width)}>
-            <Animated.View style={[st.tfill, { backgroundColor: tc }, fill]} />
+      <View ref={streakRef}>
+        <View style={st.sk}>
+          <Flame tier={tier} levelUp={levelUp} />
+          <View style={{ flex: 1 }}>
+            <View style={st.skn}>
+              <Text style={[st.sn, { color: c.ink }]}>{card.n}</Text>
+              <Text style={[st.skl, { color: c.ink }]}>{card.label}</Text>
+            </View>
+            <Text style={[st.tchip, { color: tc }]}>{card.tierName}</Text>
+            <View style={[st.tbar, { backgroundColor: c.line }]} onLayout={(e) => setBarW(e.nativeEvent.layout.width)}>
+              <Animated.View style={[st.tfill, { backgroundColor: tc }, fill]} />
+            </View>
           </View>
         </View>
+        <Small style={{ marginTop: 12 }}>{card.message}</Small>
+        {card.showNoSpend && (
+          <Pressable accessibilityRole="button" onPress={guard(noSpend)} style={({ pressed }) => [st.ckt, { borderColor: c.line }, pressed && { opacity: 0.7 }]}>
+            <Text style={[st.cktT, { color: c.ink }]}>I didn’t spend anything today</Text>
+          </Pressable>
+        )}
       </View>
-      <Small style={{ marginTop: 12 }}>{card.message}</Small>
-      {card.showNoSpend && (
-        <Pressable accessibilityRole="button" onPress={noSpend} style={({ pressed }) => [st.ckt, { borderColor: c.line }, pressed && { opacity: 0.7 }]}>
-          <Text style={[st.cktT, { color: c.ink }]}>I didn’t spend anything today</Text>
-        </Pressable>
-      )}
-      <View style={[st.ch, { backgroundColor: c.challengeBg }]}>
+      <View ref={chalRef} style={[st.ch, { backgroundColor: c.challengeBg }]}>
         <Small>{ch.label}</Small>
         {ch.cat ? (
           <>

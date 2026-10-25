@@ -12,6 +12,7 @@ import { LINE_HINT, LINE_LABEL_SPACE, lineChart, lineTip } from '@/logic/charts'
 import { fmt } from '@/logic/format';
 import { useStore } from '@/store/StoreProvider';
 import { holo, inter, useTheme } from '@/theme';
+import { tourBus, useTourTarget } from '@/tour/registry';
 
 import type { PanelProps } from './HoloRing';
 import { Arrive, Column, PanelHead, Spare, useNaturalHeight } from './PanelParts';
@@ -51,6 +52,12 @@ export function LinePanel({ activation, grow, onNatural }: PanelProps) {
 
   // the selected day: the dot moves on the UI thread, the text follows in JS
   const [day, setDay] = useState(29);
+  // the tour lights up the chart ('ln') and the line under it ('ln-tip'), and waits for another day
+  const chartRef = useTourTarget('ln');
+  const tipRef = useTourTarget('ln-tip');
+  useEffect(() => {
+    tourBus.lnDay = day;
+  }, [day]);
   const sel = useSharedValue(29);
   useEffect(() => {
     sel.value = 29;
@@ -128,7 +135,7 @@ export function LinePanel({ activation, grow, onNatural }: PanelProps) {
     <Column onLayout={nat.onColumn}>
       <PanelHead title="Saved vs spent" tag="30 days" />
       <Text style={[st.hint, { color: c.mute }]}>{LINE_HINT}</Text>
-      <View style={{ height: H + LINE_LABEL_SPACE }} onLayout={(e) => setW(e.nativeEvent.layout.width)}>
+      <View ref={chartRef} style={{ height: H + LINE_LABEL_SPACE }} onLayout={(e) => setW(e.nativeEvent.layout.width)}>
         {L && (
           <GestureDetector gesture={scrub}>
             <View style={StyleSheet.absoluteFill}>
@@ -168,7 +175,7 @@ export function LinePanel({ activation, grow, onNatural }: PanelProps) {
         )}
       </View>
       {tip && (
-        <Text style={[st.tip, { color: c.ink }]}>
+        <Text ref={tipRef} style={[st.tip, { color: c.ink }]}>
           <Text style={{ fontFamily: inter[700] }}>{tip.date}</Text>
           {' received ' + tip.received + ', spent '}
           <Text style={{ color: '#ff8a8a' }}>{tip.spent}</Text>

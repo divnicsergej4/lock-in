@@ -68,6 +68,10 @@ export interface AppState {
   tierSeen?: number; // highest flame tier already celebrated
   fold?: Record<string, boolean>; // which foldable sections are open (e.g. "buy": Can I afford this?)
   drw?: 'o' | 'c'; // the envelope drawer: open or closed (shut)
+  rem?: { on: boolean; time: string }; // daily reminder to log expenses ("HH:MM")
+  remDis?: string; // day key on which the reminder was answered with "I didn't spend today"
+  tutSeen?: number; // the guided tour has been shown (1)
+  team?: { n: string; t: number; c: { who: string; amt: number; t?: number }[] }; // shared goal kept on the phone (demo)
 }
 
 export interface Plan {

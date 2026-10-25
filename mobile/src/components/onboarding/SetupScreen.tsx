@@ -71,7 +71,7 @@ export function SetupScreen({ onStart }: { onStart: (input: SetupInput) => void 
         <Pressable accessibilityRole="button" onPress={() => onStart(v)} style={({ pressed }) => [st.go, pressed && { opacity: 0.85 }]}>
           <Text style={st.goT}>Start</Text>
         </Pressable>
-        <Text style={st.trk}>🔒 We only record, anonymously, whether and on which days you used the app. Amounts, descriptions and categories stay on your phone only.</Text>
+        <Text style={st.trk}>🔒 Amounts, descriptions and categories stay on your phone only.</Text>
       </Enter>
     </ScrollView>
   );

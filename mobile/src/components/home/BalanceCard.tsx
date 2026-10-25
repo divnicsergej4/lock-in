@@ -16,7 +16,7 @@ export function BalanceCard() {
   const env = accountLine(state);
   const b2 = state.cur2 ? secondBalance(state) : 0;
   return (
-    <Section>
+    <Section tourId="bal-card">
       <Small>Available</Small>
       <Text style={[st.bal, { color: c.ink }]}>
         {fmt(freeBalance(state))} <Text style={[st.cur, { color: c.mute }]}>{state.cur}</Text>

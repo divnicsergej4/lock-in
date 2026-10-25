@@ -26,12 +26,14 @@ import Animated, {
 
 import { useAppToast } from '@/components/AppToast';
 import { bezier } from '@/components/intro/cssAnim';
+import { useDemoGuard } from '@/components/demoGuard';
 import { Small } from '@/components/home/Section';
 import { deleteEnvelope, DRAWER_CLOSED_HINT, DRAWER_OPEN_HINT, drawerLabel, envelopeCard, envelopeColor, putIn, takeOut } from '@/logic/envelopes';
 import { fmt } from '@/logic/format';
 import type { Envelope } from '@/logic/types';
 import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
+import { tourBus, useTourInput, useTourRef } from '@/tour/registry';
 
 import { EASE, EASE_IN, EASE_IN_OUT, EASE_OUT, kf, mixWhite, phase, rgba, type Frame } from './kf';
 import { usePageScroll } from './scroll';
@@ -329,6 +331,7 @@ function Card({
   const card = envelopeCard(state, e, Date.now());
   const [mode, setMode] = useState<'in' | 'out' | null>(null);
   const [v, setV] = useState('');
+  const addIn = useTourInput('env-add', v);
   const [sure, setSure] = useState(false);
   useEffect(() => {
     if (!sure) return;
@@ -402,6 +405,7 @@ function Card({
         {mode && (
           <View style={st.envx}>
             <TextInput
+              ref={addIn}
               autoFocus
               value={v}
               onChangeText={setV}
@@ -424,8 +428,9 @@ function Card({
 }
 
 function CardButton({ title, onPress, label }: { title: string; onPress: () => void; label?: string }) {
+  const { guard } = useDemoGuard(); // Add, Take out and Delete change data: look only in the demo
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label ?? title} onPress={onPress} style={({ pressed }) => [st.envbB, pressed && { transform: [{ scale: 0.97 }] }]}>
+    <Pressable accessibilityRole="button" accessibilityLabel={label ?? title} onPress={guard(onPress)} style={({ pressed }) => [st.envbB, pressed && { transform: [{ scale: 0.97 }] }]}>
       <Text style={st.envbT}>{title}</Text>
     </Pressable>
   );
@@ -474,6 +479,11 @@ export function Drawer({ play, pullOut }: { play: number; pullOut?: { i: number;
   const busySV = useSharedValue(false);
   const drawerRef = useAnimatedRef<View>();
   const cardRef = useAnimatedRef<View>();
+  // the guided tour lights up the drawer, the card taken out and the handle
+  const frontRef = useAnimatedRef<Animated.View>();
+  useTourRef('drw', drawerRef);
+  useTourRef('fopen', cardRef);
+  useTourRef('dfront', frontRef);
 
   useEffect(() => {
     Hs.value = H;
@@ -683,6 +693,7 @@ export function Drawer({ play, pullOut }: { play: number; pullOut?: { i: number;
 
   const light = name === 'light';
   const showCard = open >= 0 && !shut && E[open];
+  tourBus.fopen = !!showCard;
   return (
     <View>
       <View ref={drawerRef} onLayout={(ev) => (lay.drw = ev.nativeEvent.layout)} style={[st.drw, flying >= 0 && { overflow: 'visible' }]}>
@@ -717,6 +728,7 @@ export function Drawer({ play, pullOut }: { play: number; pullOut?: { i: number;
         </Animated.View>
         <GestureDetector gesture={handle}>
           <Animated.View
+            ref={frontRef}
             accessibilityRole="button"
             accessibilityLabel="Open or close the drawer"
             shouldRasterizeIOS

@@ -1,13 +1,14 @@
 // "Can I afford this?" (prototype section[data-fold=buy]): a foldable amber card. Name + price → the
 // verdict from docs/FORE.md and what the purchase does to free money, fixed costs and goals.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AFFORD_NO_PRICE, canIAfford } from '@/logic/afford';
 import { parseAmount } from '@/logic/format';
 import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
+import { tourBus, useTourInput, useTourTarget } from '@/tour/registry';
 
 import { Button, Field, Fold, Small } from './Section';
 
@@ -16,8 +17,15 @@ export function AffordFold() {
   const { c } = useTheme();
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const nameIn = useTourInput('w-n', name);
+  const priceIn = useTourInput('w-p', price);
   const [out, setOut] = useState<{ verdict: string; lines: string[] } | null>(null);
   const [noPrice, setNoPrice] = useState(false);
+  // the tour lights up the answer ('w-out') and waits for one to show
+  const outRef = useTourTarget('w-out');
+  useEffect(() => {
+    tourBus.wout = noPrice ? AFFORD_NO_PRICE : out ? out.verdict + '\n' + out.lines.join('\n') : '';
+  }, [out, noPrice]);
 
   const check = () => {
     const p = parseAmount(price);
@@ -31,13 +39,13 @@ export function AffordFold() {
   };
 
   return (
-    <Fold id="buy" title="Can I afford this?" kind="amber">
+    <Fold id="buy" title="Can I afford this?" kind="amber" tourId="buy">
       <View style={st.row}>
-        <Field value={name} onChangeText={setName} placeholder="Guitar" accessibilityLabel="What are you buying" style={st.half} />
-        <Field value={price} onChangeText={setPrice} placeholder="Price" keyboardType="decimal-pad" accessibilityLabel="Price" style={st.half} />
+        <Field ref={nameIn} value={name} onChangeText={setName} placeholder="Guitar" accessibilityLabel="What are you buying" style={st.half} />
+        <Field ref={priceIn} value={price} onChangeText={setPrice} placeholder="Price" keyboardType="decimal-pad" accessibilityLabel="Price" style={st.half} />
       </View>
       <Button title="Check" onPress={check} />
-      <View style={{ marginTop: 10 }}>
+      <View ref={outRef} style={{ marginTop: 10 }}>
         {noPrice && <Small style={{ marginTop: 2.8, marginBottom: 12.8 }}>{AFFORD_NO_PRICE}</Small>}
         {out && (
           <View style={[st.tip, { backgroundColor: c.tipBg, borderColor: c.line }]}>

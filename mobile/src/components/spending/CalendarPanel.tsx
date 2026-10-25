@@ -10,6 +10,7 @@ import { Ghost } from '@/components/home/Section';
 import { calendar, calendarDay, WEEKDAYS_SHORT, type CalendarCell } from '@/logic/charts';
 import { useStore } from '@/store/StoreProvider';
 import { holo, inter, useTheme } from '@/theme';
+import { tourBus } from '@/tour/registry';
 
 import type { PanelProps } from './HoloRing';
 import { Arrive, Column, PanelHead, Spare, useNaturalHeight } from './PanelParts';
@@ -94,13 +95,23 @@ export function CalendarPanel({ activation, grow, onNatural, month, onMonth }: P
   };
 
   const day = picked ? calendarDay(state, month.y, month.m, picked) : null;
+  // the tour waits for a day to be tapped, and starts that step with none picked
+  useEffect(() => {
+    tourBus.calDay = day ? day.head + day.summary : '';
+  }, [day]);
+  useEffect(() => {
+    tourBus.clearCalDay = () => setPicked(null);
+    return () => {
+      tourBus.clearCalDay = null;
+    };
+  }, []);
   return (
     <Column onLayout={(h) => nat.onColumn(h - rows.length * grow)}>
       <PanelHead title="Daily spending" />
       <View style={st.calh}>
-        <Ghost title="‹" onPress={() => turn(-1)} style={st.nav} />
+        <Ghost title="‹" onPress={() => turn(-1)} style={st.nav} demoOk />
         <Text style={[st.title, { color: c.ink }]}>{cal.title}</Text>
-        <Ghost title="›" onPress={() => turn(1)} style={st.nav} />
+        <Ghost title="›" onPress={() => turn(1)} style={st.nav} demoOk />
       </View>
       <View style={st.grid}>
         <View style={st.row}>

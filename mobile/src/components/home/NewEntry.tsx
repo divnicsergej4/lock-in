@@ -2,11 +2,13 @@
 // with icons, "More options" (own category, monthly subscription, paid from an envelope), and the
 // button. After an expense the roast from docs/FORE.md shows as a toast.
 
-import { useState } from 'react';
+import { useEffect, useState, type ComponentRef } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useAnimatedRef } from 'react-native-reanimated';
 
 import { useAppToast } from '@/components/AppToast';
 import { CategoryIcon } from '@/components/CategoryIcon';
+import { DEMO_FADE, useDemoGuard } from '@/components/demoGuard';
 import { Enter } from '@/components/onboarding/Enter';
 import { Select } from '@/components/onboarding/Select';
 import { allCategories, categoryColor } from '@/logic/categories';
@@ -14,7 +16,9 @@ import { addExpense, addIncome } from '@/logic/entries';
 import { fmt } from '@/logic/format';
 import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
+import { tourBus, useTourInput, useTourRef, useTourTarget } from '@/tour/registry';
 
+import { entryFocus } from './entryFocus';
 import { Button, Field, Ghost, H2, Section, Small, SummaryMarker } from './Section';
 
 const INCOME_CHIPS: [string, string][] = [
@@ -33,6 +37,34 @@ export function NewEntry() {
   const [cat, setCat] = useState('');
   const [itype, setItype] = useState('');
   const [more, setMore] = useState(false);
+  // the amount field: focused by the reminder's "Log now", lit up by the tour ('e-amt')
+  const amtRef = useAnimatedRef<ComponentRef<typeof TextInput>>();
+  useTourRef('e-amt', amtRef);
+  useTourInput('e-amt', amt, amtRef);
+  const noteIn = useTourInput('e-note', note);
+  const modeRef = useTourTarget('mode');
+  const noteRef = useTourTarget('e-note');
+  const chipsRef = useTourTarget('chips');
+  const moreRef = useTourTarget('more');
+  const goRef = useTourTarget('e-go');
+  const { demo, no, guard } = useDemoGuard();
+  useEffect(() => {
+    tourBus.amt = amt;
+    tourBus.note = note;
+    tourBus.more = more;
+  }, [amt, note, more]);
+  useEffect(() => {
+    tourBus.expenseMode = () => switchMode('o');
+    return () => {
+      tourBus.expenseMode = null;
+    };
+  });
+  useEffect(() => {
+    entryFocus.current = () => amtRef.current?.focus();
+    return () => {
+      entryFocus.current = null;
+    };
+  }, []);
   const [newCat, setNewCat] = useState('');
   const [sub, setSub] = useState(false);
   const [envId, setEnvId] = useState('');
@@ -95,7 +127,7 @@ export function NewEntry() {
   return (
     <Section>
       <H2>New entry</H2>
-      <View style={[st.mode]}>
+      <View ref={modeRef} style={[st.mode]}>
         {(['o', 'i'] as const).map((m) => {
           const on = mode === m;
           return (
@@ -133,23 +165,29 @@ export function NewEntry() {
 
       <Text style={[st.amtl, { color: c.mute }]}>Amount</Text>
       <TextInput
+        ref={amtRef}
         value={amt}
         onChangeText={setAmt}
         placeholder="0"
         placeholderTextColor={c.placeholder}
         keyboardType="decimal-pad"
         accessibilityLabel="Amount"
-        style={[st.amt, { color: c.ink, backgroundColor: c.amtBg, borderColor: c.line }]}
+        editable={!demo}
+        onPressIn={demo ? no : undefined}
+        style={[st.amt, { color: c.ink, backgroundColor: c.amtBg, borderColor: c.line }, demo && { opacity: DEMO_FADE }]}
       />
-      <Field
-        value={note}
-        onChangeText={setNote}
-        placeholder={income ? 'Description (required), e.g. salary' : 'Description (required), e.g. lunch with a friend'}
-        accessibilityLabel="Description"
-        style={st.note}
-      />
+      <View ref={noteRef} style={st.noteBox}>
+        <Field
+          ref={noteIn}
+          value={note}
+          onChangeText={setNote}
+          placeholder={income ? 'Description (required), e.g. salary' : 'Description (required), e.g. lunch with a friend'}
+          accessibilityLabel="Description"
+          style={st.note}
+        />
+      </View>
 
-      <View style={st.chips}>
+      <View ref={chipsRef} style={st.chips}>
         {(income ? INCOME_CHIPS : allCategories(state).map((k) => [k, categoryColor(state, k)] as [string, string])).map(([k, col], i) => {
           const on = income ? itype === k : cat === k;
           return (
@@ -157,7 +195,11 @@ export function NewEntry() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityState={{ selected: on }}
-                onPress={() => (income ? setItype(k) : pick(k))}
+                onPress={guard(() => {
+                  tourBus.chip = 1;
+                  if (income) setItype(k);
+                  else pick(k);
+                })}
                 style={[st.chip, { backgroundColor: on ? c.chipOn : c.chipBg, borderColor: on ? c.accent : c.line }]}
               >
                 <CategoryIcon cat={k} color={col} mix={c.iconMix} style={{ marginRight: 4 }} />
@@ -169,7 +211,8 @@ export function NewEntry() {
       </View>
 
       {!income && (
-        <>
+        // the <details> element: its summary's 10 px margin is the element's own
+        <View ref={moreRef} style={{ marginTop: 10 }}>
           <Pressable accessibilityRole="button" accessibilityState={{ expanded: more }} onPress={() => setMore((m) => !m)} style={st.summary}>
             <SummaryMarker open={more} color={c.mute} />
             <Text style={[st.summaryT, { color: c.mute }]}>More options</Text>
@@ -180,7 +223,7 @@ export function NewEntry() {
                 <Field value={newCat} onChangeText={setNewCat} placeholder="New category" accessibilityLabel="New category" style={{ flex: 1, flexBasis: 0, minWidth: 0 }} />
                 <Ghost title="Add" onPress={addCategory} />
               </View>
-              <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: sub }} onPress={() => setSub((v) => !v)} style={st.check}>
+              <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: sub }} onPress={guard(() => setSub((v) => !v))} style={st.check}>
                 <View style={[st.box, { borderColor: sub ? c.accent : c.mute, backgroundColor: sub ? c.accent : c.inputBg }]}>
                   {sub && <Text style={st.tick}>✓</Text>}
                 </View>
@@ -201,10 +244,12 @@ export function NewEntry() {
               )}
             </>
           )}
-        </>
+        </View>
       )}
 
-      <Button title={income ? 'Log income' : 'Log expense'} onPress={submit} />
+      <View ref={goRef} style={{ marginTop: 12 }}>
+        <Button title={income ? 'Log income' : 'Log expense'} onPress={submit} style={{ marginTop: 0 }} />
+      </View>
       {!!err && <Small style={{ color: c.err }}>{err}</Small>}
     </Section>
   );
@@ -220,11 +265,12 @@ const st = StyleSheet.create({
   // margin-top 4 collapses into the switch's 10 px margin above it
   amtl: { marginTop: 0, marginBottom: 6, fontFamily: inter[400], fontSize: 13.6, lineHeight: 19.72, textAlign: 'center' },
   amt: { height: 82.3, padding: 10, marginBottom: 4, borderWidth: 1, borderRadius: 16, fontFamily: inter[800], fontSize: 41.6, textAlign: 'center' },
-  note: { marginTop: 4, marginBottom: 10, borderRadius: 14 },
+  noteBox: { marginTop: 4, marginBottom: 10 },
+  note: { borderRadius: 14 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingTop: 2, paddingBottom: 8 },
   chip: { height: 40, flexDirection: 'row', alignItems: 'center', gap: 6, paddingTop: 6, paddingBottom: 6, paddingLeft: 6, paddingRight: 11, borderWidth: 1, borderRadius: 16 },
   chipT: { fontFamily: inter[600], fontSize: 13.6, lineHeight: 19.72 },
-  summary: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 },
+  summary: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   summaryT: { fontFamily: inter[400], fontSize: 14.08, lineHeight: 20.416 },
   row: { flexDirection: 'row', gap: 8, marginTop: 8 },
   check: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, marginBottom: 4 },

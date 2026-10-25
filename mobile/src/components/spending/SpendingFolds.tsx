@@ -40,7 +40,7 @@ export function LimitsFold() {
     toast(r.toast);
   };
   return (
-    <Fold id="lim" title="Category limits">
+    <Fold id="lim" title="Category limits" tourId="lim">
       <View style={st.row}>
         <Select label="Category" value={cat} onChange={setCat} options={cats.map((v) => ({ value: v, label: v }))} look={look} style={{ ...half, height: 47.2 }} />
         <Field value={amt} onChangeText={setAmt} placeholder="Monthly limit" keyboardType="decimal-pad" accessibilityLabel="Limit" style={half} />
@@ -97,7 +97,7 @@ export function RecurringFold() {
     toast(r.toast);
   };
   return (
-    <Fold id="rec" title="Recurring entries" kind="teal">
+    <Fold id="rec" title="Recurring entries" kind="teal" tourId="rec">
       <Small style={{ marginTop: -4, marginBottom: 8 }}>Rent, bills, salary... logged automatically every month.</Small>
       <View>
         <View style={st.row}>
@@ -159,7 +159,7 @@ export function SubscriptionsFold() {
   const toast = useAppToast();
   const sub = subscriptions(state);
   return (
-    <Fold id="subs" title="Subscriptions" kind="rose">
+    <Fold id="subs" title="Subscriptions" kind="rose" tourId="subs">
       {sub.list.length ? (
         <View>
           <View>
@@ -196,7 +196,7 @@ export function PatternsFold() {
   const { c } = useTheme();
   const list = patterns(state, Date.now());
   return (
-    <Fold id="pat" title="We noticed">
+    <Fold id="pat" title="We noticed" tourId="pat">
       {list.length ? (
         <View>
           {list.map((t) => (

@@ -1,47 +1,41 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+// More (prototype tab 3): the monthly report, backup and Settings.
 
-import { Card, Screen, T } from '@/components/ui';
-import type { ThemeName } from '@/logic/types';
-import { useStore } from '@/store/StoreProvider';
-import { fonts, radius, useTheme } from '@/theme';
+import { View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Skeleton: monthly report, backup and the rest of Settings come in step 4.
-// The theme switch is here already so the light theme can be checked on the phone.
+import { Hero } from '@/components/home/Hero';
+import { useTabPage } from '@/components/tabPage';
+import { BackupFold } from '@/components/more/BackupFold';
+import { ReportFold } from '@/components/more/ReportFold';
+import { SettingsFold } from '@/components/more/SettingsFold';
+import { Sections, TabEntrance } from '@/components/TabEntrance';
+import { useTheme } from '@/theme';
+
 export default function More() {
-  const { state, update } = useStore();
   const { c } = useTheme();
-  const options: { v: ThemeName; label: string }[] = [
-    { v: 'dark', label: 'Dark' },
-    { v: 'light', label: 'Light' },
-  ];
-
+  const insets = useSafeAreaInsets();
+  const { ref, anchor, top, onContentSizeChange } = useTabPage(3);
+  // bottom padding: the tab bar sits over the content (prototype main padding-bottom 130px)
   return (
-    <Screen>
-      <T variant="title">More</T>
-      <Card>
-        <T variant="h2">Theme</T>
-        <View style={styles.row}>
-          {options.map((o) => {
-            const on = state.theme === o.v;
-            return (
-              <Pressable
-                key={o.v}
-                accessibilityRole="button"
-                accessibilityState={{ selected: on }}
-                onPress={() => update((s) => ({ ...s, theme: o.v }))}
-                style={[styles.btn, { borderColor: on ? c.accent : c.line, backgroundColor: on ? c.accent : 'transparent' }]}
-              >
-                <T style={{ fontFamily: fonts.semibold, color: on ? c.onAccent : c.ink }}>{o.label}</T>
-              </Pressable>
-            );
-          })}
-        </View>
-      </Card>
-    </Screen>
+    <Animated.ScrollView
+      ref={ref}
+      onContentSizeChange={onContentSizeChange}
+      style={{ flex: 1, backgroundColor: c.bg }}
+      contentContainerStyle={{ paddingTop: top, paddingHorizontal: 16, paddingBottom: 130 + insets.bottom }}
+      keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
+    >
+      {/* the top of the content, for the guided tour's measurements */}
+      <View ref={anchor} collapsable={false} />
+      <TabEntrance index={3}>
+        <Hero />
+        <Sections>
+          <ReportFold />
+          <BackupFold />
+          <SettingsFold />
+        </Sections>
+      </TabEntrance>
+    </Animated.ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 8, marginTop: 6 },
-  btn: { flex: 1, alignItems: 'center', paddingVertical: 10, borderWidth: 1.5, borderRadius: radius.button },
-});

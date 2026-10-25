@@ -1,18 +1,22 @@
 // Building blocks shared by the app's screens, matching the prototype's <section> cards, foldable
 // sections (section.fold) and inputs. Sizes and colours are the browser's computed values.
 
-import { Children, useEffect, type ReactNode } from 'react';
+import { Children, useEffect, type ComponentRef, type ReactNode, type Ref } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps, type TextStyle, type ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
+import { DEMO_FADE, useDemoGuard } from '@/components/demoGuard';
 import { Enter } from '@/components/onboarding/Enter';
 import { useStore } from '@/store/StoreProvider';
 import { inter, sectionTints, useTheme } from '@/theme';
+import { useTourTarget } from '@/tour/registry';
 
 export type SectionKind = 'plain' | 'hot' | 'amber' | 'teal' | 'rose' | 'pro';
 
-export function Section({ kind = 'plain', style, children }: { kind?: SectionKind; style?: ViewStyle; children: ReactNode }) {
+/** A card. With `tourId` the guided tour can light it up under that name. */
+export function Section({ kind = 'plain', style, tourId, children }: { kind?: SectionKind; style?: ViewStyle; tourId?: string; children: ReactNode }) {
   const { c, name } = useTheme();
+  const ref = useTourTarget(tourId);
   const tint = kind === 'teal' || kind === 'rose' || kind === 'pro' ? sectionTints[name][kind] : null;
   const look: ViewStyle = tint
     ? { backgroundImage: tint[0], borderColor: tint[1] }
@@ -21,7 +25,11 @@ export function Section({ kind = 'plain', style, children }: { kind?: SectionKin
       : kind === 'amber'
         ? { backgroundImage: c.amberBg, borderColor: c.amberBorder }
         : { backgroundColor: c.card, borderColor: c.line };
-  return <View style={[st.section, look, style]}>{children}</View>;
+  return (
+    <View ref={ref} style={[st.section, look, style]}>
+      {children}
+    </View>
+  );
 }
 
 /** Section title (h2: 17.6 px, 700). */
@@ -52,14 +60,33 @@ function Chevron({ open }: { open: boolean }) {
  * A foldable section (prototype section.fold): tap the title to open or close it; whether it is open
  * is remembered. When it opens, its contents pop in one after another (40 ms apart).
  */
-export function Fold({ id, title, kind = 'plain', defaultOpen = false, children }: { id: string; title: string; kind?: SectionKind; defaultOpen?: boolean; children: ReactNode }) {
+export function Fold({
+  id,
+  title,
+  kind = 'plain',
+  defaultOpen = false,
+  tourId,
+  headTourId,
+  children,
+}: {
+  id: string;
+  title: string;
+  kind?: SectionKind;
+  defaultOpen?: boolean;
+  tourId?: string; // the tour can light up the whole section
+  headTourId?: string; // ... or just its title row
+  children: ReactNode;
+}) {
   const { state, update } = useStore();
+  const head = useTourTarget(headTourId);
   const saved = (state.fold || {})[id];
   const open = saved == null ? defaultOpen : !!saved;
   const toggle = () => update((s) => ({ ...s, fold: { ...(s.fold || {}), [id]: !open } }));
   return (
-    <Section kind={kind} style={open ? undefined : { paddingTop: 16, paddingBottom: 16 }}>
-      <Pressable accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={toggle} style={[st.foldHead, { marginBottom: open ? 12 : 0 }]}>
+    <Section kind={kind} tourId={tourId} style={open ? undefined : { paddingTop: 16, paddingBottom: 16 }}>
+      <Pressable
+        ref={head}
+        accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={toggle} style={[st.foldHead, { marginBottom: open ? 12 : 0 }]}>
         <H2 style={{ marginBottom: 0, flex: 1 }}>{title}</H2>
         <Chevron open={open} />
       </Pressable>
@@ -73,35 +100,43 @@ export function Fold({ id, title, kind = 'plain', defaultOpen = false, children 
   );
 }
 
-/** Text field like the prototype's inputs (12 px corners unless given). */
-export function Field(props: TextInputProps) {
+/** Text field like the prototype's inputs (12 px corners unless given). Off and faded in the demo. */
+export function Field(props: TextInputProps & { ref?: Ref<ComponentRef<typeof TextInput>> }) {
   const { c } = useTheme();
+  const { demo, no } = useDemoGuard();
   return (
     <TextInput
       placeholderTextColor={c.placeholder}
       autoComplete="off"
       autoCorrect={false}
       {...props}
-      style={[st.field, { color: c.ink, backgroundColor: c.inputBg, borderColor: c.line }, props.style]}
+      editable={demo ? false : props.editable}
+      onPressIn={demo ? no : props.onPressIn}
+      style={[st.field, { color: c.ink, backgroundColor: c.inputBg, borderColor: c.line }, props.style, demo && { opacity: DEMO_FADE }]}
     />
   );
 }
 
-/** Main green button (prototype button: 12 px corners, 700). */
-export function Button({ title, onPress, style, textStyle }: { title: string; onPress: () => void; style?: ViewStyle; textStyle?: TextStyle }) {
+/**
+ * Main green button (prototype button: 12 px corners, 700). In the demo it only shows "look only",
+ * unless `demoOk` (it changes no data).
+ */
+export function Button({ title, onPress, style, textStyle, demoOk }: { title: string; onPress: () => void; style?: ViewStyle; textStyle?: TextStyle; demoOk?: boolean }) {
   const { c } = useTheme();
+  const { guard } = useDemoGuard();
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [st.btn, { backgroundColor: c.accent }, pressed && { opacity: 0.85 }, style]}>
+    <Pressable accessibilityRole="button" onPress={demoOk ? onPress : guard(onPress)} style={({ pressed }) => [st.btn, { backgroundColor: c.accent }, pressed && { opacity: 0.85 }, style]}>
       <Text style={[st.btnT, { color: c.onAccent }, textStyle]}>{title}</Text>
     </Pressable>
   );
 }
 
-/** Outlined button (prototype button.ghost). */
-export function Ghost({ title, onPress, style, textStyle }: { title: string; onPress: () => void; style?: ViewStyle | ViewStyle[]; textStyle?: TextStyle }) {
+/** Outlined button (prototype button.ghost); like Button in the demo. */
+export function Ghost({ title, onPress, style, textStyle, demoOk }: { title: string; onPress: () => void; style?: ViewStyle | ViewStyle[]; textStyle?: TextStyle; demoOk?: boolean }) {
   const { c } = useTheme();
+  const { guard } = useDemoGuard();
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [st.ghost, { borderColor: c.line }, pressed && { opacity: 0.7 }, style]}>
+    <Pressable accessibilityRole="button" onPress={demoOk ? onPress : guard(onPress)} style={({ pressed }) => [st.ghost, { borderColor: c.line }, pressed && { opacity: 0.7 }, style]}>
       <Text style={[st.ghostT, { color: c.ink }, textStyle]}>{title}</Text>
     </Pressable>
   );

@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Hero } from '@/components/home/Hero';
 import { Sections, TabEntrance } from '@/components/TabEntrance';
+import { useTabPage } from '@/components/tabPage';
 import { CalendarPanel } from '@/components/spending/CalendarPanel';
 import { DonutPanel } from '@/components/spending/DonutPanel';
 import { HoloRing, type PanelProps } from '@/components/spending/HoloRing';
@@ -22,6 +23,7 @@ const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 export default function Spending() {
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
+  const { ref, anchor, top, onContentSizeChange } = useTabPage(1);
   const [month, setMonth] = useState(() => {
     const now = new Date();
     return { y: now.getFullYear(), m: now.getMonth() };
@@ -65,12 +67,16 @@ export default function Spending() {
   // bottom padding: the tab bar sits over the content (prototype main padding-bottom 130px)
   return (
     <AnimatedScrollView
+      ref={ref}
+      onContentSizeChange={onContentSizeChange}
       onScroll={onScroll}
       style={{ flex: 1, backgroundColor: c.bg }}
-      contentContainerStyle={{ paddingTop: insets.top, paddingHorizontal: 16, paddingBottom: 130 + insets.bottom }}
+      contentContainerStyle={{ paddingTop: top, paddingHorizontal: 16, paddingBottom: 130 + insets.bottom }}
       keyboardShouldPersistTaps="handled"
       automaticallyAdjustKeyboardInsets
     >
+      {/* the top of the content, for the guided tour's measurements */}
+      <View ref={anchor} collapsable={false} />
       <TabEntrance index={1}>
         <Hero />
         <Sections>

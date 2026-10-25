@@ -4,7 +4,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useAppToast } from '@/components/AppToast';
-import { Button, Fold, Small } from '@/components/home/Section';
+import { Button, Field, Fold, Ghost, Small } from '@/components/home/Section';
+import { teamSummary } from '@/logic/demo';
+import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
 
 const PEOPLE: [string, string][] = [
@@ -13,11 +15,61 @@ const PEOPLE: [string, string][] = [
   ['A', '#ff7eb6'],
 ];
 
+/**
+ * In the demo (prototype #team-body) the goal is a real one with three people: what each put in, the
+ * bar, and the fields to set a goal or pay in (switched off, like every input in the demo).
+ */
+function DemoTeam() {
+  const { state } = useStore();
+  const { c } = useTheme();
+  const t = teamSummary(state);
+  const half = { flex: 1, flexBasis: 0, minWidth: 0 } as const;
+  const noop = () => {};
+  return (
+    <Fold id="team" title="Shared goal" kind="pro" defaultOpen tourId="team">
+      <View style={st.row}>
+        <Field placeholder="E.g. a trip" accessibilityLabel="Goal name" style={half} />
+        <Field placeholder="Goal" keyboardType="decimal-pad" accessibilityLabel="Goal amount" style={half} />
+      </View>
+      <Ghost title="Set goal" onPress={noop} style={{ alignSelf: 'flex-start', marginTop: 8 }} />
+      <View style={[st.row, { marginTop: 8 }]}>
+        <Field placeholder="Who's paying in" accessibilityLabel="Who's paying in" style={half} />
+        <Field placeholder="Amount" keyboardType="decimal-pad" accessibilityLabel="Payment amount" style={half} />
+      </View>
+      <Button title="Pay in" onPress={noop} />
+      <View style={{ marginTop: 10 }}>
+        {t ? (
+          <>
+            <Text style={[st.b, { color: c.ink }]}>{t.name}</Text>
+            <View style={st.bar}>
+              <View style={st.barT}>
+                <Text style={[st.t14, { color: c.ink }]}>{t.line}</Text>
+                <Text style={[st.t14, { color: c.ink, fontFamily: inter[700] }]}>{t.pct + '%'}</Text>
+              </View>
+              <View style={[st.track, { backgroundColor: c.line }]}>
+                <View style={{ width: t.pct + '%', height: '100%', backgroundColor: c.accent }} />
+              </View>
+            </View>
+            {t.people.map((p) => (
+              <Small key={p}>{p}</Small>
+            ))}
+          </>
+        ) : (
+          <Small>Set the shared goal name and amount, then log payments.</Small>
+        )}
+      </View>
+      <Small style={{ marginTop: 12.8, marginBottom: 12.8 }}>Saved only on this phone. Live sharing needs the real app.</Small>
+    </Fold>
+  );
+}
+
 export function SharedGoal() {
   const { c } = useTheme();
   const toast = useAppToast();
+  const { demo } = useStore();
+  if (demo) return <DemoTeam />;
   return (
-    <Fold id="team" title="Shared goal" kind="pro" defaultOpen>
+    <Fold id="team" title="Shared goal" kind="pro" defaultOpen tourId="team">
       <Small style={{ marginTop: 0.8 }}>
         Save together with friends or your partner: for a trip, a gift or a place. Everyone logs what they put in, and everyone sees how much is left.
       </Small>
@@ -61,6 +113,7 @@ export function SharedGoal() {
 }
 
 const st = StyleSheet.create({
+  row: { flexDirection: 'row', gap: 8 },
   tmd: { marginTop: 12.8, marginBottom: 4, padding: 14, borderRadius: 14, backgroundColor: 'rgba(127,127,127,0.08)' },
   tmh: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
   b: { flexShrink: 1, fontFamily: inter[700], fontSize: 16, lineHeight: 23.2 },

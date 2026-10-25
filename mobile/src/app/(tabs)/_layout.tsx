@@ -1,12 +1,16 @@
 import { Redirect, Tabs } from 'expo-router';
 import { useEffect, type ComponentProps } from 'react';
-import { AppState as RNAppState, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppState as RNAppState, Pressable, StyleSheet, Text, type PressableProps } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { DemoBar } from '@/components/DemoBar';
 import { TabIcon, type TabIconName } from '@/components/TabIcon';
 import { processRecurring } from '@/logic/recurring';
 import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
+import { useTourTarget } from '@/tour/registry';
+import { TourOverlay } from '@/tour/TourOverlay';
 
 /** Props Tabs passes to tabBar (state, emitter, navigateToTab; there is no `navigation` here). */
 type NavProps = Parameters<NonNullable<ComponentProps<typeof Tabs>['tabBar']>>[0];
@@ -22,15 +26,17 @@ const TABS: { name: string; title: string; icon: TabIconName }[] = [
 function NavBar({ state, emitter, navigateToTab }: NavProps) {
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
+  const bar = useTourTarget('nav'); // the tour keeps parts above it
   return (
-    <View style={[st.nav, { backgroundColor: c.navBg, borderTopColor: c.line, paddingBottom: 6 + insets.bottom }]}>
+    <Animated.View ref={bar} style={[st.nav, { backgroundColor: c.navBg, borderTopColor: c.line, paddingBottom: 6 + insets.bottom }]}>
       {state.routes.map((r, i) => {
         const tab = TABS.find((t) => t.name === r.name)!;
         const on = state.index === i;
         const color = on ? c.accent : c.mute;
         return (
-          <Pressable
+          <NavButton
             key={r.key}
+            i={i}
             accessibilityRole="button"
             accessibilityState={{ selected: on }}
             accessibilityLabel={tab.title}
@@ -43,16 +49,26 @@ function NavBar({ state, emitter, navigateToTab }: NavProps) {
           >
             <TabIcon name={tab.icon} color={color} />
             <Text style={[st.label, { color }]}>{tab.title}</Text>
-          </Pressable>
+          </NavButton>
         );
       })}
-    </View>
+    </Animated.View>
+  );
+}
+
+/** A tab button the tour can point at ('nav1' Spending, 'nav2' Savings, 'nav3' More). */
+function NavButton({ i, ...props }: PressableProps & { i: number }) {
+  const ref = useTourTarget('nav' + i);
+  return (
+    <Animated.View ref={ref} style={{ flex: 1 }}>
+      <Pressable {...props} />
+    </Animated.View>
   );
 }
 
 export default function TabLayout() {
   const { c } = useTheme();
-  const { state, update } = useStore();
+  const { state, update, epoch } = useStore();
   // recurring entries whose day has come are logged when the app opens and when it comes back
   // (prototype: recProcess at every render)
   useEffect(() => {
@@ -63,17 +79,22 @@ export default function TabLayout() {
   }, [update]);
   // a new user (no starting balance yet) sees the intro first, like in the prototype
   if (!(state.start > 0)) return <Redirect href="/welcome" />;
+  // epoch: after the demo or the tour every page starts fresh (fields empty, Home, at the top)
   return (
-    <Tabs screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: c.bg } }} tabBar={(p) => <NavBar {...p} />}>
+    <>
+      <Tabs key={epoch} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: c.bg } }} tabBar={(p) => <NavBar {...p} />}>
       {TABS.map((t) => (
         <Tabs.Screen key={t.name} name={t.name} options={{ title: t.title }} />
       ))}
-    </Tabs>
+      </Tabs>
+      <DemoBar />
+      <TourOverlay />
+    </>
   );
 }
 
 const st = StyleSheet.create({
   nav: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', paddingTop: 6, paddingHorizontal: 6, borderTopWidth: 1 },
-  btn: { flex: 1, alignItems: 'center', gap: 3, paddingVertical: 6, paddingHorizontal: 4, borderRadius: 12 },
+  btn: { alignItems: 'center', gap: 3, paddingVertical: 6, paddingHorizontal: 4, borderRadius: 12 },
   label: { fontFamily: inter[600], fontSize: 11.52, lineHeight: 16.704 },
 });

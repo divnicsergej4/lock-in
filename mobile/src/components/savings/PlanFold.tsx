@@ -49,7 +49,7 @@ export function PlanFold() {
   };
 
   return (
-    <Fold id="plan" title="Monthly plan" kind="teal" defaultOpen>
+    <Fold id="plan" title="Monthly plan" kind="teal" defaultOpen tourId="plan">
       <Small style={{ marginTop: -4, marginBottom: 8 }}>
         Enter planned expenses (rent, bills, food...) and how much you want to save, and see how much you can spend.
       </Small>

@@ -12,6 +12,7 @@ import { fmt } from '@/logic/format';
 import { freeBalance } from '@/logic/money';
 import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
+import { useTourInput, useTourTarget } from '@/tour/registry';
 
 import { Drawer } from './Drawer';
 
@@ -24,6 +25,11 @@ export function EnvelopesFold({ play }: { play: number }) {
   const E = state.env || [];
   const free = freeBalance(state);
   const minus = name === 'light' ? '#d93a3a' : '#ff7b7b';
+  // parts the guided tour lights up
+  const pRef = useTourTarget('env-p');
+  const envfRef = useTourTarget('envf');
+  const distRef = useTourTarget('env-dist');
+  const newRef = useTourTarget('env-new');
 
   // "Split money into envelopes"
   const [split, setSplit] = useState<string[] | null>(null);
@@ -42,6 +48,7 @@ export function EnvelopesFold({ play }: { play: number }) {
   const [more, setMore] = useState(false);
   const [pullOut, setPullOut] = useState({ i: -1, k: 0 });
   const [nm, setNm] = useState('');
+  const nameIn = useTourInput('env-name', nm);
   const [goal, setGoal] = useState('');
   const [k, setK] = useState('');
   const [unit, setUnit] = useState<'d' | 'm' | 'y'>('m');
@@ -59,14 +66,20 @@ export function EnvelopesFold({ play }: { play: number }) {
   };
 
   return (
-    <Fold id="env" title="Envelopes & goals" kind="teal" defaultOpen>
-      <Small style={{ marginTop: 0.8 }}>Split your money into envelopes, like at home: rent, clothes, a trip… An envelope can also have a goal and a deadline.</Small>
-      <View style={[st.envf]}>
+    <Fold id="env" title="Envelopes & goals" kind="teal" defaultOpen headTourId="env-h2">
+      <View ref={pRef} style={{ marginTop: 0.8 }}>
+        <Small>Split your money into envelopes, like at home: rent, clothes, a trip… An envelope can also have a goal and a deadline.</Small>
+      </View>
+      <View ref={envfRef} style={[st.envf]}>
         <Text style={[st.envfL, { color: c.mute }]}>Free to assign</Text>
         <Text style={[st.envfV, { color: free < 0 ? minus : c.ink }]}>{fmt(free) + ' ' + state.cur}</Text>
       </View>
       <Drawer play={play} pullOut={pullOut} />
-      {E.length > 0 && <Ghost title="Split money into envelopes" onPress={toggleSplit} style={{ marginTop: 12 }} />}
+      {E.length > 0 && (
+        <View ref={distRef} style={{ marginTop: 12 }}>
+          <Ghost title="Split money into envelopes" onPress={toggleSplit} />
+        </View>
+      )}
       {split && (
         <View style={{ marginTop: 10 }}>
           {E.map((e, i) => (
@@ -91,32 +104,35 @@ export function EnvelopesFold({ play }: { play: number }) {
           <Button title="Save" onPress={saveSplit} style={{ marginTop: 12.8 + 12 - 12.8 }} />
         </View>
       )}
-      <Pressable accessibilityRole="button" accessibilityState={{ expanded: more }} onPress={() => setMore((m) => !m)} style={st.summary}>
-        <SummaryMarker open={more} color={c.mute} />
-        <Text style={[st.summaryT, { color: c.mute }]}>+ New envelope</Text>
-      </Pressable>
-      {more && (
-        <View>
-          <Field value={nm} onChangeText={setNm} placeholder="Name, e.g. Summer trip" accessibilityLabel="Envelope name" style={{ marginTop: 10 }} />
-          <View style={[st.row, { marginTop: 8 }]}>
-            <Field value={goal} onChangeText={setGoal} placeholder="Goal (optional)" keyboardType="decimal-pad" accessibilityLabel="Goal" style={third} />
-            <Field value={k} onChangeText={setK} placeholder="Deadline" keyboardType="number-pad" accessibilityLabel="Deadline" style={third} />
-            <Select
-              label="Deadline unit"
-              value={unit}
-              onChange={(v) => setUnit(v as 'd' | 'm' | 'y')}
-              options={[
-                { value: 'd', label: 'days' },
-                { value: 'm', label: 'months' },
-                { value: 'y', label: 'years' },
-              ]}
-              look={look}
-              style={{ ...third, height: 47.2 }}
-            />
+      {/* the <details> element (the tour's 'env-new'): its summary's 10 px margin is its own */}
+      <View ref={newRef} style={{ marginTop: 10 }}>
+        <Pressable accessibilityRole="button" accessibilityState={{ expanded: more }} onPress={() => setMore((m) => !m)} style={st.summary}>
+          <SummaryMarker open={more} color={c.mute} />
+          <Text style={[st.summaryT, { color: c.mute }]}>+ New envelope</Text>
+        </Pressable>
+        {more && (
+          <View>
+            <Field ref={nameIn} value={nm} onChangeText={setNm} placeholder="Name, e.g. Summer trip" accessibilityLabel="Envelope name" style={{ marginTop: 10 }} />
+            <View style={[st.row, { marginTop: 8 }]}>
+              <Field value={goal} onChangeText={setGoal} placeholder="Goal (optional)" keyboardType="decimal-pad" accessibilityLabel="Goal" style={third} />
+              <Field value={k} onChangeText={setK} placeholder="Deadline" keyboardType="number-pad" accessibilityLabel="Deadline" style={third} />
+              <Select
+                label="Deadline unit"
+                value={unit}
+                onChange={(v) => setUnit(v as 'd' | 'm' | 'y')}
+                options={[
+                  { value: 'd', label: 'days' },
+                  { value: 'm', label: 'months' },
+                  { value: 'y', label: 'years' },
+                ]}
+                look={look}
+                style={{ ...third, height: 47.2 }}
+              />
+            </View>
+            <Button title="Create envelope" onPress={create} />
           </View>
-          <Button title="Create envelope" onPress={create} />
-        </View>
-      )}
+        )}
+      </View>
     </Fold>
   );
 }
@@ -127,7 +143,7 @@ const st = StyleSheet.create({
   envfV: { fontFamily: inter[700], fontSize: 18.4, lineHeight: 26.68, fontVariant: ['tabular-nums'] },
   srow2: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8 },
   srow2T: { flex: 1, fontFamily: inter[600], fontSize: 16, lineHeight: 23.2 },
-  summary: { flexDirection: 'row', alignItems: 'center', gap: 6.9, marginTop: 10 },
+  summary: { flexDirection: 'row', alignItems: 'center', gap: 6.9 },
   summaryT: { fontFamily: inter[400], fontSize: 14.08, lineHeight: 20.4 },
   row: { flexDirection: 'row', gap: 8 },
 });

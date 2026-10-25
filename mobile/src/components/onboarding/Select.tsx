@@ -2,10 +2,11 @@
 // list to pick from (the prototype used the phone's own picker).
 
 import { useState } from 'react';
-import { FlatList, Modal, Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { FlatList, Modal, Pressable, StyleSheet, Text, View, type TextStyle, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
+import { DEMO_FADE, useDemoGuard } from '@/components/demoGuard';
 import { brico } from '@/theme';
 
 export interface Option {
@@ -24,14 +25,36 @@ export interface SelectLook {
 }
 const LIGHT: SelectLook = { bg: '#f3f7f4', border: '#dbe7df', ink: '#0d1f15', mute: '#5d7466', sheet: '#fff', font: brico[400] };
 
-export function Select({ value, options, onChange, style, label, look = LIGHT }: { value: string; options: Option[]; onChange: (v: string) => void; style?: ViewStyle; label: string; look?: SelectLook }) {
+export function Select({
+  value,
+  options,
+  onChange,
+  style,
+  textStyle,
+  label,
+  look = LIGHT,
+}: {
+  value: string;
+  options: Option[];
+  onChange: (v: string) => void;
+  style?: ViewStyle;
+  textStyle?: TextStyle; // e.g. { flex: 0 } for a field only as wide as its text
+  label: string;
+  look?: SelectLook;
+}) {
   const [open, setOpen] = useState(false);
+  const { demo, no } = useDemoGuard(); // off in the demo, like the other inputs
   const insets = useSafeAreaInsets();
   const cur = options.find((o) => o.value === value) || options[0];
   return (
     <>
-      <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => setOpen(true)} style={[st.field, { backgroundColor: look.bg, borderColor: look.border }, style]}>
-        <Text style={[st.text, { color: look.ink, fontFamily: look.font }]} numberOfLines={1}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        onPress={demo ? no : () => setOpen(true)}
+        style={[st.field, { backgroundColor: look.bg, borderColor: look.border }, style, demo && { opacity: DEMO_FADE }]}
+      >
+        <Text style={[st.text, { color: look.ink, fontFamily: look.font }, textStyle]} numberOfLines={1}>
           {cur.label}
         </Text>
         <Svg width={12} height={12} viewBox="0 0 12 12">

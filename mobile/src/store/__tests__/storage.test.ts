@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { initialState } from '@/logic/types';
 
-import { hydrate, loadState, saveState } from '../storage';
+import { clearTourSnapshot, hydrate, loadState, saveState, saveTourSnapshot } from '../storage';
 
 describe('local storage', () => {
   beforeEach(() => AsyncStorage.clear());
@@ -21,6 +21,16 @@ describe('local storage', () => {
 
   test('fields missing from older saves get defaults', () => {
     expect(hydrate({ start: 10 })).toEqual({ ...initialState, start: 10 });
+  });
+
+  test('closed in the middle of the tour: practice entries are dropped, the real data comes back', async () => {
+    const real = { ...initialState, start: 750, exp: [{ amt: 4, cat: 'Coffee', t: 1, note: 'latte' }] };
+    await saveTourSnapshot(real);
+    await saveState({ ...real, exp: [...real.exp, { amt: 350, cat: 'Coffee', t: 2, note: 'practice' }] });
+    expect(await loadState()).toEqual({ ...real, tutSeen: 1 });
+    // and it stays that way on the next launch
+    expect(await loadState()).toEqual({ ...real, tutSeen: 1 });
+    await clearTourSnapshot();
   });
 
   test('broken data falls back to the empty state instead of crashing', async () => {

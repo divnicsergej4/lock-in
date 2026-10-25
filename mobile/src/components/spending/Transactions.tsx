@@ -14,6 +14,8 @@ import { editCategories, transactions, TX_EMPTY, type TxFilter, type TxRow } fro
 import { deleteExpense, deleteIncome, editAmount, editEntry } from '@/logic/entries';
 import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
+import { tourBus, useTourRunning, useTourTarget } from '@/tour/registry';
+import { TourPauseNote } from '@/tour/TourOverlay';
 
 const FILTERS: [TxFilter, string][] = [
   ['all', 'All'],
@@ -28,6 +30,14 @@ function EditSheet({ target, onClose }: { target: { list: 'exp' | 'ins'; i: numb
   const toast = useAppToast();
   const insets = useSafeAreaInsets();
   const e = target ? (target.list === 'exp' ? state.exp[target.i] : state.ins[target.i]) : null;
+  // a window over the guided tour: the tour waits while it's open (prototype tutPause)
+  const touring = useTourRunning();
+  useEffect(() => {
+    tourBus.sheet = !!target;
+    return () => {
+      tourBus.sheet = false;
+    };
+  }, [target]);
   const [amt, setAmt] = useState('');
   const [note, setNote] = useState('');
   const [cat, setCat] = useState('');
@@ -57,6 +67,7 @@ function EditSheet({ target, onClose }: { target: { list: 'exp' | 'ins'; i: numb
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose}>
       <Pressable style={st.scrim} onPress={onClose} />
+      {touring && <TourPauseNote />}
       <Animated.View
         onLayout={(ev) => setH(ev.nativeEvent.layout.height)}
         style={[st.sheet, { backgroundColor: c.card, borderColor: c.line, paddingBottom: 20 + insets.bottom }, slide]}
@@ -78,11 +89,12 @@ function EditSheet({ target, onClose }: { target: { list: 'exp' | 'ins'; i: numb
   );
 }
 
-function Row({ r, onEdit, onDelete }: { r: Extract<TxRow, { kind: 'tx' }>; onEdit: () => void; onDelete: () => void }) {
+function Row({ r, first, onEdit, onDelete }: { r: Extract<TxRow, { kind: 'tx' }>; first: boolean; onEdit: () => void; onDelete: () => void }) {
   const { c, name } = useTheme();
   const minus = name === 'light' ? '#d93a3a' : '#ff7b7b';
+  const ref = useTourTarget(first ? 'hist-li' : undefined); // the tour shows the first entry
   return (
-    <View style={[st.li, { borderBottomColor: c.line }]}>
+    <View ref={ref} style={[st.li, { borderBottomColor: c.line }]}>
       <View style={st.left}>
         <CategoryIcon cat={r.icon} color={r.color} mix={c.iconMix} style={{ marginRight: 4 }} />
         <Text style={[st.t16, { color: c.ink, flexShrink: 1 }]} numberOfLines={2}>
@@ -107,11 +119,13 @@ export function Transactions() {
   const [f, setF] = useState<TxFilter>('all');
   const [edit, setEdit] = useState<{ list: 'exp' | 'ins'; i: number } | null>(null);
   const rows = transactions(state, f);
+  const firstTx = rows.findIndex((r) => r.kind === 'tx');
+  const fltRef = useTourTarget('flt');
   const del = (ref: { list: 'exp' | 'ins'; i: number }) => update((s) => (ref.list === 'exp' ? deleteExpense(s, ref.i) : deleteIncome(s, ref.i)));
   return (
     <>
-      <Fold id="tx" title="All transactions" defaultOpen>
-        <View style={st.flt}>
+      <Fold id="tx" title="All transactions" defaultOpen headTourId="tx-h2">
+        <View ref={fltRef} style={st.flt}>
           {FILTERS.map(([k, label]) => {
             const on = f === k;
             return (
@@ -135,7 +149,7 @@ export function Transactions() {
                   {r.text}
                 </Text>
               ) : (
-                <Row key={r.key} r={r} onEdit={() => setEdit(r.ref)} onDelete={() => del(r.ref)} />
+                <Row key={r.key} r={r} first={rows[firstTx] === r} onEdit={() => setEdit(r.ref)} onDelete={() => del(r.ref)} />
               ),
             )
           ) : (

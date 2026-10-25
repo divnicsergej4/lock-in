@@ -236,6 +236,7 @@ const FUNCS = [
   'catStreak', 'checkIn', 'curBal', 'envSum', 'freeBal', 'getInc', 'totalSpent', 'dys', 'isNeed', 'mcat', 'monthSpent',
   'todayCount', 'pickM', 'ageDec', 'upcomingFixed', 'rateTo', 'rateTxt', 'dd', 'tierOf', 'streakCard', 'extra', 'more',
   'lims', 'todayCard', 'dayIO', 'dnRender', 'lnRender', 'cal', 'txRender', 'cc', 'recProcess', 'planCalc', 'planRender', 'conv', 'bal2', 'envGoal', 'pace', 'envCard', 'num', 'cats', 'migrate',
+  'demoData',
 ].map(fnSource);
 
 const HANDLERS: [string, string][] = [

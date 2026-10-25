@@ -26,6 +26,7 @@ import Svg, { Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 
 import { bezier } from '@/components/intro/cssAnim';
 import { holo, useTheme } from '@/theme';
+import { tourBus, useTourTarget } from '@/tour/registry';
 
 import { HoloClock } from './holoClock';
 import { HoloPanel } from './HoloPanel';
@@ -146,9 +147,11 @@ export const HoloRing = memo(function HoloRing({
   // ---- JS state: which panel is in front (stacking, taps) and the arrival animations ----
   const [cur, setCur] = useState(0);
   const [act, setAct] = useState<number[]>([0, 0, 0]);
+  const stage = useTourTarget('vzc'); // the ring's stage, lit up by the tour
   const activeRef = useRef(-1);
   const activate = useCallback((i: number) => {
     activeRef.current = i;
+    tourBus.holoAct = i; // the tour waits for the line (1) and the calendar (2)
     setAct((a) => a.map((n, j) => (j === i ? n + 1 : n)));
   }, []);
 
@@ -289,7 +292,7 @@ export const HoloRing = memo(function HoloRing({
     <HoloClock.Provider value={liveT}>
     <Animated.View ref={box}>
       <GestureDetector gesture={pan}>
-        <View style={{ height: (ph ?? 472) + HPT + HPB, overflow: 'hidden' }}>
+        <View ref={stage} style={{ height: (ph ?? 472) + HPT + HPB, overflow: 'hidden' }}>
           <View pointerEvents="none" style={[st.base, { width: bw, marginLeft: -bw / 2 }]}>
             <Svg width={bw} height={46}>
               <Defs>
