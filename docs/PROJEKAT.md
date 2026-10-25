@@ -67,7 +67,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   za animacije, @shopify/react-native-skia za holo prsten i lika na uvodu, lokalno čuvanje podataka na telefonu.
 - **Lična potrošnja ostaje samo na telefonu.** Na serveru je samo ono što mora: nalozi, prijatelji, zajednički ciljevi, pretplata.
 - **Backend: Supabase.** Migracije su u `backend/supabase/migrations/` (`0001` nalozi, prijatelji, zajednički cilj;
-  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
+  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa; `0005` obaveštenja iz cilja), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
   (`npm test` u folderu `backend`, radi i na Windows-u bez Postgres-a). Detalji u `backend/README.md`,
   zaštita i podešavanja po dashboard-ima u `docs/ZASTITA.md`.
 - **Prototip je specifikacija.** `index.html` na grani `razvoj` je tačan izgled i ponašanje svakog ekrana. Pri prenosu u
@@ -260,6 +260,20 @@ Urađeno:
   NULL); Turnstile ugrađen na ekranu za prijavu (Managed + interaction-only, u WebView-u); Dependabot nedeljno;
   istorija svih grana bez tajni; upozorenje ispod rezervne kopije. `npm audit` u `mobile/`: 8 ranjivosti u Expo
   alatima za razvoj (ne u aplikaciji), bez ispravke koja ne kvari Expo; čeka se Expo zakrpa.
+- Obaveštenja (`docs/ZASTITA.md`, deo 8; Sergej je tražio tri vrste):
+  1. podsetnik za troškove: ostaje žuta kartica iz prototipa, plus pravo lokalno obaveštenje u izabrano vreme, samo
+     ako tog dana još ništa nije upisano;
+  2. „Don’t waste money“: lokalno, podrazumevano svakih 6 h (izbor 6 / 12 / 24 h), nikad 23–9 h, poštuje jačinu
+     poruka kao fore, svoj prekidač u Settings > Reminder. **15 tekstova su moj predlog i čekaju Sergejevo
+     odobrenje** (`mobile/src/logic/nudges.ts`); njegove verzije se prepisuju tačno;
+  3. zajednički cilj (push sa servera, `0005` + `send-goal-push` + pg_cron): ostali članovi dobijaju uplatu, ulazak i
+     izlazak, onaj ko je to uradio ne; najviše jedno obaveštenje po osobi po cilju na 10 minuta (spajaju se);
+     prekidač „Shared goal alerts“ u Settings > Account.
+  Dozvola se traži tek na uključivanje prekidača (ne pri pokretanju). Odluke koje nisu bile rečene: nudge je
+  podrazumevano isključen dok ga korisnik ne uključi (dozvola se ne sme tražiti ranije); termini su 9, 15, 21 h
+  (6 h), 9 i 21 h (12 h), 9 h (24 h); član sa isteklom pretplatom dobija samo „left“; kad neko doda prijatelja,
+  obaveštenje ne dobijaju ni onaj ko je dodao ni dodati. Lokalna obaveštenja rade u Expo Go; push iz cilja traži
+  development build, EAS projekat i Apple nalog (`docs/ZASTITA.md` 3.9).
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

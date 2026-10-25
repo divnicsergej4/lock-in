@@ -73,6 +73,8 @@ počinje od nule, i da svaki budući FK na `auth.users` mora biti `cascade` ili 
 3. Isto za `backend/supabase/migrations/0004_privacy_and_input_checks.sql` (posle `0003`): ko šta vidi i provere
    unosa (vidi 7). Ako javi grešku „violates check constraint“, u bazi već postoji red koji ne prolazi novu proveru
    (npr. naziv cilja sa razmakom na kraju): javi mi koji, ne briši ništa sam.
+4. Isto za `backend/supabase/migrations/0005_goal_push.sql` (posle `0004`): push tokeni i obaveštenja iz
+   zajedničkog cilja (vidi 8 i 3.9).
 
 ### 3.2 Supabase: Auth (prijava bez lozinke)
 Prijava je samo: **kod od 6 cifara na mejl**, **Google** i **Sign in with Apple** (iPhone). Lozinke nema nigde
@@ -214,6 +216,41 @@ se ista stranica postavi na tvoj domen i WebView je otvori odatle; to je mala iz
 2. Na plaćenom planu doplata se obračunava automatski i nema tvrdog limita; Expo šalje mejl vlasniku na 80% i 100%
    uključenih build kredita. Pogledaj Billing > **Usage** pre svakog većeg build-ovanja. Build-uj samo `production`
    kad treba, a za probu koristi Expo Go.
+
+### 3.9 Obaveštenja iz zajedničkog cilja (push), vidi 8
+Lokalni podsetnici (troškovi, „Don’t waste money“) ne traže ništa od ovoga. Push sa servera traži, redom:
+1. **EAS projekat** (besplatno): u folderu `mobile` pokreni `npx eas-cli@latest init` (prijava na tvoj Expo nalog).
+   To upiše `extra.eas.projectId` u `app.json`; commit-uj tu izmenu. Bez toga prekidač „Shared goal alerts“ kaže
+   „Shared goal alerts come with the full app build.“
+2. **iOS**: treba Apple Developer nalog. Pri prvom `npx eas-cli@latest build --profile development --platform ios`
+   EAS pita za push: odgovori da napravi **Apple Push Notifications service key** (EAS ga čuva, ti ga ne lepiš nigde).
+3. **Android**: Firebase konzola > nov projekat > Android aplikacija `com.lockintracker.app` > preuzmi
+   `google-services.json` i stavi ga u `mobile/` (u `app.json` dodati `android.googleServicesFile`, javi mi);
+   Firebase > Project settings > Service accounts > **Generate new private key**, pa taj JSON otpremi u
+   expo.dev > projekat > Credentials > Android > **FCM V1 service account key**. Taj JSON je tajna: ne commit-uj ga
+   i ne šalji nikome.
+4. Supabase > SQL Editor: migracija `0005_goal_push.sql` (3.1, korak 4).
+5. Supabase > **Edge Functions > Secrets**: `PUSH_CRON_AUTH` = `Bearer ` + nov dugačak nasumičan tekst (bar 40 znakova,
+   ne isti kao za RevenueCat). Ako u expo.dev uključiš „Enhanced push security“, dodaj i `EXPO_ACCESS_TOKEN`
+   (expo.dev > Access tokens); inače ne treba.
+6. Postavljanje: `npx supabase functions deploy send-goal-push --no-verify-jwt` (u folderu `backend`).
+7. Supabase > **Integrations > Vault** > Add new secret: Name `push_cron_auth`, Secret = **ista** vrednost kao
+   `PUSH_CRON_AUTH` (sa `Bearer ` na početku).
+8. Supabase > **Integrations > Cron** > uključi (pg_cron; traži i pg_net: Database > Extensions > `pg_net` uključi) >
+   Create job: Name `send-goal-push`, Schedule `* * * * *` (svaki minut), Type **SQL snippet**, i nalepi (zameni
+   `<tvoj-projekat>`):
+   ```sql
+   select net.http_post(
+     url := 'https://<tvoj-projekat>.supabase.co/functions/v1/send-goal-push',
+     headers := jsonb_build_object('Content-Type', 'application/json', 'Authorization',
+       (select decrypted_secret from vault.decrypted_secrets where name = 'push_cron_auth')),
+     body := '{}'::jsonb
+   ) where exists (select 1 from app.push_events where sent_at is null);
+   ```
+   Funkcija se zove samo kad nešto čeka, pa ne troši pozive kad je mirno (Free plan ima 500.000 poziva mesečno).
+9. Provera: na dva telefona (dva naloga, prijatelji, isti cilj, oba sa uključenim „Shared goal alerts“) jedan uplati,
+   drugi mora da dobije „<ime> added €… to <cilj>“ za manje od minuta. Edge Functions > send-goal-push > Logs
+   pokazuje `sent` i `dropped`.
 
 ## 4. Prijava u aplikaciji (`mobile/src/auth/`, urađeno 25. oktobra 2026)
 
@@ -394,3 +431,46 @@ commit-ovan `.env`, `.p8`, `.p12`, `.pem`, `.key` ni `google-services` fajl. Jed
 
 **Rezervna kopija**: ispod „Make backup / Import“ piše „This backup has all your spending in it. Don’t send it to
 anyone.“ Ništa drugo na tom ekranu nije menjano.
+
+## 8. Obaveštenja (25. oktobar 2026)
+
+**Dozvola** se nikad ne traži pri pokretanju, samo kad korisnik uključi neki podsetnik ili „Shared goal alerts“
+(i, kad ekran zajedničkog cilja bude postojao, kad uđe u cilj: `enableGoalAlerts` u `mobile/src/notifications/push.ts`).
+Ako je odbije, prekidač kaže kako da je uključi u podešavanjima telefona.
+
+**1. Podsetnik za troškove** (Settings > Reminder): bio je isti kao u prototipu, tj. samo žuta kartica na Home
+posle izabranog vremena (prototip je web stranica i nije mogao da šalje obaveštenja). Kartica ostaje, a dodato je
+pravo lokalno obaveštenje u izabrano vreme, sa tekstom kartice („You haven't logged any expenses today“ / „Log
+them now while you remember.“), i to samo ako tog dana još ništa nije upisano, čekirano „I didn’t spend anything
+today“ ni odgovoreno na karticu. Planira se 10 dana unapred i ponovo pri svakom otvaranju aplikacije.
+
+**2. „Don’t waste money“** (Settings > Reminder): lokalno, bez servera, podrazumevano isključeno, a kad se
+uključi: na 6 h (9, 15 i 21 h), 12 h (9 i 21 h) ili 24 h (9 h); nikad od 23 do 9 h po vremenu telefona. Tekst se
+bira po jačini poruka kao kod fora (Gentle: samo blagi; Normal: obični; No mercy: jaki oko 70% vremena). Tekstovi
+su **predlog** (`mobile/src/logic/nudges.ts`) dok ih Sergej ne odobri ili prepravi. Planira se 10 dana unapred,
+ukupno najviše 40 obaveštenja (iOS dozvoljava 64); ko ne otvori aplikaciju 10 dana, prestaju.
+
+**3. Zajednički cilj (push)**, migracija `0005_goal_push.sql`, funkcija `send-goal-push`, podešavanje 3.9:
+- kad neko uplati („Marko added €50 to Summer trip“), uđe u cilj ili izađe (i kad obriše nalog), obaveštenje dobijaju
+  svi **ostali** članovi koji imaju uključene „Shared goal alerts“; onaj ko je to uradio ne dobija; kad neko doda
+  prijatelja, ne dobijaju ga ni onaj ko je dodao ni onaj koji je dodat;
+- član kome je istekla proba/pretplata dobija **samo** „X left …“ (odluka jer nije rečeno: ostalo ne može ni da
+  menja; Sergej može da promeni u `app.queue_goal_push`);
+- **protiv spama**: najviše **jedno obaveštenje po osobi po cilju na 10 minuta**; sve između se spoji u jedno
+  („Marko added €120 to Summer trip (3 payments)“, „Summer trip: Marko added €120, Ana joined, Eva left“). Uplate i
+  dodavanje u cilj su i dalje ograničeni iz `0002` (60 / 30 na sat po korisniku);
+- **tokeni**: tabela `push_tokens`, svako vidi i briše samo svoje (RLS; `user_id` se ne čita), upis samo preko
+  `register_push_token` (provera oblika, najviše 20 puta na sat, najviše 10 telefona po osobi; telefon koji se
+  prijavi na drugi nalog prelazi na njega). Prekidač isključen, odjava (dok još ima mreže) i brisanje naloga brišu
+  token; Expo-ov odgovor „DeviceNotRegistered“ (aplikacija obrisana) takođe;
+- red za slanje (`app.push_events`) aplikacija ne može ni da čita; slanje radi samo server (`claim_goal_pushes`,
+  samo `service_role`), koga poziva pg_cron svakog minuta sa tajnim zaglavljem (`PUSH_CRON_AUTH`, kao webhook);
+  ako Expo ne odgovori, događaji se vraćaju za sledeći krug; imena u tekstu su očišćena kao u mejlu sa pozivom.
+- Poznato ograničenje: odjava bez mreže ne stigne da obriše token, pa taj telefon i dalje dobija obaveštenja tog
+  naloga dok se neko ne prijavi na njemu ili dok se aplikacija ne obriše. Expo „receipts“ (kasnije greške isporuke)
+  se još ne čitaju; „DeviceNotRegistered“ se hvata iz prvog odgovora.
+
+Testovi: `backend/tests/push.test.mjs` (43 provere: tokeni, ko šta dobija, isteklo, izlazak, brisanje naloga,
+spajanje na 10 minuta, ponovni pokušaj), `send-goal-push/handler_test.ts` (7: tekstovi, spajanje, tajna, po 100,
+Expo pao, obrisan telefon), `mobile/src/logic/__tests__/nudges.test.ts` (11: vremena, noć, jačina poruka, podsetnik)
+i `mobile/src/notifications/__tests__/local.test.ts` (6: ništa bez dozvole, dozvola samo na dodir, ≤ 64, bez duplikata).

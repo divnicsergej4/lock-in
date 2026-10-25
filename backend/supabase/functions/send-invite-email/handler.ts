@@ -15,19 +15,10 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
-export const MAX_NAME = 40; // same as profiles.display_name
-
-/**
- * The sender's name comes from a user and goes into the subject and the text. The email is plain text only
- * (no HTML part), and the name keeps only letters, digits, spaces, apostrophes and hyphens: no < > " & (no HTML),
- * no dots, colons, slashes or @ (mail apps turn "evil.com", "https://…" and "a@b.co" into links even in plain
- * text), no line breaks (no extra headers in the subject), no invisible or right-to-left control characters.
- * Look-alike characters (full-width "ｅｖｉｌ．ｃｏｍ") are folded first, so they are caught too.
- */
-export function safeName(s: string | null | undefined): string {
-  const kept = (s ?? '').normalize('NFKC').replace(/[^\p{L}\p{M}\p{N} '’-]/gu, ' ').replace(/\s+/g, ' ').trim();
-  return Array.from(kept).slice(0, MAX_NAME).join('').trim();
-}
+// The sender's name goes into the subject and the text of a plain-text email (no HTML part): safeName keeps it
+// from becoming HTML, a link, an address or an extra header line (see _shared/text.ts).
+import { MAX_NAME, safeName } from '../_shared/text.ts';
+export { MAX_NAME, safeName };
 
 // The recipient's address goes into the text: only a plain address, nothing a mail app could show as markup.
 export const SAFE_EMAIL = /^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;

@@ -10,6 +10,10 @@ import { SvgXml } from 'react-native-svg';
 
 import { accessText } from '@/auth/access';
 import { useAuth } from '@/auth/AuthProvider';
+import { supabase } from '@/auth/supabase';
+import { DEFAULT_NUDGE_EVERY, NUDGE_EVERY, type NudgeEvery } from '@/logic/nudges';
+import { askPermission } from '@/notifications/local';
+import { disableGoalAlerts, enableGoalAlerts } from '@/notifications/push';
 import { useAppToast } from '@/components/AppToast';
 import { DEMO_FADE, useDemoGuard } from '@/components/demoGuard';
 import { Button, Field, Fold, Ghost } from '@/components/home/Section';
@@ -34,6 +38,8 @@ const ICONS = {
   roast: '<path d="M12 3.5c.9 3 4.9 5.1 4.9 9.7a4.9 4.9 0 0 1-9.8 0c0-2.3 1-3.9 2.2-5.1.3 1.7 1 2.7 2.2 3.2-.5-2.7-.4-5.3.5-7.8Z"/>',
   bell: '<path d="M6.5 16.5v-5a5.5 5.5 0 0 1 11 0v5l1.5 2h-14Z"/><path d="M10 20.5a2.3 2.3 0 0 0 4 0"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  coin: '<circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.3c-.5-.8-1.4-1.3-2.5-1.3-1.4 0-2.5.8-2.5 1.9 0 2.6 5 1.4 5 4.1 0 1.1-1.1 2-2.5 2-1.2 0-2.2-.5-2.7-1.4M12 6.5V8m0 8v1.5"/>',
+  team: '<circle cx="9" cy="9" r="3"/><path d="M3.5 18.5c.6-3 2.8-4.7 5.5-4.7s4.9 1.7 5.5 4.7"/><circle cx="16.5" cy="8" r="2.5"/><path d="M16.5 12.8c2.2 0 3.7 1.4 4.1 3.7"/>',
   tour: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .8-1 1.5v.3M12 16.8h.01"/>',
   demo: '<rect x="3.5" y="4.5" width="17" height="12" rx="2"/><path d="M8 20h8M12 16.5V20"/><path d="m10.5 8.2 4 2.3-4 2.3z"/>',
   star: '<path d="m12 4 2.4 5 5.4.7-4 3.7 1 5.4L12 16.2l-4.8 2.6 1-5.4-4-3.7 5.4-.7Z"/>',
@@ -213,6 +219,17 @@ export function SettingsFold() {
     await auth.signOut();
     toast('Signed out');
   };
+  // Shared goal alerts: the permission is asked here, on the user's own tap (and later when joining a goal)
+  const goalAlerts = async (on: boolean) => {
+    if (!supabase) return;
+    if (on) {
+      const r = await enableGoalAlerts(supabase);
+      if (!r.ok) return toast(r.error);
+    } else await disableGoalAlerts(supabase);
+    update((s) => ({ ...s, goalPush: on }));
+    toast(on ? 'Shared goal alerts on' : 'Shared goal alerts off');
+  };
+  const nag = { on: !!state.nag?.on, every: state.nag?.every ?? DEFAULT_NUDGE_EVERY };
   const deleteAccount = async () => {
     if (deleting) return;
     if (!sureDel) {
@@ -328,17 +345,51 @@ export function SettingsFold() {
             <Switch
               on={rem.on}
               label="Remind me to log expenses"
-              onChange={(on) => {
+              onChange={async (on) => {
                 const r = setReminder(state, on);
-                if (r.ok) {
-                  update(() => r.state);
-                  toast(r.toast);
-                }
+                if (!r.ok) return;
+                update(() => r.state);
+                // The card on Home works either way; the notification needs the permission (asked only now).
+                if (on && !(await askPermission())) return toast('Reminder on. Allow notifications for Lock In in your phone’s Settings to get it as a notification.');
+                toast(r.toast);
               }}
             />
           }
         />
         <Row icon="clock" title="Reminder time" top right={<TimeField value={rem.time} onChange={(t) => update((s) => setReminderTime(s, t))} look={look} style={{ ...inline, height: 43.2, minWidth: 133.4 }} />} />
+        <Row
+          icon="coin"
+          title="Don’t waste money"
+          hint="A short nudge now and then. Never between 11 pm and 9 am"
+          top
+          right={
+            <Switch
+              on={!!nag.on}
+              label="Don’t waste money nudges"
+              onChange={async (on) => {
+                if (on && !(await askPermission())) return toast('Allow notifications for Lock In in your phone’s Settings first.');
+                update((s) => ({ ...s, nag: { on, every: s.nag?.every ?? DEFAULT_NUDGE_EVERY } }));
+                toast(on ? 'Nudges on' : 'Nudges off');
+              }}
+            />
+          }
+        />
+        <Row
+          icon="clock"
+          title="How often"
+          top
+          right={
+            <Select
+              label="How often"
+              value={String(nag.every)}
+              onChange={(v) => update((s) => ({ ...s, nag: { on: !!s.nag?.on, every: Number(v) as NudgeEvery } }))}
+              options={NUDGE_EVERY.map((h) => ({ value: String(h), label: `Every ${h} hours` }))}
+              look={look}
+              style={{ ...inline, minWidth: 150 }}
+              textStyle={{ flex: 0 }}
+            />
+          }
+        />
       </Group>
 
       <Group label="Help">
@@ -351,6 +402,13 @@ export function SettingsFold() {
           {auth.session ? (
             <>
               <Row icon="user" title={auth.session.user.email || 'Signed in'} hint={accessText(auth.access, Date.now())} />
+              <Row
+                icon="team"
+                title="Shared goal alerts"
+                hint="When someone in your goal pays in, joins or leaves"
+                top
+                right={<Switch on={!!state.goalPush} label="Shared goal alerts" onChange={goalAlerts} />}
+              />
               <Row icon="out" title="Sign out" hint="Only on this phone" right={<Arrow />} onPress={signOut} top />
             </>
           ) : (

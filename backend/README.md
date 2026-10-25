@@ -28,8 +28,11 @@ Ovde je baza za naloge, prijatelje i zajednički cilj. Lična potrošnja se ne �
    nikome. Provera na pravom projektu: `scripts/check-no-password-login.mjs` (koraci u `docs/ZASTITA.md`, deo 4).
 5. Isto za `supabase/migrations/0004_privacy_and_input_checks.sql` (posle 0003): tuđ mejl ne vidi niko, provere
    unosa (`docs/ZASTITA.md`, deo 7).
+6. Isto za `supabase/migrations/0005_goal_push.sql` (posle 0004): obaveštenja iz zajedničkog cilja (`docs/ZASTITA.md`,
+   delovi 3.9 i 8, uključujući cron posao).
 
-Serverske funkcije (`supabase/functions/`: RevenueCat webhook, slanje mejla sa pozivom i brisanje naloga) i sve što treba
+Serverske funkcije (`supabase/functions/`: RevenueCat webhook, slanje mejla sa pozivom, brisanje naloga, slanje
+obaveštenja iz zajedničkog cilja `send-goal-push`; zajednički delovi u `_shared/`) i sve što treba
 kliknuti po dashboard-ima (Auth limiti, CAPTCHA, spend cap, Resend, RevenueCat, Expo): `docs/ZASTITA.md`.
 
 Nikome ne šalji `service_role` ključ ni lozinku baze, pa ni meni. Aplikacija koristi samo javni (anon) ključ,
@@ -51,7 +54,8 @@ Postgres i Python nisu potrebni).
 - `tests/privacy.test.mjs`: 20 provera ko šta vidi (`0004`), sa tačnim spiskom kolona i RPC-ova koje aplikacija sme da
   čita i zove.
 - `tests/input_checks.test.mjs`: 68 provera unosa (`0004`): tekstovi, iznosi, valuta, adrese, bez dinamičkog SQL-a.
-- `supabase/functions/*/handler_test.ts`: 22 provere serverskih funkcija (Deno).
+- `tests/push.test.mjs`: 43 provere za `0005` (tokeni, ko dobija obaveštenje, najviše jedno na 10 minuta).
+- `supabase/functions/*/handler_test.ts`: 29 provera serverskih funkcija (Deno).
 - `tests/test_shared_goals.py`: ista 49 provera na pravom Postgres-u (`python3 tests/test_shared_goals.py -h … -p … -U …`).
 
 ## Šta još fali

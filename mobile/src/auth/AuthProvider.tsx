@@ -9,6 +9,8 @@ import { decideAccess, type Access } from './access';
 import { deleteAccount as deleteOnServer, signOutHere, type Result } from './account';
 import { linkPurchases, storeAccess, unlinkPurchases } from './purchases';
 import { supabase, wipeLocalSession } from './supabase';
+import { disableGoalAlerts } from '@/notifications/push';
+import { useStore } from '@/store/StoreProvider';
 
 type Auth = {
   /** false: no Supabase keys in this build (or the web preview), sign-in is not available. */
@@ -33,6 +35,7 @@ export const useAuth = () => useContext(Ctx);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [access, setAccess] = useState<Access>({ kind: 'signed-out' });
+  const { update } = useStore();
   const uid = session?.user.id ?? null;
   const asked = useRef(0); // only the latest question may set the answer
 
@@ -63,20 +66,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     if (!supabase) return;
+    await disableGoalAlerts(supabase); // while still signed in: this phone stops getting that account's alerts
+    update((s) => ({ ...s, goalPush: false }));
     await unlinkPurchases();
     await signOutHere(supabase, wipeLocalSession);
     setSession(null);
-  }, []);
+  }, [update]);
 
   const deleteAccount = useCallback(async (): Promise<Result> => {
     if (!supabase) return { ok: false, error: 'Accounts are not available.' };
     const r = await deleteOnServer(supabase, wipeLocalSession);
     if (r.ok) {
+      await disableGoalAlerts(null); // the server already removed the tokens with the account
+      update((s) => ({ ...s, goalPush: false }));
       await unlinkPurchases();
       setSession(null);
     }
     return r;
-  }, []);
+  }, [update]);
 
   const value = useMemo(
     () => ({ available: !!supabase, session, access, refreshAccess, signOut, deleteAccount }),

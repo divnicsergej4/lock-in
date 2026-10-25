@@ -17,6 +17,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider } from '@/auth/AuthProvider';
 import { AppToastProvider } from '@/components/AppToast';
+import { useNotifications } from '@/notifications/useNotifications';
 import { StoreProvider, useStore } from '@/store/StoreProvider';
 import { useTheme } from '@/theme';
 
@@ -39,6 +40,7 @@ export default function RootLayout() {
 function App() {
   const { ready } = useStore();
   const { name, c } = useTheme();
+  useNotifications();
   const [fontsLoaded, fontError] = useFonts({
     BricolageGrotesque_400Regular,
     BricolageGrotesque_500Medium,
