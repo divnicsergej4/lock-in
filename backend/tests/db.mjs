@@ -8,13 +8,22 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const MIGRATIONS = path.join(HERE, '..', 'supabase', 'migrations');
 
-export async function freshDb() {
+const migrations = () => fs.readdirSync(MIGRATIONS).filter((f) => f.endsWith('.sql')).sort();
+
+/** `before`: stop before the migration whose name starts with it (e.g. '0003'), to test that migration itself. */
+export async function freshDb({ before } = {}) {
   const db = new PGlite();
   await db.exec(fs.readFileSync(path.join(HERE, 'supabase_shim.sql'), 'utf8'));
-  for (const f of fs.readdirSync(MIGRATIONS).filter((f) => f.endsWith('.sql')).sort()) {
+  for (const f of migrations()) {
+    if (before && f.startsWith(before)) break;
     await db.exec(fs.readFileSync(path.join(MIGRATIONS, f), 'utf8'));
   }
   return db;
+}
+
+export async function applyMigration(db, prefix) {
+  const f = migrations().find((m) => m.startsWith(prefix));
+  await db.exec(fs.readFileSync(path.join(MIGRATIONS, f), 'utf8'));
 }
 
 // Output the way `psql -At` prints it: columns joined by |, rows by new lines.

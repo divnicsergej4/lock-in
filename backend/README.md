@@ -24,6 +24,8 @@ Ovde je baza za naloge, prijatelje i zajednički cilj. Lična potrošnja se ne �
 1. Supabase dashboard → SQL Editor → New query.
 2. Nalepi ceo fajl `supabase/migrations/0001_accounts_friends_shared_goals.sql` i pokreni ga.
 3. Isto za `supabase/migrations/0002_limits_and_quotas.sql` (uvek redom, posle 0001).
+4. Isto za `supabase/migrations/0003_no_passwords.sql` (posle 0002): niko nema lozinku, prijava lozinkom ne radi
+   nikome. Provera na pravom projektu: `scripts/check-no-password-login.mjs` (koraci u `docs/ZASTITA.md`, deo 4).
 
 Serverske funkcije (`supabase/functions/`: RevenueCat webhook, slanje mejla sa pozivom i brisanje naloga) i sve što treba
 kliknuti po dashboard-ima (Auth limiti, CAPTCHA, spend cap, Resend, RevenueCat, Expo): `docs/ZASTITA.md`.
@@ -42,6 +44,8 @@ Postgres i Python nisu potrebni).
   pretplate sa servera, da su brojači nedostupni aplikaciji i da je RLS uključen na svakoj tabeli.
 - `tests/delete_account.test.mjs`: 25 provera brisanja naloga (šta se briše, šta ostaje drugima, aplikacija ne može
   sama da briše korisnike, svaki FK na `auth.users` je `cascade` ili `set null`).
+- `tests/no_passwords.test.mjs`: 23 provere za `0003` (ponavlja šta Supabase Auth radi u bazi za prijavu lozinkom,
+  kodom, Google-om i Apple-om; isti koraci na bazi bez `0003` pokazuju da napad tamo uspeva).
 - `supabase/functions/*/handler_test.ts`: 19 provera serverskih funkcija (Deno).
 - `tests/test_shared_goals.py`: ista 49 provera na pravom Postgres-u (`python3 tests/test_shared_goals.py -h … -p … -U …`).
 

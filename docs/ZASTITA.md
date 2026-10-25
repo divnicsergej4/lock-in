@@ -67,6 +67,9 @@ počinje od nule, i da svaki budući FK na `auth.users` mora biti `cascade` ili 
 ### 3.1 Supabase: baza
 1. Supabase > **SQL Editor** > New query > nalepi ceo `backend/supabase/migrations/0002_limits_and_quotas.sql` > Run
    (posle `0001`).
+2. Isto za `backend/supabase/migrations/0003_no_passwords.sql` (posle `0002`): niko nikad nema lozinku (vidi 4).
+   Provera u SQL Editor-u, mora da bude `0`:
+   `select count(*) from auth.users where coalesce(encrypted_password, '') <> '';`
 
 ### 3.2 Supabase: Auth (prijava bez lozinke)
 Prijava je samo: **kod od 6 cifara na mejl**, **Google** i **Sign in with Apple** (iPhone). Lozinke nema nigde
@@ -78,9 +81,10 @@ Prijava je samo: **kod od 6 cifara na mejl**, **Google** i **Sign in with Apple*
    - „Allow manual linking“: isključeno.
    - Otvori **Email**: „Enable Email provider“ uključeno, „Confirm email“ **uključeno**, „Secure email change“
      uključeno, „Email OTP Expiration“ **600** sekundi (10 min), „Email OTP Length“ **6**.
-     Lozinku aplikacija ne koristi, ali Supabase ne može da isključi prijavu lozinkom preko API-ja, pa je otežaj:
-     „Minimum password length“ **20**, „Password requirements“ **Lowercase, uppercase letters, digits and symbols**.
-     „Prevent use of leaked passwords“ nije potrebno.
+     „Confirm email“ **mora** da ostane uključeno: kad je isključeno, `signUp` sa bilo kojim mejlom odmah daje
+     prijavu, bez potvrde mejla, i to `0003` ne može da spreči (tu se ne prijavljuje lozinkom, nalog se samo napravi).
+     Polja o lozinci („Minimum password length“, „Password requirements“, „Prevent use of leaked passwords“) su
+     nebitna: lozinka se nikad ne čuva (`0003`). Ostavi ih kako jesu.
 2. **Authentication > Emails > Templates**: u **„Magic Link“** i u **„Confirm signup“** (njega dobija neko ko se
    prijavljuje prvi put) obriši sav tekst i nalepi:
    - Subject: `Your Lock In code`
@@ -236,11 +240,34 @@ telefonu (`AppState`) ne postoji oznaka „plaćeno“. „Lock-in Pro / See pla
 **Brisanje naloga** (Settings > Danger zone > Delete account, dva dodira u 4 s, kao Reset): funkcija
 `delete-account` (vidi 2). Tekst kaže da pretplata u App Store-u / Google Play-u nije otkazana time (Apple traži da se to kaže).
 
-**Poznat rizik, nije rešen u kodu:** pošto Supabase ne može da isključi registraciju lozinkom preko API-ja, neko
-bi mogao da napravi nepotvrđen nalog sa tuđim mejlom i lozinkom pre nego što se pravi vlasnik prvi put prijavi
-kodom. Šteta je mala (nalog ima samo prijatelje i zajedničke ciljeve) i zato je lozinka otežana (3.2, korak 1).
-Pre puštanja proveriti na pravom projektu da li potvrda koda briše tu lozinku; ako ne briše, to se
-rešava pre puštanja.
+**Lozinke (rešeno 25. oktobra 2026, migracija `0003_no_passwords.sql`):** prijava lozinkom ne radi nikome.
+- Problem je bio stvaran: Supabase ne može da isključi lozinke (sa javnim ključem svako može da pozove `signUp`,
+  `signInWithPassword` i `updateUser({ password })`), a Supabase Auth **ne briše** postojeću lozinku nepotvrđenog
+  naloga kad se on potvrdi kodom (`signupVerify` i `Signup` u njihovom kodu ne diraju lozinku). Neko je mogao da
+  napravi nalog sa tuđim mejlom i svojom lozinkom, a kad se pravi vlasnik prvi put prijavi kodom, da uđe njegovom
+  lozinkom.
+- Rešenje: triger `no_password` **BEFORE INSERT OR UPDATE** na `auth.users` uvek postavlja `encrypted_password` na
+  prazno. Supabase Auth prazno tretira kao „nema lozinke“ (`User.Authenticate` vraća „ne“ pre bilo kakvog
+  poređenja), pa je odgovor uvek „Invalid login credentials“: pre potvrde, posle potvrde, za nalog napravljen u
+  dashboard-u i za lozinku postavljenu kasnije. Migracija briše i lozinke naloga koji već postoje.
+- Kod, Google i Apple lozinku nikad ne čitaju (kod se proverava prema jednokratnom tokenu, Google i Apple prema
+  nalogu kod njih). Google/Apple nalozi ionako imaju prazno polje, a nalog napravljen kodom dobija od Supabase-a
+  nasumičnu privremenu lozinku, koja se sada odmah briše.
+- Na Supabase-u je dozvoljeno: trigeri na `auth.users` su izričito dozvoljeni i posle ograničenja od 21. aprila 2025;
+  funkcija je van `auth` šeme (`app.no_password`), ne čita nijednu tabelu i aplikacija ne može da je pozove.
+- Testovi (`backend/tests/no_passwords.test.mjs`, 23 provere): korak po korak ponavljaju šta Supabase Auth radi
+  u bazi za svaki zahtev (isti redovi, iste kolone, ista uloga `supabase_auth_admin`, ista provera lozinke):
+  nalog sa lozinkom ne može da se prijavi lozinkom ni pre ni posle prijave kodom; isto za nalog iz dashboard-a i
+  lozinku postavljenu preko `updateUser`; kod, Google i Apple i dalje rade i ostale kolone ostaju; profil se i
+  dalje pravi. Iste korake test pušta i na bazi **bez** `0003`: tamo napad uspeva, što pokazuje da test proverava
+  pravu stvar.
+- Šta test ne može: pravi Supabase Auth server se ne pokreće ovde (nema Docker-a). Zato posle primene `0003` na
+  pravom projektu, jednom:
+  1. Authentication > Users > **Add user > Create new user**: probni mejl (npr. tvoj sa `+nopw` pre `@`),
+     bilo koja probna lozinka, „Auto Confirm User“ uključeno.
+  2. U folderu `backend`: `node scripts/check-no-password-login.mjs <taj mejl> <ta lozinka>` (uzima URL i anon ključ
+     iz `mobile/.env.local`). Mora da ispiše `OK: password sign-in is refused`.
+  3. SQL iz 3.1, korak 2 mora da vrati `0`. Pa obriši tog probnog korisnika.
 
 ## 5. Provera ključeva i RLS (25. oktobar 2026)
 
@@ -254,3 +281,24 @@ rešava pre puštanja.
 - Uočeno, nije menjano: tabela `events` iz prototipa dozvoljava neograničen upis bez prijave (samo provera datuma).
   Neko ko pročita javni ključ iz prototipa može da je puni smećem. Šteta je mala (samo statistika), ali ako se
   isti Supabase projekat koristi za aplikaciju, vredi dodati limit ili je obrisati kad testiranje prototipa završi.
+
+## 6. Pre objave u prodavnicama: skloniti
+
+Sve ovo služi samo za probu (Expo Go, test nalozi). Pre slanja na App Store / Google Play:
+
+1. Supabase > Authentication > Sign In / Providers > **Apple** > Client IDs: obriši `host.exp.Exponent`
+   (to je Expo Go; ostaje samo `com.lockintracker.app`).
+2. Supabase > Authentication > **URL Configuration** > Redirect URLs: obriši sve `exp://…` adrese
+   (ostaje samo `lockin://auth-callback`). Site URL mora biti `lockin://auth-callback`, ne `localhost`.
+3. Supabase > Authentication > **Users**: obriši probne naloge (npr. onaj iz provere lozinke u delu 4).
+   U SQL Editor-u obriši probne redove iz `public.subscriptions` koje si eventualno upisao ručno.
+4. Supabase > Authentication > Attack Protection: **CAPTCHA uključena** (Turnstile), ali tek kad je ugrađen u
+   aplikaciju (3.2, korak 9); ako nije ugrađen, objava čeka na to.
+5. Supabase > Authentication > Sign In / Providers > Email: „Confirm email“ **uključeno** (vidi 3.2, korak 1).
+6. Google Cloud Console > OAuth consent screen: status **In production** (ne „Testing“, gde rade samo ručno
+   dodati test korisnici); u „Authorized redirect URIs“ samo Supabase callback.
+7. Resend: pošiljalac sa tvog domena (ne `onboarding@resend.dev`), domen potvrđen (SPF/DKIM).
+8. `mobile/.env.local` / EAS secrets za production build: adresa i javni ključ **pravog** Supabase projekta
+   (ne probnog, ako ih ima dva) i pravi RevenueCat javni ključevi. Nikad `service_role` / `sb_secret_`.
+9. Tabela `events` iz prototipa (vidi 5): ako je u istom projektu kao aplikacija, obrisati je ili joj dodati limit.
+10. Pokrenuti proveru iz dela 4 (lozinke) i SQL iz 3.1, korak 2 na pravom projektu.

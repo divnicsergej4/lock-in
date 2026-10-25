@@ -67,7 +67,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   za animacije, @shopify/react-native-skia za holo prsten i lika na uvodu, lokalno čuvanje podataka na telefonu.
 - **Lična potrošnja ostaje samo na telefonu.** Na serveru je samo ono što mora: nalozi, prijatelji, zajednički ciljevi, pretplata.
 - **Backend: Supabase.** Migracije su u `backend/supabase/migrations/` (`0001` nalozi, prijatelji, zajednički cilj;
-  `0002` limiti i kvote), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
+  `0002` limiti i kvote; `0003` bez lozinki), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
   (`npm test` u folderu `backend`, radi i na Windows-u bez Postgres-a). Detalji u `backend/README.md`,
   zaštita i podešavanja po dashboard-ima u `docs/ZASTITA.md`.
 - **Prototip je specifikacija.** `index.html` na grani `razvoj` je tačan izgled i ponašanje svakog ekrana. Pri prenosu u
@@ -246,6 +246,13 @@ Urađeno:
   Nije provereno na pravom telefonu ni sa pravim Supabase projektom (nema ključeva u repou): to je sledeći korak.
   Sergej podešava: `docs/ZASTITA.md` 3.2 (Email, šabloni mejla, SMTP, Rate Limits, URL-ovi, Google, Apple),
   3.5 (postaviti `delete-account`), 3.6 (entitlement `access`), i javne ključeve u `mobile/.env.local`.
+- Lozinke zatvorene u bazi (Sergej: „ne ostavljamo za kasnije“): migracija `0003_no_passwords.sql`, triger
+  BEFORE INSERT OR UPDATE na `auth.users` koji uvek prazni `encrypted_password`, pa prijava lozinkom ne radi nikome,
+  ni posle potvrde mejla. Zatvara i preuzimanje naloga (neko napravi nalog sa tuđim mejlom i lozinkom, pa uđe kad
+  se vlasnik prijavi kodom; Supabase Auth tu lozinku sam ne briše). Kod, Google i Apple lozinku ne čitaju.
+  Testovi: 23 provere (`backend/tests/no_passwords.test.mjs`), uz kontrolu da napad bez `0003` uspeva. Pravi Supabase
+  Auth nije pokrenut (nema Docker-a): Sergej jednom proverava na projektu (`docs/ZASTITA.md`, deo 4).
+  „Confirm email“ mora ostati uključeno. Lista stvari koje se sklanjaju pre objave: `docs/ZASTITA.md`, deo 6.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "npm run test:db && npm run test:functions",
-    "test:db": "node tests/shared_goals.test.mjs && node tests/limits.test.mjs && node tests/delete_account.test.mjs",
+    "test:db": "node tests/shared_goals.test.mjs && node tests/limits.test.mjs && node tests/delete_account.test.mjs && node tests/no_passwords.test.mjs",
     "test:functions": "deno test --node-modules-dir=none supabase/functions && deno check --node-modules-dir=none supabase/functions/*/index.ts"
   },
   "devDependencies": {
