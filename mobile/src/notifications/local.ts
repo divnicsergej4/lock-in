@@ -69,5 +69,5 @@ async function sync(s: AppState, now: number) {
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId: CHANNEL_REMINDERS },
     });
   for (const t of reminderTimes(s, now)) await plan(`rem-${t}`, t, { title: REMINDER_TITLE, body: REMINDER_TEXT });
-  if (s.nag?.on) for (const n of nudgePlan(s, now)) await plan(`nudge-${n.at}`, n.at, { body: n.body });
+  for (const n of nudgePlan(s, now)) await plan(`nudge-${n.at}`, n.at, { body: n.body });
 }

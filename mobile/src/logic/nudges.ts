@@ -63,21 +63,26 @@ export function rotationText(t: number): string {
 
 export type Planned = { at: number; body: string };
 
-/** The nudges from now on for DAYS_AHEAD days (only times still ahead, at least a minute away). */
+/**
+ * The nudges from now on for DAYS_AHEAD days (only times still ahead, at least a minute away). Two separate
+ * switches: `nag` (the rotation at 9, 15 / 21) and `streakNag` (20:00), so someone can keep only the streak one.
+ */
 export function nudgePlan(s: AppState, now: number, days = DAYS_AHEAD): Planned[] {
+  const rotation = !!s.nag?.on;
+  const streak = !!s.streakNag;
   const out: Planned[] = [];
   const add = (t: number, body: string) => t > now + 60_000 && out.push({ at: t, body });
   for (let d = 0; d < days; d++) {
     if (d === 0 && loggedToday(s, now)) {
       const t = at(now, 0, LOGGED_HOUR);
-      add(t, rotationText(t));
+      if (rotation) add(t, rotationText(t));
       continue;
     }
-    for (const h of NOT_LOGGED_HOURS) {
+    if (rotation) for (const h of NOT_LOGGED_HOURS) {
       const t = at(now, d, h);
       add(t, rotationText(t));
     }
-    add(at(now, d, STREAK_HOUR), STREAK_NUDGE);
+    if (streak) add(at(now, d, STREAK_HOUR), STREAK_NUDGE);
   }
   return out;
 }

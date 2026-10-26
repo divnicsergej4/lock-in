@@ -36,7 +36,7 @@ import { askPermission, hasPermission, syncLocalNotifications } from '../local';
 
 const mock = Notifications as unknown as { __planned: Map<string, { content: { title?: string; body: string }; trigger: { date: number } }>; __perm: { granted: boolean; status: string } };
 const NOW = new Date(2026, 9, 25, 10, 30).getTime();
-const state = (over: Partial<AppState>): AppState => ({ ...initialState, ...over });
+const state = (over: Partial<AppState>): AppState => ({ ...initialState, streakNag: !!over.nag?.on, ...over });
 const ids = () => [...mock.__planned.keys()].sort();
 
 beforeEach(() => {

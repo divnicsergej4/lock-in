@@ -37,6 +37,7 @@ const ICONS = {
   roast: '<path d="M12 3.5c.9 3 4.9 5.1 4.9 9.7a4.9 4.9 0 0 1-9.8 0c0-2.3 1-3.9 2.2-5.1.3 1.7 1 2.7 2.2 3.2-.5-2.7-.4-5.3.5-7.8Z"/>',
   bell: '<path d="M6.5 16.5v-5a5.5 5.5 0 0 1 11 0v5l1.5 2h-14Z"/><path d="M10 20.5a2.3 2.3 0 0 0 4 0"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  flame: '<path d="M12 3.5c.9 3 4.9 5.1 4.9 9.7a4.9 4.9 0 0 1-9.8 0c0-2.3 1-3.9 2.2-5.1.3 1.7 1 2.7 2.2 3.2-.5-2.7-.4-5.3.5-7.8Z"/><path d="M12 20.5v-3"/>',
   coin: '<circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.3c-.5-.8-1.4-1.3-2.5-1.3-1.4 0-2.5.8-2.5 1.9 0 2.6 5 1.4 5 4.1 0 1.1-1.1 2-2.5 2-1.2 0-2.2-.5-2.7-1.4M12 6.5V8m0 8v1.5"/>',
   team: '<circle cx="9" cy="9" r="3"/><path d="M3.5 18.5c.6-3 2.8-4.7 5.5-4.7s4.9 1.7 5.5 4.7"/><circle cx="16.5" cy="8" r="2.5"/><path d="M16.5 12.8c2.2 0 3.7 1.4 4.1 3.7"/>',
   tour: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .8-1 1.5v.3M12 16.8h.01"/>',
@@ -358,7 +359,7 @@ export function SettingsFold() {
         <Row
           icon="coin"
           title="Don’t waste money"
-          hint="At 9 am, 3 pm and 8 pm until you log something that day, then once at 9 pm"
+          hint="At 9 am and 3 pm until you log something that day, then once at 9 pm"
           top
           right={
             <Switch
@@ -368,6 +369,23 @@ export function SettingsFold() {
                 if (on && !(await askPermission())) return toast('Allow notifications for Lock In in your phone’s Settings first.');
                 update((s) => ({ ...s, nag: { on } }));
                 toast(on ? 'Nudges on' : 'Nudges off');
+              }}
+            />
+          }
+        />
+        <Row
+          icon="flame"
+          title="Streak reminder"
+          hint="At 8 pm, only if you haven’t logged anything that day"
+          top
+          right={
+            <Switch
+              on={!!state.streakNag}
+              label="Streak reminder"
+              onChange={async (on) => {
+                if (on && !(await askPermission())) return toast('Allow notifications for Lock In in your phone’s Settings first.');
+                update((s) => ({ ...s, streakNag: on }));
+                toast(on ? 'Streak reminder on' : 'Streak reminder off');
               }}
             />
           }

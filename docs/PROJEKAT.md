@@ -266,7 +266,8 @@ Urađeno:
   2. „Don’t waste money“: lokalno, svoj prekidač u Settings > Reminder. Sergejev raspored i tekstovi (26. oktobar,
      prepisani tačno u `mobile/src/logic/nudges.ts`): dan bez upisa 9 h i 15 h iz rotacije od 11 tekstova i 20 h
      „you’ve been doing good. don’t ruin the streak now 🔥“ (nije u rotaciji); posle upisa tog dana samo jedno u
-     21 h; nikad 23–9 h. Izbor 6 / 12 / 24 h izbačen (raspored ga zamenjuje). Tekstovi idu u svakoj jačini poruka
+     21 h; nikad 23–9 h. Izbor 6 / 12 / 24 h izbačen (raspored ga zamenjuje). Streak (20 h) ima svoj prekidač
+     „Streak reminder“, odvojen od „Don’t waste money“, da bi neko mogao da ostavi samo njega. Tekstovi idu u svakoj jačini poruka
      dok Sergej ne označi jake;
   3. zajednički cilj (push sa servera, `0005` + `send-goal-push` + pg_cron): ostali članovi dobijaju uplatu, ulazak i
      izlazak, onaj ko je to uradio ne; najviše jedno obaveštenje po osobi po cilju na 10 minuta (spajaju se);

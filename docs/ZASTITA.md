@@ -450,7 +450,9 @@ tekstovi su Sergejevi (26. oktobra 2026, `mobile/src/logic/nudges.ts`, prepisani
   **20 h** „you’ve been doing good. don’t ruin the streak now 🔥“ (samo tada, nije deo rotacije);
 - čim se tog dana nešto upiše (ili „I didn’t spend anything today“), ostatak tog dana otpada i stiže **jedno u
   21 h** iz rotacije; sutradan opet 9, 15, 20;
-- nikad od 23 do 9 h. Izbor „svakih 6 / 12 / 24 h“ je izbačen jer ga ovaj raspored zamenjuje.
+- nikad od 23 do 9 h. Izbor „svakih 6 / 12 / 24 h“ je izbačen jer ga ovaj raspored zamenjuje;
+- dva odvojena prekidača (Sergej: neko možda hoće samo streak): „Don’t waste money“ (9, 15 / 21 h) i
+  „Streak reminder“ (20 h). Svaki se uključuje i isključuje sam, pa može da ostane samo streak.
 Tekstovi nisu podeljeni po jačini poruka (Gentle / Normal / No mercy): svi idu u svakom modu, dok Sergej ne označi
 koji su jaki. Planira se 10 dana unapred (najviše 30 + 10 podsetnika; iOS dozvoljava 64) i ponovo pri svakom
 otvaranju i upisu; ko ne otvori aplikaciju 10 dana, prestaju. Ako su uključeni i podsetnik za troškove u 20:00 i

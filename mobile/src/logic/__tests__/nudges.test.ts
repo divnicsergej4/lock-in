@@ -6,7 +6,7 @@ const at = (d: number, h: number, m = 0) => new Date(2026, 9, d, h, m).getTime()
 const NOW = at(25, 8, 30);
 const hour = (t: number) => new Date(t).getHours();
 const day = (t: number) => new Date(t).getDate();
-const s = (over: Partial<AppState> = {}): AppState => ({ ...initialState, ...over });
+const s = (over: Partial<AppState> = {}): AppState => ({ ...initialState, nag: { on: true }, streakNag: true, ...over });
 const logged = (t: number) => s({ exp: [{ amt: 4, cat: 'Coffee', t, note: 'latte' }] });
 
 describe('Sergej’s texts, exactly', () => {
@@ -58,6 +58,17 @@ describe('when', () => {
   test('nothing logged and it is already 20:30: nothing more today (21 is only for logged days)', () => {
     const plan = nudgePlan(s(), at(25, 20, 30));
     expect(day(plan[0].at)).toBe(26);
+  });
+
+  test('two separate switches: only the streak one, only the rotation, or none', () => {
+    const onlyStreak = nudgePlan(s({ nag: { on: false } }), NOW);
+    expect(onlyStreak.length).toBe(10);
+    expect(onlyStreak.every((p) => hour(p.at) === 20 && p.body === STREAK_NUDGE)).toBe(true);
+    expect(nudgePlan(s({ nag: { on: false }, exp: [{ amt: 1, cat: 'Coffee', t: NOW - 1000, note: 'x' }] }), NOW)
+      .some((p) => day(p.at) === 25)).toBe(false); // logged today: no streak reminder today
+    const onlyRotation = nudgePlan(s({ streakNag: false }), NOW);
+    expect(onlyRotation.every((p) => hour(p.at) !== 20 && NUDGES.includes(p.body))).toBe(true);
+    expect(nudgePlan(s({ nag: { on: false }, streakNag: false }), NOW)).toEqual([]);
   });
 
   test('never at night', () => {

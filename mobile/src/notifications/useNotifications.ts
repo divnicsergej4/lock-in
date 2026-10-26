@@ -22,7 +22,7 @@ export function useNotifications() {
   const now = Date.now();
   const k = dayKey(now);
   const doneToday = todayCount(state, now) > 0 || !!(state.chk || {})[k] || state.remDis === k;
-  const key = JSON.stringify([state.rem, state.nag, k, doneToday]);
+  const key = JSON.stringify([state.rem, state.nag, state.streakNag, k, doneToday]);
 
   useEffect(() => {
     if (!ready || demo) return;
