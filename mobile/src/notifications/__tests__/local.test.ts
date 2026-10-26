@@ -28,7 +28,7 @@ jest.mock('expo-notifications', () => {
 
 import * as Notifications from 'expo-notifications';
 
-import { NUDGES, NUDGES_GENTLE } from '@/logic/nudges';
+import { NUDGES, STREAK_NUDGE } from '@/logic/nudges';
 import { REMINDER_TITLE } from '@/logic/settings';
 import { initialState, type AppState } from '@/logic/types';
 
@@ -47,7 +47,7 @@ beforeEach(() => {
 });
 
 test('nothing is planned and nothing is asked while the permission is not given', async () => {
-  await syncLocalNotifications(state({ rem: { on: true, time: '20:00' }, nag: { on: true, every: 6 } }), NOW);
+  await syncLocalNotifications(state({ rem: { on: true, time: '20:00' }, nag: { on: true } }), NOW);
   expect(mock.__planned.size).toBe(0);
   expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled(); // never at start-up
   expect(await hasPermission()).toBe(false);
@@ -62,36 +62,44 @@ test('the permission is asked only through askPermission (a tap on a switch)', a
 
 test('reminder and nudges are planned, within the iOS limit of 64', async () => {
   mock.__perm.granted = true;
-  await syncLocalNotifications(state({ rem: { on: true, time: '20:00' }, nag: { on: true, every: 6 }, roast: 0 }), NOW);
+  await syncLocalNotifications(state({ rem: { on: true, time: '20:00' }, nag: { on: true } }), NOW);
   const all = ids();
   expect(all.filter((i) => i.startsWith('rem-')).length).toBe(10);
-  expect(all.filter((i) => i.startsWith('nudge-')).length).toBe(29);
+  expect(all.filter((i) => i.startsWith('nudge-')).length).toBe(29); // at 10:30 today's 9:00 is gone: 15 + 20, then 9 days × 3
   expect(all.length).toBeLessThanOrEqual(64);
   const rem = mock.__planned.get(all.find((i) => i.startsWith('rem-'))!)!;
   expect(rem.content.title).toBe(REMINDER_TITLE);
-  const nudge = mock.__planned.get(all.find((i) => i.startsWith('nudge-'))!)!;
-  expect(NUDGES_GENTLE).toContain(nudge.content.body); // Gentle roast level
   expect([...mock.__planned.values()].every((r) => r.trigger.date > NOW)).toBe(true);
 });
 
-test('No mercy uses its texts; nothing at night', async () => {
+test('Sergej’s texts go out as they are; 20:00 is the streak one; nothing at night', async () => {
   mock.__perm.granted = true;
-  await syncLocalNotifications(state({ nag: { on: true, every: 6 }, roast: 2 }), NOW);
-  const bodies = [...mock.__planned.values()].map((r) => r.content.body);
-  const allTexts = NUDGES.map((x) => x.replace(/^!/, ''));
-  expect(bodies.every((b) => allTexts.includes(b))).toBe(true);
-  expect([...mock.__planned.values()].every((r) => { const h = new Date(r.trigger.date).getHours(); return h >= 9 && h < 23; })).toBe(true);
+  await syncLocalNotifications(state({ nag: { on: true } }), NOW);
+  for (const r of mock.__planned.values()) {
+    const h = new Date(r.trigger.date).getHours();
+    expect(h >= 9 && h < 23).toBe(true);
+    if (h === 20) expect(r.content.body).toBe(STREAK_NUDGE);
+    else expect(NUDGES).toContain(r.content.body);
+  }
+});
+
+test('logging something today drops the rest of today’s nudges and plans one at 21:00', async () => {
+  mock.__perm.granted = true;
+  await syncLocalNotifications(state({ nag: { on: true } }), NOW);
+  await syncLocalNotifications(state({ nag: { on: true }, exp: [{ amt: 3, cat: 'Coffee', t: NOW - 1000, note: 'x' }] }), NOW);
+  const today = [...mock.__planned.values()].filter((r) => new Date(r.trigger.date).getDate() === 25);
+  expect(today.map((r) => new Date(r.trigger.date).getHours())).toEqual([21]);
 });
 
 test('planning again replaces ours (no doubles), and turning off removes them', async () => {
   mock.__perm.granted = true;
   mock.__planned.set('someone-else', { content: { body: 'x' }, trigger: { date: NOW + 1 } });
-  const s = state({ rem: { on: true, time: '20:00' }, nag: { on: true, every: 12 } });
+  const s = state({ rem: { on: true, time: '20:00' }, nag: { on: true } });
   await syncLocalNotifications(s, NOW);
   const first = mock.__planned.size;
   await syncLocalNotifications(s, NOW);
   expect(mock.__planned.size).toBe(first);
-  await syncLocalNotifications(state({ rem: { on: false, time: '20:00' }, nag: { on: false, every: 12 } }), NOW);
+  await syncLocalNotifications(state({ rem: { on: false, time: '20:00' }, nag: { on: false } }), NOW);
   expect(ids()).toEqual(['someone-else']); // only ours are touched
 });
 

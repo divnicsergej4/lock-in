@@ -1,91 +1,103 @@
-import { NUDGES, NUDGES_GENTLE, nudgeHours, nudgeTimes, pickNudge, QUIET_FROM, QUIET_UNTIL, reminderTimes } from '../nudges';
+import { LOGGED_HOUR, NUDGES, nudgePlan, reminderTimes, rotationText, STREAK_NUDGE } from '../nudges';
 import { initialState, type AppState } from '../types';
 
-// 25 Oct 2026, 10:30 on the phone's clock (jest runs in the machine's time zone; the logic uses local hours too).
-const NOW = new Date(2026, 9, 25, 10, 30).getTime();
+// 25 Oct 2026 on the phone's clock (jest runs in the machine's time zone; the logic uses local hours too).
+const at = (d: number, h: number, m = 0) => new Date(2026, 9, d, h, m).getTime();
+const NOW = at(25, 8, 30);
 const hour = (t: number) => new Date(t).getHours();
 const day = (t: number) => new Date(t).getDate();
+const s = (over: Partial<AppState> = {}): AppState => ({ ...initialState, ...over });
+const logged = (t: number) => s({ exp: [{ amt: 4, cat: 'Coffee', t, note: 'latte' }] });
 
-describe('nudges: when', () => {
-  test('every 6, 12 or 24 hours from 9:00, never at night', () => {
-    expect(nudgeHours(6)).toEqual([9, 15, 21]);
-    expect(nudgeHours(12)).toEqual([9, 21]);
-    expect(nudgeHours(24)).toEqual([9]);
-  });
-
-  test('no nudge between 23:00 and 9:00, for 10 days, only times still ahead', () => {
-    for (const every of [6, 12, 24] as const) {
-      const ts = nudgeTimes(NOW, every);
-      expect(ts.every((t) => hour(t) >= QUIET_UNTIL && hour(t) < QUIET_FROM)).toBe(true);
-      expect(ts.every((t) => t > NOW)).toBe(true);
-      expect(new Set(ts.map(day)).size).toBe(every === 24 ? 9 : 10); // at 10:30 today's 9:00 is gone; 6 h and 12 h still have 21:00 today
-    }
-    const six = nudgeTimes(NOW, 6);
-    expect(six.slice(0, 3).map(hour)).toEqual([15, 21, 9]); // today 9:00 is already past
-    expect(six.length).toBe(29);
-  });
-
-  test('late in the evening the next one is tomorrow at 9', () => {
-    const late = new Date(2026, 9, 25, 22, 59).getTime();
-    const [first] = nudgeTimes(late, 6);
-    expect([day(first), hour(first)]).toEqual([26, 9]);
+describe('Sergej’s texts, exactly', () => {
+  test('11 in the rotation, the streak one apart', () => {
+    expect(NUDGES).toEqual([
+      'remember what you’re saving for, g',
+      'every bit you don’t spend today goes to your goal😉',
+      'these ‘small’ purchases add up by the end of the month',
+      'boy, you gonna save up a little bit or what?',
+      'lock in. no random buys today. stay focused.',
+      'your goal won’t fund itself. keep going 💪',
+      'future you is watching. make them proud 😌',
+      'a coffee here, a snack there… it all counts',
+      'skip one thing today. your savings will thank you',
+      'today’s a good day to spend nothing 😌',
+      'you don’t need it. you just saw it.',
+    ]);
+    expect(STREAK_NUDGE).toBe('you’ve been doing good. don’t ruin the streak now 🔥');
+    expect(NUDGES).not.toContain(STREAK_NUDGE);
   });
 });
 
-describe('nudges: which text, by roast level', () => {
-  const seq = (...v: number[]) => { let i = 0; return () => v[i++ % v.length]; };
-  const hard = NUDGES.filter((x) => x[0] === '!').map((x) => x.slice(1));
-  const normal = NUDGES.filter((x) => x[0] !== '!');
-
-  test('15 texts in all', () => {
-    expect(NUDGES_GENTLE.length + NUDGES.length).toBe(15);
-  });
-
-  test('Gentle: only the gentle ones', () => {
-    for (let i = 0; i < 50; i++) expect(NUDGES_GENTLE).toContain(pickNudge(0));
-  });
-
-  test('Normal: never the strong ones', () => {
-    for (let i = 0; i < 200; i++) expect(normal).toContain(pickNudge(1));
-  });
-
-  test('No mercy: strong about 70% of the time, the "!" marker is never shown', () => {
-    expect(hard).toContain(pickNudge(2, seq(0.69, 0)));
-    expect(normal).toContain(pickNudge(2, seq(0.7, 0)));
-    let strong = 0;
-    for (let i = 0; i < 4000; i++) {
-      const t = pickNudge(2);
-      expect(t.startsWith('!')).toBe(false);
-      if (hard.includes(t)) strong++;
+describe('when', () => {
+  test('nothing logged: 9, 15 and 20 every day; 20 is always the streak one', () => {
+    const plan = nudgePlan(s(), NOW);
+    expect(plan.slice(0, 3).map((p) => [day(p.at), hour(p.at)])).toEqual([[25, 9], [25, 15], [25, 20]]);
+    expect(plan.length).toBe(30); // 10 days × 3
+    for (const p of plan) {
+      expect([9, 15, 20]).toContain(hour(p.at));
+      if (hour(p.at) === 20) expect(p.body).toBe(STREAK_NUDGE);
+      else expect(NUDGES).toContain(p.body);
     }
-    expect(strong / 4000).toBeGreaterThan(0.65);
-    expect(strong / 4000).toBeLessThan(0.75);
+  });
+
+  test('something logged today: the rest of today is dropped, one comes at 21 instead; tomorrow starts over', () => {
+    const now = at(25, 12);
+    const plan = nudgePlan(logged(at(25, 11)), now);
+    const today = plan.filter((p) => day(p.at) === 25);
+    expect(today.map((p) => hour(p.at))).toEqual([LOGGED_HOUR]);
+    expect(NUDGES).toContain(today[0].body);
+    expect(plan.filter((p) => day(p.at) === 26).map((p) => hour(p.at))).toEqual([9, 15, 20]);
+  });
+
+  test('"I didn’t spend anything today" counts as logged (it keeps the streak)', () => {
+    const plan = nudgePlan(s({ chk: { '2026-10-25': 1 } }), at(25, 20, 30));
+    expect(plan.filter((p) => day(p.at) === 25).map((p) => hour(p.at))).toEqual([21]);
+  });
+
+  test('nothing logged and it is already 20:30: nothing more today (21 is only for logged days)', () => {
+    const plan = nudgePlan(s(), at(25, 20, 30));
+    expect(day(plan[0].at)).toBe(26);
+  });
+
+  test('never at night', () => {
+    for (const p of [...nudgePlan(s(), NOW), ...nudgePlan(logged(NOW), NOW)]) {
+      expect(hour(p.at)).toBeGreaterThanOrEqual(9);
+      expect(hour(p.at)).toBeLessThan(23);
+    }
+  });
+
+  test('the rotation never repeats a text twice in a row and uses all of them', () => {
+    const slots: number[] = [];
+    for (let d = 1; d <= 20; d++) for (const h of [9, 15, 21]) slots.push(at(d, h));
+    const texts = slots.map(rotationText);
+    for (let i = 1; i < texts.length; i++) expect(texts[i]).not.toBe(texts[i - 1]);
+    expect(new Set(texts).size).toBe(NUDGES.length);
   });
 });
 
 describe('expense reminder: when', () => {
-  const s = (over: Partial<AppState>): AppState => ({ ...initialState, rem: { on: true, time: '20:00' }, ...over });
+  const r = (over: Partial<AppState>): AppState => s({ rem: { on: true, time: '20:00' }, ...over });
 
   test('off: nothing', () => {
-    expect(reminderTimes({ ...initialState }, NOW)).toEqual([]);
-    expect(reminderTimes(s({ rem: { on: false, time: '20:00' } }), NOW)).toEqual([]);
+    expect(reminderTimes(s(), NOW)).toEqual([]);
+    expect(reminderTimes(r({ rem: { on: false, time: '20:00' } }), NOW)).toEqual([]);
   });
 
   test('every day at the chosen time, starting today', () => {
-    const ts = reminderTimes(s({ rem: { on: true, time: '20:15' } }), NOW);
+    const ts = reminderTimes(r({ rem: { on: true, time: '20:15' } }), NOW);
     expect(ts.length).toBe(10);
-    expect(ts.every((t) => new Date(t).getHours() === 20 && new Date(t).getMinutes() === 15)).toBe(true);
+    expect(ts.every((t) => hour(t) === 20 && new Date(t).getMinutes() === 15)).toBe(true);
     expect(day(ts[0])).toBe(25);
   });
 
   test('not today once something is logged today, "I didn’t spend" is checked, or the card was answered', () => {
-    const logged = s({ exp: [{ amt: 4, cat: 'Coffee', t: NOW - 3600_000, note: 'latte' }] });
-    expect(day(reminderTimes(logged, NOW)[0])).toBe(26);
-    expect(day(reminderTimes(s({ chk: { '2026-10-25': 1 } }), NOW)[0])).toBe(26);
-    expect(day(reminderTimes(s({ remDis: '2026-10-25' }), NOW)[0])).toBe(26);
+    expect(day(reminderTimes(r({ exp: [{ amt: 4, cat: 'Coffee', t: NOW - 3600_000, note: 'latte' }] }), NOW)[0])).toBe(26);
+    expect(day(reminderTimes(r({ chk: { '2026-10-25': 1 } }), NOW)[0])).toBe(26);
+    expect(day(reminderTimes(r({ remDis: '2026-10-25' }), NOW)[0])).toBe(26);
   });
 
   test('time already past today: from tomorrow', () => {
-    expect(day(reminderTimes(s({ rem: { on: true, time: '08:00' } }), NOW)[0])).toBe(26);
+    expect(day(reminderTimes(r({ rem: { on: true, time: '08:00' } }), NOW)[0])).toBe(26);
   });
 });

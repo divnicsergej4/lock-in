@@ -444,11 +444,17 @@ pravo lokalno obaveštenje u izabrano vreme, sa tekstom kartice („You haven't 
 them now while you remember.“), i to samo ako tog dana još ništa nije upisano, čekirano „I didn’t spend anything
 today“ ni odgovoreno na karticu. Planira se 10 dana unapred i ponovo pri svakom otvaranju aplikacije.
 
-**2. „Don’t waste money“** (Settings > Reminder): lokalno, bez servera, podrazumevano isključeno, a kad se
-uključi: na 6 h (9, 15 i 21 h), 12 h (9 i 21 h) ili 24 h (9 h); nikad od 23 do 9 h po vremenu telefona. Tekst se
-bira po jačini poruka kao kod fora (Gentle: samo blagi; Normal: obični; No mercy: jaki oko 70% vremena). Tekstovi
-su **predlog** (`mobile/src/logic/nudges.ts`) dok ih Sergej ne odobri ili prepravi. Planira se 10 dana unapred,
-ukupno najviše 40 obaveštenja (iOS dozvoljava 64); ko ne otvori aplikaciju 10 dana, prestaju.
+**2. „Don’t waste money“** (Settings > Reminder): lokalno, bez servera, podrazumevano isključeno. Raspored i
+tekstovi su Sergejevi (26. oktobra 2026, `mobile/src/logic/nudges.ts`, prepisani tačno):
+- dan bez upisa: **9 h i 15 h** jedan tekst iz rotacije (11 tekstova, redom, nikad isti dva puta zaredom) i
+  **20 h** „you’ve been doing good. don’t ruin the streak now 🔥“ (samo tada, nije deo rotacije);
+- čim se tog dana nešto upiše (ili „I didn’t spend anything today“), ostatak tog dana otpada i stiže **jedno u
+  21 h** iz rotacije; sutradan opet 9, 15, 20;
+- nikad od 23 do 9 h. Izbor „svakih 6 / 12 / 24 h“ je izbačen jer ga ovaj raspored zamenjuje.
+Tekstovi nisu podeljeni po jačini poruka (Gentle / Normal / No mercy): svi idu u svakom modu, dok Sergej ne označi
+koji su jaki. Planira se 10 dana unapred (najviše 30 + 10 podsetnika; iOS dozvoljava 64) i ponovo pri svakom
+otvaranju i upisu; ko ne otvori aplikaciju 10 dana, prestaju. Ako su uključeni i podsetnik za troškove u 20:00 i
+ovaj, u 20 h na dan bez upisa stignu oba.
 
 **3. Zajednički cilj (push)**, migracija `0005_goal_push.sql`, funkcija `send-goal-push`, podešavanje 3.9:
 - kad neko uplati („Marko added €50 to Summer trip“), uđe u cilj ili izađe (i kad obriše nalog), obaveštenje dobijaju
@@ -472,5 +478,6 @@ ukupno najviše 40 obaveštenja (iOS dozvoljava 64); ko ne otvori aplikaciju 10 
 
 Testovi: `backend/tests/push.test.mjs` (43 provere: tokeni, ko šta dobija, isteklo, izlazak, brisanje naloga,
 spajanje na 10 minuta, ponovni pokušaj), `send-goal-push/handler_test.ts` (7: tekstovi, spajanje, tajna, po 100,
-Expo pao, obrisan telefon), `mobile/src/logic/__tests__/nudges.test.ts` (11: vremena, noć, jačina poruka, podsetnik)
-i `mobile/src/notifications/__tests__/local.test.ts` (6: ništa bez dozvole, dozvola samo na dodir, ≤ 64, bez duplikata).
+Expo pao, obrisan telefon), `mobile/src/logic/__tests__/nudges.test.ts` (11: tačni tekstovi, 9/15/20 bez upisa,
+21 posle upisa, noć, rotacija, podsetnik) i `mobile/src/notifications/__tests__/local.test.ts` (7: ništa bez dozvole,
+dozvola samo na dodir, ≤ 64, 20 h je streak tekst, upis prebacuje na 21 h, bez duplikata).

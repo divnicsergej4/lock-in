@@ -1,12 +1,12 @@
 // Local notifications on the phone (no server): the expense reminder and the "don't waste money" nudges.
-// Everything ahead is planned for DAYS_AHEAD days and planned again whenever the app opens or a setting,
-// the roast level or today's entries change. The permission is never asked here: only when the user turns a
+// Everything ahead is planned for DAYS_AHEAD days and planned again whenever the app opens or a setting or
+// today's entries change (logging something drops the rest of today's nudges and moves one to 21:00). The permission is never asked here: only when the user turns a
 // reminder on (askPermission), not when the app starts.
 
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import { nudgeTimes, pickNudge, reminderTimes } from '@/logic/nudges';
+import { nudgePlan, reminderTimes } from '@/logic/nudges';
 import { REMINDER_TEXT, REMINDER_TITLE } from '@/logic/settings';
 import type { AppState } from '@/logic/types';
 
@@ -51,12 +51,12 @@ export async function askPermission(): Promise<boolean> {
 let queue: Promise<void> = Promise.resolve();
 
 /** Plans our notifications again from `s` (one at a time, so two quick changes cannot double them). */
-export function syncLocalNotifications(s: AppState, now = Date.now(), rand: () => number = Math.random): Promise<void> {
-  queue = queue.then(() => sync(s, now, rand)).catch(() => {});
+export function syncLocalNotifications(s: AppState, now = Date.now()): Promise<void> {
+  queue = queue.then(() => sync(s, now)).catch(() => {});
   return queue;
 }
 
-async function sync(s: AppState, now: number, rand: () => number) {
+async function sync(s: AppState, now: number) {
   if (Platform.OS === 'web') return;
   const planned = await Notifications.getAllScheduledNotificationsAsync();
   await Promise.all(planned.filter((n) => OURS.test(n.identifier)).map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)));
@@ -69,5 +69,5 @@ async function sync(s: AppState, now: number, rand: () => number) {
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId: CHANNEL_REMINDERS },
     });
   for (const t of reminderTimes(s, now)) await plan(`rem-${t}`, t, { title: REMINDER_TITLE, body: REMINDER_TEXT });
-  if (s.nag?.on) for (const t of nudgeTimes(now, s.nag.every)) await plan(`nudge-${t}`, t, { body: pickNudge(s.roast, rand) });
+  if (s.nag?.on) for (const n of nudgePlan(s, now)) await plan(`nudge-${n.at}`, n.at, { body: n.body });
 }

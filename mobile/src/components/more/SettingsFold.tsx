@@ -11,7 +11,6 @@ import { SvgXml } from 'react-native-svg';
 import { accessText } from '@/auth/access';
 import { useAuth } from '@/auth/AuthProvider';
 import { supabase } from '@/auth/supabase';
-import { DEFAULT_NUDGE_EVERY, NUDGE_EVERY, type NudgeEvery } from '@/logic/nudges';
 import { askPermission } from '@/notifications/local';
 import { disableGoalAlerts, enableGoalAlerts } from '@/notifications/push';
 import { useAppToast } from '@/components/AppToast';
@@ -229,7 +228,6 @@ export function SettingsFold() {
     update((s) => ({ ...s, goalPush: on }));
     toast(on ? 'Shared goal alerts on' : 'Shared goal alerts off');
   };
-  const nag = { on: !!state.nag?.on, every: state.nag?.every ?? DEFAULT_NUDGE_EVERY };
   const deleteAccount = async () => {
     if (deleting) return;
     if (!sureDel) {
@@ -360,33 +358,17 @@ export function SettingsFold() {
         <Row
           icon="coin"
           title="Don’t waste money"
-          hint="A short nudge now and then. Never between 11 pm and 9 am"
+          hint="At 9 am, 3 pm and 8 pm until you log something that day, then once at 9 pm"
           top
           right={
             <Switch
-              on={!!nag.on}
+              on={!!state.nag?.on}
               label="Don’t waste money nudges"
               onChange={async (on) => {
                 if (on && !(await askPermission())) return toast('Allow notifications for Lock In in your phone’s Settings first.');
-                update((s) => ({ ...s, nag: { on, every: s.nag?.every ?? DEFAULT_NUDGE_EVERY } }));
+                update((s) => ({ ...s, nag: { on } }));
                 toast(on ? 'Nudges on' : 'Nudges off');
               }}
-            />
-          }
-        />
-        <Row
-          icon="clock"
-          title="How often"
-          top
-          right={
-            <Select
-              label="How often"
-              value={String(nag.every)}
-              onChange={(v) => update((s) => ({ ...s, nag: { on: !!s.nag?.on, every: Number(v) as NudgeEvery } }))}
-              options={NUDGE_EVERY.map((h) => ({ value: String(h), label: `Every ${h} hours` }))}
-              look={look}
-              style={{ ...inline, minWidth: 150 }}
-              textStyle={{ flex: 0 }}
             />
           }
         />

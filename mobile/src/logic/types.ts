@@ -70,7 +70,7 @@ export interface AppState {
   drw?: 'o' | 'c'; // the envelope drawer: open or closed (shut)
   rem?: { on: boolean; time: string }; // daily reminder to log expenses ("HH:MM")
   remDis?: string; // day key on which the reminder was answered with "I didn't spend today"
-  nag?: { on: boolean; every: 6 | 12 | 24 }; // "don't waste money" nudges (local notifications), off until turned on
+  nag?: { on: boolean }; // "don't waste money" nudges (local notifications, logic/nudges.ts), off until turned on
   goalPush?: boolean; // shared goal alerts were turned on on this phone (the token itself is on the server)
   tutSeen?: number; // the guided tour has been shown (1)
   team?: { n: string; t: number; c: { who: string; amt: number; t?: number }[] }; // shared goal kept on the phone (demo)
