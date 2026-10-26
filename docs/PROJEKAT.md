@@ -275,7 +275,14 @@ Urađeno:
   Dozvola se traži tek na uključivanje prekidača (ne pri pokretanju). Odluke koje nisu bile rečene: nudge je
   podrazumevano isključen dok ga korisnik ne uključi (dozvola se ne sme tražiti ranije); „I didn’t spend anything
   today“ se računa kao upis; član sa isteklom pretplatom dobija samo „left“; kad neko doda prijatelja,
-  obaveštenje ne dobijaju ni onaj ko je dodao ni dodati. Lokalna obaveštenja rade u Expo Go; push iz cilja traži
+  obaveštenje ne dobijaju ni onaj ko je dodao ni dodati.
+- Domen (`docs/DOMEN.md`): Sergej ga kupuje sam (predlog Cloudflare Registrar). Folder `web/` (engleski, statično,
+  bez praćenja): Privacy Policy, Terms of Use, Support (`support@<domen>`), početna i Turnstile stranica koju
+  aplikacija sad otvara sa domena (`https://<domen>/turnstile/`, kako Cloudflare preporučuje), postavlja se na
+  Cloudflare Pages iz grane `aplikacija` (nikako `divnicsergej4.github.io`). Privacy i Terms nisu pravni savet: u
+  HTML komentaru na vrhu je šta pravnik treba da proveri i popuni (`[OWNER NAME AND ADDRESS]`, `[COUNTRY]`,
+  `[SUPABASE REGION]`). Domen još ne postoji: mesto je označeno sa `__DOMAIN__` (`mobile/src/config/domain.ts`
+  i stranice u `web/`); dok je `DOMAIN = null`, Turnstile ne šalje token. Mejl ide sa poddomena `mail.<domen>`. Lokalna obaveštenja rade u Expo Go; push iz cilja traži
   development build, EAS projekat i Apple nalog (`docs/ZASTITA.md` 3.9).
 
 Sledeće, ovim redom:

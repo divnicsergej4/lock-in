@@ -1,23 +1,21 @@
-// Runs the Turnstile page in a WebView while "Send code" waits for a token (see src/auth/turnstile.ts).
-// Normally nothing shows; if Cloudflare wants a click, the widget appears in place with a short line above it.
-// The WebView may only load the page itself and Cloudflare's challenge; any other address is refused.
+// Runs Lock In's Turnstile page (https://<DOMAIN>/turnstile/, folder web/turnstile) in a WebView while "Send code"
+// waits for a token (see src/auth/turnstile.ts). Normally nothing shows; if Cloudflare wants a click, the widget
+// appears in place with a short line above it. The WebView may only open that page and Cloudflare's challenge.
 
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
 import { captchaBroker, captchaOn, TURNSTILE_HOSTNAME, TURNSTILE_SITE_KEY } from '@/auth/captcha';
-import { parseMessage, turnstileHtml, type BrokerState } from '@/auth/turnstile';
+import { allowedInTurnstile, parseMessage, turnstilePageUrl, type BrokerState } from '@/auth/turnstile';
 import { Small } from '@/components/home/Section';
-
-const ALLOWED = ['https://challenges.cloudflare.com/', 'about:blank', 'about:srcdoc'];
 
 export function TurnstileHost() {
   const [st, setSt] = useState<BrokerState>({ running: false, visible: false, run: 0 });
   useEffect(() => captchaBroker.subscribe(setSt), []);
   const on = captchaOn();
-  const base = `https://${TURNSTILE_HOSTNAME}/`;
-  const html = useMemo(() => (on ? turnstileHtml(TURNSTILE_SITE_KEY!) : ''), [on]);
+  const host = TURNSTILE_HOSTNAME!;
+  const uri = useMemo(() => (on ? turnstilePageUrl(host, TURNSTILE_SITE_KEY!) : ''), [on, host]);
   if (!on || !st.running) return null;
 
   return (
@@ -25,9 +23,9 @@ export function TurnstileHost() {
       {st.visible && <Small style={{ marginBottom: 6 }}>Quick check that you’re human:</Small>}
       <WebView
         key={st.run} // a new challenge for every send: a token works only once
-        source={{ html, baseUrl: base }}
-        originWhitelist={[base, ...ALLOWED]}
-        onShouldStartLoadWithRequest={(r) => r.url === base || ALLOWED.some((a) => r.url.startsWith(a))}
+        source={{ uri }}
+        originWhitelist={[`https://${host}`, 'https://challenges.cloudflare.com', 'about:blank', 'about:srcdoc']}
+        onShouldStartLoadWithRequest={(r) => allowedInTurnstile(r.url, host)}
         onMessage={(e: WebViewMessageEvent) => captchaBroker.handle(parseMessage(e.nativeEvent.data))}
         onError={() => captchaBroker.fail('load')}
         onHttpError={() => captchaBroker.fail('load')}

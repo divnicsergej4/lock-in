@@ -1,0 +1,141 @@
+<!doctype html>
+<!--
+  ZA SERGEJA (ovaj komentar se ne vidi na stranici; obriši ga kad pravnik pregleda tekst):
+  OVO NIJE PRAVNI SAVET. Tekst je napisan prema onome što aplikacija stvarno radi (kod na grani aplikacija,
+  26. oktobar 2026), ali ga pre objave mora pregledati pravnik. Neka proveri naročito:
+  1. Ko je "we" (rukovalac podacima): ti lično ili firma; ime i adresa umesto [OWNER NAME AND ADDRESS].
+  2. GDPR (EU/UK korisnici): pravni osnov za svaku vrstu podataka (ugovor, legitimni interes), da li treba
+     predstavnik u EU (čl. 27) i ugovori o obradi (DPA) sa Supabase, Resend, RevenueCat, Expo, Cloudflare.
+  3. Prenos podataka van EU (Supabase region [SUPABASE REGION], provajderi u SAD): standardne ugovorne klauzule.
+  4. SAD: CCPA/CPRA (Kalifornija) i zakoni drugih saveznih država; da li je dovoljna izjava da ne prodajemo podatke.
+  5. Deca: od koliko godina se aplikacija sme koristiti (COPPA u SAD je 13, GDPR do 16 zavisno od zemlje); tekst
+     sada kaže 13+, pravnik da potvrdi ili promeni, i da li treba provera godina.
+  6. Koliko dugo se čuvaju logovi i rezervne kopije kod provajdera (Supabase), da se upišu tačni rokovi.
+  7. Srbija: Zakon o zaštiti podataka o ličnosti, ako si rukovalac iz Srbije.
+  8. Da li tekst odgovara onome što upisuješ u App Store "App Privacy" i Google Play "Data safety" obrasce.
+  Ovaj tekst se mora menjati kad aplikacija počne da radi nešto novo (npr. analitika, novi provajder).
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy · Lock In</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <header><a class="brand" href="/">Lock In</a><nav><a href="/terms/">Terms</a><a href="/support/">Support</a></nav></header>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: October 26, 2026</p>
+
+  <p>Lock In is a spending tracker. This policy explains what data the app keeps, where, who can see it and how
+  to delete it. Lock In is run by [OWNER NAME AND ADDRESS] ("we"). Questions:
+  <a href="mailto:support@__DOMAIN__">support@__DOMAIN__</a>.</p>
+
+  <div class="card"><strong>In short:</strong> your spending stays on your phone. Our server only has your
+  account, your friends, your shared goals and whether you have a trial or subscription. No ads, no tracking,
+  and we do not sell your data.</div>
+
+  <h2>1. What stays only on your phone</h2>
+  <p>Everything you track for yourself is saved only on your phone and is never sent to us:</p>
+  <ul>
+    <li>amounts, descriptions, categories, dates and income you log;</li>
+    <li>envelopes, limits, recurring entries, subscriptions you track, your monthly plan and report;</li>
+    <li>the settings you choose, including your age if you enter it (optional) and your reminder times.</li>
+  </ul>
+  <p>Reminders and "Don’t waste money" nudges are scheduled on your phone; they need no server. If you use
+  Backup, the app shows your data as text so you can copy it yourself; it is not uploaded anywhere. This data is
+  removed with Settings &gt; Reset everything or when you delete the app.</p>
+  <p>You can use these features without an account.</p>
+
+  <h2>2. What is on our server (only if you sign in)</h2>
+  <p>An account is needed for shared goals with friends and for your trial or subscription. Then our server
+  keeps:</p>
+  <ul>
+    <li><strong>Account:</strong> your email address and the display name you choose. If you sign in with
+      Apple, we get the email Apple gives us (it can be a private relay address) and your name the first time,
+      which we use as your display name if you have none. If you sign in with Google, we get your email address,
+      and our sign-in provider also stores the name and profile picture link Google provides. There are no
+      passwords: you sign in with a 6-digit code sent to your email, with Apple or with Google.</li>
+    <li><strong>Friends:</strong> friend requests you send (the email address you invite, and whether the request
+      is waiting, accepted or declined) and your friendships.</li>
+    <li><strong>Shared goals:</strong> the goals you are in (name, target amount, currency), who is in them and who
+      added whom, and the payments each member logs into them (amount, optional note, time).</li>
+    <li><strong>Trial and subscription:</strong> until when your trial or subscription is active and which product
+      it is.</li>
+    <li><strong>Notifications:</strong> if you turn on "Shared goal alerts", a push token for your phone, and a
+      short list of what is waiting to be sent to you (deleted within a day after it is sent).</li>
+    <li><strong>Security records:</strong> a record of actions such as sending friend requests, to enforce limits
+      against spam; and technical logs kept by our hosting provider (for example IP address and time of a request)
+      to keep the service secure.</li>
+  </ul>
+
+  <h2>3. Who can see what</h2>
+  <ul>
+    <li>Nobody else can see your email address. Other people only see your display name, and only if they are
+      your friends, are in a shared goal with you, or received a friend request from you.</li>
+    <li>Everyone in a shared goal sees the goal, who is in it and every member’s payments into it. That is what
+      a shared goal is for: only add people you want to share it with.</li>
+    <li>When you invite someone by email, we send them an email saying that your display name invited them to
+      Lock In. Without a display name, it says "A friend".</li>
+    <li>If you turn on "Shared goal alerts", you get notifications such as "Marko added €50 to Summer trip" when
+      someone else in your goal pays in, joins or leaves; members who turned them on get the same about you.</li>
+  </ul>
+
+  <h2>4. Payments</h2>
+  <p>Lock In has a 7-day free trial, then a paid subscription or one-time purchase. Payment is handled only by
+  Apple (App Store) or Google (Google Play); we never see your card or bank details. We use RevenueCat to check
+  purchases: it receives your Lock In account ID and the purchase information from Apple or Google, and tells our
+  server until when your access is active.</p>
+
+  <h2>5. Services we use</h2>
+  <p>These companies process data for us, only to run the parts of Lock In listed here:</p>
+  <ul>
+    <li><strong>Supabase</strong>: our database and sign-in (all the server data in section 2), hosted in
+      [SUPABASE REGION].</li>
+    <li><strong>Resend</strong>: sends the sign-in codes and invite emails.</li>
+    <li><strong>Apple and Google</strong>: Sign in with Apple and Google sign-in, if you use them; App Store and
+      Google Play payments; delivering push notifications.</li>
+    <li><strong>RevenueCat</strong>: checking purchases (section 4).</li>
+    <li><strong>Expo</strong>: sends shared goal alerts to Apple and Google for delivery to your phone.</li>
+    <li><strong>Cloudflare</strong>: hosts this website and runs Turnstile, a check that a person, not a bot,
+      asks for a sign-in code. Turnstile looks at technical signals from your device for that check.</li>
+  </ul>
+  <p>We do not use advertising or analytics services, we do not sell or rent your data, and we do not use it to
+  track you across other apps or websites.</p>
+
+  <h2>6. How long we keep it</h2>
+  <p>We keep your server data while you have an account. When you leave a shared goal, your payments into it are
+  deleted. When the last member leaves, the goal is deleted. Notification records are deleted within a day.
+  Copies in our hosting provider’s backups and logs are deleted on their own schedule.</p>
+
+  <h2>7. Deleting your account</h2>
+  <p>In the app: Settings &gt; Danger zone &gt; Delete account. This deletes your account, email, display name,
+  friend requests, friendships, push tokens, your trial and subscription record, your membership in every shared
+  goal and your payments into them. Goals you were alone in are deleted; goals with other people stay theirs,
+  without you. Deleting your account does not cancel an App Store or Google Play subscription: cancel it in your
+  phone’s subscription settings. It does not delete the data on your phone either; use Settings &gt; Reset
+  everything for that. You can also ask us at <a href="mailto:support@__DOMAIN__">support@__DOMAIN__</a>.</p>
+
+  <h2>8. Your rights</h2>
+  <p>Depending on where you live, you can ask to see, correct, export or delete your data, or object to how we use
+  it. Most of it you can change or delete in the app yourself; for anything else write to
+  <a href="mailto:support@__DOMAIN__">support@__DOMAIN__</a>. You can also complain to your data protection
+  authority.</p>
+
+  <h2>9. Security</h2>
+  <p>There are no passwords to steal. Your sign-in on the phone is stored encrypted, with the key in the phone’s
+  secure storage (Keychain or Keystore). On the server, every table is protected so each person can only reach
+  what this policy says they can.</p>
+
+  <h2>10. Children</h2>
+  <p>Lock In is not meant for children under 13, and we do not knowingly keep data about them. If you think a
+  child has an account, write to us and we will delete it.</p>
+
+  <h2>11. Changes</h2>
+  <p>If we change what Lock In does with data, we will update this page and the date at the top.</p>
+
+  <footer><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/support/">Support</a></footer>
+</main>
+</body>
+</html>

@@ -2,17 +2,18 @@
 // With passwordless sign-in Supabase asks for a CAPTCHA token only when a code is sent (signInWithOtp);
 // Apple and Google sign-in, checking the code and refreshing the login never need one.
 //
-// Both values are public (like the anon key) and come from .env.local:
-//   EXPO_PUBLIC_TURNSTILE_SITE_KEY  the widget's site key from Cloudflare
-//   EXPO_PUBLIC_TURNSTILE_HOSTNAME  a host name in the widget's hostname list (e.g. your domain); the WebView
-//                                   page is loaded as if it came from https://<that name>
-// Without both, no token is sent, so CAPTCHA must stay OFF in Supabase, or "Send code" fails (captcha_failed).
-// The page itself runs in TurnstileHost (on the sign-in screen); the logic is in turnstile.ts.
+// The widget runs on Lock In's own page https://<DOMAIN>/turnstile/ (folder web/turnstile, Cloudflare Pages),
+// opened in a WebView by TurnstileHost on the sign-in screen; this is how Cloudflare says to use it in apps.
+// Needs both: the domain (src/config/domain.ts) and the public site key from .env.local
+// (EXPO_PUBLIC_TURNSTILE_SITE_KEY). Without them no token is sent, so CAPTCHA must stay OFF in Supabase, or
+// "Send code" fails (captcha_failed). The logic is in turnstile.ts.
+
+import { DOMAIN } from '@/config/domain';
 
 import { isHostname, isSiteKey, TokenBroker } from './turnstile';
 
 export const TURNSTILE_SITE_KEY = process.env.EXPO_PUBLIC_TURNSTILE_SITE_KEY;
-export const TURNSTILE_HOSTNAME = process.env.EXPO_PUBLIC_TURNSTILE_HOSTNAME;
+export const TURNSTILE_HOSTNAME = DOMAIN ?? undefined;
 
 export const captchaOn = (key = TURNSTILE_SITE_KEY, host = TURNSTILE_HOSTNAME) => isSiteKey(key) && isHostname(host);
 

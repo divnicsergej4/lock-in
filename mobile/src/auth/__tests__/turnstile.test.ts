@@ -1,21 +1,48 @@
+import fs from 'fs';
+import path from 'path';
+
+import { DOMAIN } from '@/config/domain';
+
 import { captchaOn } from '../captcha';
-import { CaptchaError, isHostname, isSiteKey, parseMessage, TokenBroker, turnstileHtml } from '../turnstile';
+import { allowedInTurnstile, CaptchaError, isHostname, isSiteKey, parseMessage, TokenBroker, turnstilePageUrl } from '../turnstile';
 
 const KEY = '0x4AAAAAAAabcdefGHIJKL';
+const WEB = path.resolve(__dirname, '../../../../web/turnstile');
 
-describe('Turnstile page', () => {
-  test('loads the explicit script, interaction-only, and posts the token back', () => {
-    const html = turnstileHtml(KEY);
-    expect(html).toContain('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit');
-    expect(html).toContain(`sitekey: "${KEY}"`);
-    expect(html).toContain("appearance: 'interaction-only'");
-    expect(html).toContain('ReactNativeWebView.postMessage');
+describe('Turnstile page on the domain', () => {
+  test('the app opens https://<domain>/turnstile/?sitekey=…', () => {
+    expect(turnstilePageUrl('lockintracker.com', KEY)).toBe(`https://lockintracker.com/turnstile/?sitekey=${KEY}`);
   });
 
-  test('a site key that could break out of the script is refused', () => {
-    for (const bad of ['', 'short', '"};alert(1);//', '</script><script>alert(1)</script>', 'x'.repeat(65)]) {
-      expect(() => turnstileHtml(bad)).toThrow();
+  test('only that page and Cloudflare’s challenge may load in the WebView', () => {
+    expect(allowedInTurnstile(`https://lockintracker.com/turnstile/?sitekey=${KEY}`, 'lockintracker.com')).toBe(true);
+    expect(allowedInTurnstile('https://challenges.cloudflare.com/cdn-cgi/challenge-platform/x', 'lockintracker.com')).toBe(true);
+    for (const bad of ['https://evil.com/turnstile/', 'https://lockintracker.com/privacy/', 'https://lockintracker.com.evil.com/turnstile/', 'http://lockintracker.com/turnstile/']) {
+      expect(allowedInTurnstile(bad, 'lockintracker.com')).toBe(false);
     }
+  });
+
+  test('web/turnstile speaks the same messages the app reads, and checks the site key the same way', () => {
+    const js = fs.readFileSync(path.join(WEB, 'turnstile.js'), 'utf8');
+    const html = fs.readFileSync(path.join(WEB, 'index.html'), 'utf8');
+    expect(html).toContain('src="/turnstile/turnstile.js"');
+    expect(js).toContain('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit');
+    expect(js).toContain("appearance: 'interaction-only'");
+    expect(js).toContain('/^[0-9A-Za-z_-]{10,64}$/');
+    for (const t of ["type: 'token', token: t", "type: 'error'", "type: 'show'", "type: 'hide'"]) expect(js).toContain(t);
+    expect(js).toContain('ReactNativeWebView.postMessage(JSON.stringify(m))');
+  });
+
+  test('until the domain is set, no CAPTCHA token is sent', () => {
+    if (DOMAIN === null) expect(captchaOn(KEY)).toBe(false);
+    else expect(isHostname(DOMAIN)).toBe(true);
+  });
+
+  test('a bad site key or host name is refused', () => {
+    for (const bad of ['', 'short', '"};alert(1);//', '</script><script>alert(1)</script>', 'x'.repeat(65), 'a&b=cccccccc']) {
+      expect(() => turnstilePageUrl('lockintracker.com', bad)).toThrow();
+    }
+    expect(() => turnstilePageUrl('evil.com/x?', KEY)).toThrow();
     expect(isSiteKey(KEY)).toBe(true);
     expect(isSiteKey('1x00000000000000000000AA')).toBe(true); // Cloudflare's test key
   });

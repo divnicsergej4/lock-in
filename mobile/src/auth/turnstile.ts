@@ -1,5 +1,6 @@
-// Cloudflare Turnstile (CAPTCHA) without React: the page that runs inside the WebView, the messages it sends
-// back, and the broker that hands one fresh token to each "Send code". See docs/ZASTITA.md, part 4 and 3.3.
+// Cloudflare Turnstile (CAPTCHA) without React: where the page is (web/turnstile on Lock In's domain), the
+// messages it sends back, and the broker that hands one fresh token to each "Send code". See docs/ZASTITA.md,
+// part 4 and 3.3. The page itself is web/turnstile/index.html + turnstile.js (a test checks they match this).
 //
 // The widget is Managed with appearance "interaction-only": nobody sees it unless Cloudflare wants a click,
 // and then it shows in place on the sign-in screen. (A fully invisible widget could not show that click, and
@@ -17,32 +18,19 @@ export const isSiteKey = (k: string | undefined): k is string => !!k && SITE_KEY
 export const isHostname = (h: string | undefined): h is string =>
   !!h && /^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/.test(h);
 
-/** The page loaded into the WebView. The site key is checked and JSON-encoded, so nothing can be injected. */
-export function turnstileHtml(siteKey: string): string {
+export const TURNSTILE_PATH = '/turnstile/';
+
+/** The page the WebView opens: Lock In's own page with the (public) site key; both are checked first. */
+export function turnstilePageUrl(host: string, siteKey: string): string {
+  if (!isHostname(host)) throw new Error('bad host name');
   if (!isSiteKey(siteKey)) throw new Error('bad Turnstile site key');
-  const key = JSON.stringify(siteKey);
-  return `<!doctype html><html><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>html,body{margin:0;background:transparent}#w{display:flex;justify-content:center}</style>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=go" async defer></script>
-<script>
-function post(m){window.ReactNativeWebView.postMessage(JSON.stringify(m));}
-function go(){
-  turnstile.render('#w', {
-    sitekey: ${key},
-    appearance: 'interaction-only',
-    theme: 'auto',
-    'refresh-expired': 'never',
-    callback: function(t){post({type:'token',token:t});},
-    'error-callback': function(c){post({type:'error',code:String(c||'error')}); return true;},
-    'expired-callback': function(){post({type:'error',code:'expired'});},
-    'timeout-callback': function(){post({type:'error',code:'timeout'});},
-    'unsupported-callback': function(){post({type:'error',code:'unsupported'});},
-    'before-interactive-callback': function(){post({type:'show'});},
-    'after-interactive-callback': function(){post({type:'hide'});}
-  });
+  return `https://${host}${TURNSTILE_PATH}?sitekey=${encodeURIComponent(siteKey)}`;
 }
-</script></head><body><div id="w"></div></body></html>`;
+
+/** The WebView may only go to that page and to Cloudflare's challenge, nowhere else. */
+export function allowedInTurnstile(url: string, host: string): boolean {
+  return url.startsWith(`https://${host}${TURNSTILE_PATH}`) || url.startsWith('https://challenges.cloudflare.com/')
+    || url === 'about:blank' || url === 'about:srcdoc';
 }
 
 /** Messages from the page; anything else (or junk) is ignored. */
