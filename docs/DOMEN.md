@@ -2,7 +2,8 @@
 
 Domen treba za: mejlove (kodovi za prijavu i pozivi, preko Resend-a), Turnstile (CAPTCHA), politiku privatnosti,
 uslove korišćenja i podršku (folder `web/`). Domen kupuješ sam; nikome ne šalji lozinke ni ključeve.
-U ovom fajlu `<domen>` znači tvoj domen, npr. `lockintracker.com`.
+**Domen je kupljen: `lockintracker.app`** (Cloudflare Registrar, oktobar 2026). U ovom fajlu `<domen>` znači
+`lockintracker.app`. (`.app` domeni rade samo preko HTTPS-a; Cloudflare Pages to već daje.)
 
 Ne koristi `divnicsergej4.github.io`: to je link za testere prototipa (grana `main`).
 
@@ -90,9 +91,10 @@ stranici):
 sadržaj; Turnstile stranica sme samo Cloudflare-ov challenge).
 
 **Privacy Policy i Terms nisu pravni savet.** Na vrhu oba fajla (u HTML komentaru, ne vidi se na stranici) je
-spisak šta pravnik treba da proveri. Pre objave u prodavnicama neka ih pregleda pravnik, popuni
-`[OWNER NAME AND ADDRESS]`, `[COUNTRY]` i `[SUPABASE REGION]`, pa obriši komentar. Tekst opisuje tačno ono što
-aplikacija radi danas; kad aplikacija počne da radi nešto novo sa podacima, i tekst se menja.
+spisak šta pravnik treba da proveri. Upisano je: Andrija Dmitrović, Serbia, support@lockintracker.app, Supabase u
+Frankfurtu (EU); adresa namerno nije na javnoj stranici. Pre objave u prodavnicama neka tekst pregleda pravnik, pa
+obriši komentar. Tekst opisuje tačno ono što aplikacija radi danas; kad aplikacija počne da radi nešto novo sa
+podacima, i tekst se menja.
 
 ## 4. Postavljanje `web/` na Cloudflare Pages (na tvoj domen)
 
@@ -120,17 +122,13 @@ Svaki push na granu `aplikacija` posle toga sam objavi novu verziju stranica (za
 - **App Store Connect**: Privacy Policy URL `https://<domen>/privacy/`, Support URL `https://<domen>/support/`.
 - **Google Play Console**: Privacy policy `https://<domen>/privacy/`, kontakt mejl `support@<domen>`.
 
-Napomena: Apple traži i link na politiku privatnosti **u samoj aplikaciji**; u Settings ga još nema (nije bilo
-traženo). To je sledeći mali korak kad domen postoji.
+Apple traži i link na politiku privatnosti u samoj aplikaciji: u Settings > Legal & support su Privacy Policy, Terms
+of Use i Support (otvaraju se u pregledaču).
 
-## 6. Kad kupiš domen: javi mi ga
+## 6. Domen u kodu (urađeno)
 
-U kodu je mesto jasno označeno sa `__DOMAIN__`. Kad mi napišeš domen, upisujem ga ovde:
-
-| Gde | Šta se menja |
+| Gde | Šta |
 |---|---|
-| `mobile/src/config/domain.ts` | `DOMAIN = null` → `'<domen>'` (tada se uključuje Turnstile stranica u aplikaciji) |
-| `web/privacy/index.html`, `web/terms/index.html`, `web/support/index.html` | `__DOMAIN__` u `support@__DOMAIN__` |
-
-Pretraga za proveru: `git grep -n __DOMAIN__` (posle zamene sme da ostane samo u ovom fajlu i u komentaru u
-`domain.ts`).
+| `mobile/src/config/domain.ts` | `DOMAIN = 'lockintracker.app'` (Turnstile stranica i linkovi u Settings) |
+| `web/privacy/`, `web/terms/`, `web/support/` | `support@lockintracker.app` |
+| `docs/ZASTITA.md` | Turnstile hostname, `INVITE_FROM` |

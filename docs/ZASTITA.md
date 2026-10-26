@@ -149,12 +149,12 @@ pokaže ni taj klik, pa bi sumnjiv, a pravi korisnik ostao zaglavljen.)
 
 ### 3.3 Cloudflare Turnstile (besplatno)
 1. dash.cloudflare.com > **Turnstile** > **Add widget**.
-2. Widget name „Lock In“. Hostname Management > Add hostnames: **tvoj domen** (npr. onaj sa kog idu mejlovi,
-   `lockintracker.com`; bez `https://` i bez putanje). Widget Mode: **Managed**. Pre-clearance: **No**. Create.
+2. Widget name „Lock In“. Hostname Management > Add hostnames: **`lockintracker.app`** (bez `https://` i bez
+   putanje). Widget Mode: **Managed**. Pre-clearance: **No**. Create.
 3. **Site key** (javan) ide u `mobile/.env.local`: `EXPO_PUBLIC_TURNSTILE_SITE_KEY=<site key>` (za build preko EAS-a
    isto u EAS > Environment variables). Domen se upisuje u kod (`mobile/src/config/domain.ts`, vidi
    `docs/DOMEN.md`). **Secret key** lepiš samo u Supabase (3.2, korak 9).
-4. Redosled: (a) `web/` je postavljen na domen (`docs/DOMEN.md`, deo 4) i `https://<tvoj domen>/turnstile/` se
+4. Redosled: (a) `web/` je postavljen na domen (`docs/DOMEN.md`, deo 4) i `https://lockintracker.app/turnstile/` se
    otvara; (b) site key u `.env.local`, `npx expo start`, „Send code“ mora i dalje da radi (Supabase još ne traži
    CAPTCHA i ne gleda token); (c) tek onda uključi CAPTCHA u Supabase-u (3.2, korak 9); (d) ponovo „Send code“:
    mora da stigne kod. Ako javi „Couldn’t check that you’re human“, isključi CAPTCHA u Supabase-u i javi mi.
@@ -162,7 +162,7 @@ pokaže ni taj klik, pa bi sumnjiv, a pravi korisnik ostao zaglavljen.)
    `1x00000000000000000000AA` u `.env.local` i secret `1x0000000000000000000000000000000AA` u Supabase. Pre objave
    ih zameni pravim (deo 6). I za njih aplikaciji treba domen sa postavljenom stranicom `web/turnstile`.
 
-Kako aplikacija to radi: WebView otvara Lock In-ovu stranicu `https://<tvoj domen>/turnstile/?sitekey=…`
+Kako aplikacija to radi: WebView otvara Lock In-ovu stranicu `https://lockintracker.app/turnstile/?sitekey=…`
 (folder `web/turnstile`, na Cloudflare Pages), kako Cloudflare preporučuje za mobilne aplikacije; zato domen mora
 biti u hostname listi widgeta. WebView sme da učita samo tu stranicu i `challenges.cloudflare.com`; stranica sme
 da učita samo Cloudflare-ovu skriptu (`web/_headers`). Svaki token važi jednom i 300 s, pa se za svako slanje radi
@@ -181,7 +181,7 @@ nova provera. **Nije provereno na telefonu.**
 1. Supabase > **Edge Functions > Secrets** (ili `npx supabase secrets set ...` u svom terminalu). Upiši sam, nikome ne šalji:
    - `REVENUECAT_WEBHOOK_AUTH` = `Bearer ` + dugačak nasumičan tekst (bar 40 znakova, npr. iz menadžera lozinki);
    - `RESEND_API_KEY` = Resend ključ sa dozvolom samo „Sending access“;
-   - `INVITE_FROM` = `Lock In <invites@mail.tvoj-domen.com>` (poddomen za slanje, vidi `docs/DOMEN.md`, deo 2).
+   - `INVITE_FROM` = `Lock In <invites@mail.lockintracker.app>` (poddomen za slanje, vidi `docs/DOMEN.md`, deo 2).
    `SUPABASE_URL`, `SUPABASE_ANON_KEY` i `SUPABASE_SERVICE_ROLE_KEY` Supabase sam daje funkcijama; ne upisuju se nigde.
 2. Postavljanje (u folderu `backend`, posle `npx supabase login` i `npx supabase link`):
    ```

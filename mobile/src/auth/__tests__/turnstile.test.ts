@@ -116,9 +116,10 @@ describe('token broker', () => {
 
 describe('switched on only with both public values', () => {
   test('site key and host name', () => {
-    expect(captchaOn(undefined, undefined)).toBe(false);
-    expect(captchaOn(KEY, undefined)).toBe(false);
-    expect(captchaOn(undefined, 'lockintracker.com')).toBe(false);
-    expect(captchaOn(KEY, 'lockintracker.com')).toBe(true);
+    expect(captchaOn('', '')).toBe(false);
+    expect(captchaOn(KEY, '')).toBe(false);
+    expect(captchaOn('', 'lockintracker.app')).toBe(false);
+    expect(captchaOn(KEY, 'lockintracker.app')).toBe(true);
+    expect(captchaOn(KEY)).toBe(true); // the domain from src/config/domain.ts
   });
 });
