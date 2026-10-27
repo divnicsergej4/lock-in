@@ -1,0 +1,3 @@
+# Supabase CLI: local state written by `supabase link` (project ref, versions). Not shared.
+.temp/
+.branches/
