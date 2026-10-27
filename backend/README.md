@@ -31,6 +31,11 @@ Ovde je baza za naloge, prijatelje i zajednički cilj. Lična potrošnja se ne �
 6. Isto za `supabase/migrations/0005_goal_push.sql` (posle 0004): obaveštenja iz zajedničkog cilja (`docs/ZASTITA.md`,
    delovi 3.9 i 8, uključujući cron posao).
 
+Ceo vodič za pravi projekat, sa SQL proverom posle svake migracije i proverom na dva telefona: `docs/TESTIRANJE.md`.
+Skripte za pravi projekat (samo javni URL i ključ iz `mobile/.env.local`): `scripts/check-no-password-login.mjs`
+(prijava lozinkom mora biti odbijena) i `scripts/send-test-invite.mjs` (šalje pravi poziv mejlom dok ekran ne postoji;
+radi samo dok je CAPTCHA isključena).
+
 Serverske funkcije (`supabase/functions/`: RevenueCat webhook, slanje mejla sa pozivom, brisanje naloga, slanje
 obaveštenja iz zajedničkog cilja `send-goal-push`; zajednički delovi u `_shared/`) i sve što treba
 kliknuti po dashboard-ima (Auth limiti, CAPTCHA, spend cap, Resend, RevenueCat, Expo): `docs/ZASTITA.md`.

@@ -287,6 +287,16 @@ Urađeno:
   Supabase Frankfurt (EU); adresa namerno nije na javnoj stranici. Settings > **Legal & support**: Privacy Policy,
   Terms of Use, Support (otvaraju se u pregledaču; rade i u demu). Mejl ide sa poddomena `mail.lockintracker.app`. Lokalna obaveštenja rade u Expo Go; push iz cilja traži
   development build, EAS projekat i Apple nalog (`docs/ZASTITA.md` 3.9).
+- Vodič za pravi Supabase projekat (`docs/TESTIRANJE.md`, 27. oktobar 2026; Andrija pravi projekat): projekat u
+  Frankfurtu i samo publishable ključ u `mobile/.env.local`, migracije 0001–0005 sa SQL proverom posle svake, Resend
+  (`mail.lockintracker.app`, SPF/DKIM/DMARC) i SMTP, Auth podešavanja, probna pretplata SQL-om (`product =
+  'manual_test'`), postavljanje četiri funkcije i cron za push, provera lozinke, Turnstile pa CAPTCHA, i spisak za dva
+  telefona. Redosled je promenjen u odnosu na Andrijin spisak: probna pretplata pre probe poziva, provera lozinke
+  **pre** CAPTCHA (sa CAPTCHA Supabase odbije zahtev pre provere lozinke). Aplikacija još nema ekrane za prijatelje,
+  pozive i zajednički cilj, pa se te stavke proveravaju u SQL Editor-u kao korisnik A ili B (iste baze, ista pravila),
+  a pravi mejl sa pozivom šalje nova skripta `backend/scripts/send-test-invite.mjs` (radi samo dok je CAPTCHA
+  isključena). Svi SQL blokovi iz vodiča pušteni na lokalnoj bazi sa svim migracijama (prolaze); skripte provere
+  na lažnom serveru. Na pravom projektu još ništa nije pokrenuto.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,

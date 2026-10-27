@@ -40,6 +40,9 @@ if (code === 'invalid_credentials') {
   console.log('OK: password sign-in is refused ("Invalid login credentials").');
   process.exit(0);
 }
-console.error(`Unexpected answer ${res.status} ${code ?? ''}: ${body.msg ?? body.message ?? JSON.stringify(body)}`);
-console.error(code === 'email_not_confirmed' ? 'This means the password matched: 0003 is not working.' : 'Check the URL, the key and the email.');
+const msg = body.msg ?? body.message ?? JSON.stringify(body);
+console.error(`Unexpected answer ${res.status} ${code ?? ''}: ${msg}`);
+console.error(code === 'email_not_confirmed' ? 'This means the password matched: 0003 is not working.'
+  : /captcha/i.test(`${code} ${msg}`) ? 'CAPTCHA is on, so Supabase refused before checking the password: this proves nothing. Run this check while CAPTCHA is off (docs/TESTIRANJE.md).'
+  : 'Check the URL, the key and the email.');
 process.exit(1);

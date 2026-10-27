@@ -65,6 +65,7 @@ počinje od nule, i da svaki budući FK na `auth.users` mora biti `cascade` ili 
 ## 3. Šta Andrija podešava, korak po korak
 
 ### 3.1 Supabase: baza
+Ceo redosled za pravi projekat (od `0001`), sa SQL proverom posle svake migracije: `docs/TESTIRANJE.md`, deo 2.
 1. Supabase > **SQL Editor** > New query > nalepi ceo `backend/supabase/migrations/0002_limits_and_quotas.sql` > Run
    (posle `0001`).
 2. Isto za `backend/supabase/migrations/0003_no_passwords.sql` (posle `0002`): niko nikad nema lozinku (vidi 4).
@@ -326,7 +327,8 @@ telefonu (`AppState`) ne postoji oznaka „plaćeno“. „Lock-in Pro / See pla
   1. Authentication > Users > **Add user > Create new user**: probni mejl (npr. tvoj sa `+nopw` pre `@`),
      bilo koja probna lozinka, „Auto Confirm User“ uključeno.
   2. U folderu `backend`: `node scripts/check-no-password-login.mjs <taj mejl> <ta lozinka>` (uzima URL i anon ključ
-     iz `mobile/.env.local`). Mora da ispiše `OK: password sign-in is refused`.
+     iz `mobile/.env.local`). Mora da ispiše `OK: password sign-in is refused`. Radi se **dok je CAPTCHA isključena**:
+     kad je uključena, Supabase odbije zahtev pre nego što pogleda lozinku (skripta tada to i kaže).
   3. SQL iz 3.1, korak 2 mora da vrati `0`. Pa obriši tog probnog korisnika.
 
 ## 5. Provera ključeva i RLS (25. oktobar 2026)
