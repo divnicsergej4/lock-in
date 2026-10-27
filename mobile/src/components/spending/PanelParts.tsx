@@ -27,8 +27,8 @@ export function PanelHead({ title, tag }: { title: string; tag?: string }) {
       </Text>
       {!!tag && (
         <View style={st.tag}>
-          {/* the glow is drawn once and kept as a bitmap; only its opacity changes */}
-          <Animated.View shouldRasterizeIOS renderToHardwareTextureAndroid style={[st.tagDot, { backgroundColor: c.accent, boxShadow: `0 0 6px ${c.accent}` }, blink]} />
+          {/* the glow is drawn once and kept as a bitmap (iOS); only its opacity changes */}
+          <Animated.View shouldRasterizeIOS style={[st.tagDot, { backgroundColor: c.accent, boxShadow: `0 0 6px ${c.accent}` }, blink]} />
           <Text style={[st.tagT, { color: c.accent }]}>{tag.toUpperCase()}</Text>
         </View>
       )}

@@ -4,6 +4,7 @@
 
 import { useIsFocused } from 'expo-router';
 import { Children, createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { Platform } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 let lastTab: number | null = null;
@@ -34,7 +35,13 @@ export function SlideIn({ i, children }: { i: number; children: ReactNode }) {
     k.value = withDelay(i * 60, withTiming(1, { duration: 450, easing: Easing.bezier(0.2, 0.8, 0.2, 1) }));
   }, [play, dir, i, k, d]);
   const anim = useAnimatedStyle(() => ({ opacity: k.value, transform: [{ translateX: 34 * d.value * (1 - k.value) }] }));
-  return <Animated.View style={anim}>{children}</Animated.View>;
+  // Android: the section fades as one picture, like on iOS; otherwise every layer in it is made see-through
+  // on its own and overlapping parts (the ring's panels, the drawer's folders) show through each other
+  return (
+    <Animated.View needsOffscreenAlphaCompositing={Platform.OS === 'android'} style={anim}>
+      {children}
+    </Animated.View>
+  );
 }
 
 /** Wraps each child in SlideIn, in order. */

@@ -36,7 +36,10 @@ export function daysInMonth(t: number): number {
   return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 }
 
+// made once (see fmt in format.ts: on Android each toLocaleDateString() builds a new formatter in Java)
+const DF = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
 /** "Oct 22, 2026" */
 export function formatDate(t: number): string {
-  return new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return DF.format(new Date(t));
 }

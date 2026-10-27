@@ -35,6 +35,7 @@ import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
 // iOS orders the panels by real depth (see poseMatrix); Android and the web follow zIndex
 const IOS = Platform.OS === 'ios';
+const ANDROID = Platform.OS === 'android';
 
 /** What a panel's content is given. */
 export interface PanelProps {
@@ -72,6 +73,9 @@ function RingPanel({
 }) {
   const style = useAnimatedStyle(() => {
     const q = hPose(i, p.value, sp.value, L);
+    // Android: the panel turning to the front goes on top in the same frame, on the UI thread (the
+    // zIndex from React comes only after JavaScript has caught up)
+    if (ANDROID) return { opacity: q.opacity, zIndex: i === hm(Math.round(p.value)) ? 60 : 20, transform: poseTransform(q) };
     if (!IOS) return { opacity: q.opacity, transform: poseTransform(q) };
     return { opacity: q.opacity, transform: [{ matrix: poseMatrix(q, i === hm(Math.round(p.value))) }] };
   });
@@ -82,8 +86,10 @@ function RingPanel({
     const k = bezier([0.42, 0, 0.58, 1], ph < 0.5 ? ph / 0.5 : (1 - ph) / 0.5);
     return { transform: [{ translateY: -5 * k }] };
   });
+  // needsOffscreenAlphaCompositing: on Android a fading panel is drawn as one picture; otherwise each of
+  // its layers is made see-through on its own and the panels show through each other (iOS always does this)
   return (
-    <Animated.View style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}>
+    <Animated.View needsOffscreenAlphaCompositing={ANDROID} style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}>
       <Animated.View style={float}>
         <HoloPanel w={L.pw} h={h} dim={dim} activation={activation}>
           {children}
@@ -347,8 +353,9 @@ function Dot({ on, color, glow, onPress }: { on: boolean; color: string; glow: s
   const anim = useAnimatedStyle(() => ({ width: w.value }));
   return (
     <Pressable accessibilityRole="button" accessibilityState={{ selected: on }} onPress={onPress} hitSlop={8}>
-      {/* the glow is kept as a bitmap instead of a shadow redrawn every frame */}
-      <Animated.View shouldRasterizeIOS renderToHardwareTextureAndroid style={[st.dot, { backgroundColor: on ? c.accent : color, boxShadow: on ? glow : undefined }, anim]} />
+      {/* the glow is kept as a bitmap instead of a shadow redrawn every frame (iOS; Android's bitmap would
+          cut off the glow, which lies outside the dot) */}
+      <Animated.View shouldRasterizeIOS style={[st.dot, { backgroundColor: on ? c.accent : color, boxShadow: on ? glow : undefined }, anim]} />
     </Pressable>
   );
 }

@@ -1,6 +1,21 @@
+// One formatter for the whole app, made once: on Android, Hermes runs Intl through Java, and
+// toLocaleString() builds a new formatter on every call (slow enough to hold up taps when a screen shows
+// many amounts). Same output as Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 }).
+const NF = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+const seen = new Map<number, string>();
+
 /** Money/number formatting like the prototype's fmt(): en-US grouping, up to 2 decimals. */
 export function fmt(n: number): string {
-  return Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 });
+  const v = Number(n);
+  // 0 and -0 are one key in a Map but print differently
+  if (v === 0) return NF.format(v);
+  let s = seen.get(v);
+  if (s === undefined) {
+    if (seen.size > 5000) seen.clear();
+    s = NF.format(v);
+    seen.set(v, s);
+  }
+  return s;
 }
 
 export function fmt0(n: number): string {

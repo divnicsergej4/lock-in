@@ -3,7 +3,9 @@
 // (.fopen.pull); "Put it back" (or tapping its folder) flies it home: the card turns into the small
 // folder, arcs up over its slot and drops in with a little bounce, nudging the folders in front of it.
 // The handle opens and closes the drawer, by a tap or by dragging. Every motion runs on the UI thread
-// from one clock per animation; the still parts (drawer inside, folders, front) are kept as bitmaps.
+// from one clock per animation; the still parts (drawer inside, folders, front) are kept as bitmaps on
+// iOS (not on Android: there the bitmap ends at the view's edge, which would cut off the folder bodies
+// below their 44 px slots and the shadows).
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View, type LayoutRectangle } from 'react-native';
@@ -152,7 +154,7 @@ function Folder({
         style={StyleSheet.absoluteFill}
       >
         {/* drawn once and kept as a bitmap: the shadows would otherwise be redrawn every frame */}
-        <View shouldRasterizeIOS renderToHardwareTextureAndroid style={StyleSheet.absoluteFill}>
+        <View shouldRasterizeIOS style={StyleSheet.absoluteFill}>
           <View style={[st.fbody, { backgroundColor: L.body, backgroundImage: L.bodyOverlay, boxShadow: shadowCss(L.shSlot) }]}>
             <Text style={st.famt} onLayout={(ev) => onAmt(ev.nativeEvent.layout)}>
               {fmt(e.b)}
@@ -386,7 +388,7 @@ function Card({
       </View>
       <View onLayout={(ev) => onBody(ev.nativeEvent.layout)} style={st.fobody}>
         {/* the card's look (colour, shine, big shadow) is a bitmap under its contents */}
-        <View shouldRasterizeIOS renderToHardwareTextureAndroid style={[StyleSheet.absoluteFill, st.fobodyBg, { backgroundColor: L.cardBody, backgroundImage: L.cardOverlay, boxShadow: shadowCss(L.shCard) }]} />
+        <View shouldRasterizeIOS style={[StyleSheet.absoluteFill, st.fobodyBg, { backgroundColor: L.cardBody, backgroundImage: L.cardOverlay, boxShadow: shadowCss(L.shCard) }]} />
         <Text style={st.foamt} onLayout={(ev) => onAmt(ev.nativeEvent.layout)}>
           {card.amount + ' '}
           <Text style={st.foamtS}>{state.cur}</Text>
@@ -702,7 +704,6 @@ export function Drawer({ play, pullOut }: { play: number; pullOut?: { i: number;
           <View style={st.fstack}>
             <View
               shouldRasterizeIOS
-              renderToHardwareTextureAndroid
               style={[
                 st.fstackBg,
                 light
@@ -732,7 +733,6 @@ export function Drawer({ play, pullOut }: { play: number; pullOut?: { i: number;
             accessibilityRole="button"
             accessibilityLabel="Open or close the drawer"
             shouldRasterizeIOS
-            renderToHardwareTextureAndroid
             style={[
               st.dfront,
               light

@@ -100,11 +100,11 @@ export function HoloPanel({
   return (
     <View style={[st.vzp, { width: w, height: h }]}>
       {/* the panel's still look (gradient, border, grid, corner marks and its three shadows) is drawn once
-          and kept as a bitmap; otherwise iOS redraws the masked shadows on every frame of a scroll */}
+          and kept as a bitmap; otherwise iOS redraws the masked shadows on every frame of a scroll (not on
+          Android: its bitmap ends at the panel's edge and would cut the glow and the shadow off) */}
       <View
         pointerEvents="none"
         shouldRasterizeIOS
-        renderToHardwareTextureAndroid
         style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: k.panelShadow }]}
       >
         {!!h && (

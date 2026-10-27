@@ -7,6 +7,10 @@ import { fmt } from './format';
 import { dayInOut, monthByCategory } from './money';
 import type { AppState } from './types';
 
+// made once (see fmt in format.ts: on Android each toLocaleDateString() builds a new formatter in Java)
+const MONTH_SHORT = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+const MONTH_LONG = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
+
 // ---------------- donut: top 5 categories this month ----------------
 
 export const DONUT_R = 88;
@@ -38,7 +42,7 @@ export function donut(s: AppState, now: number, selected?: string): Donut {
   const ks = Object.keys(a.byCat)
     .sort((x, y) => a.byCat[y] - a.byCat[x])
     .slice(0, 5);
-  const month = new Date(now).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  const month = MONTH_SHORT.format(new Date(now));
   if (!ks.length) return { month, empty: true, arcs: [], selected: '', selectedAmount: 0, caption: '', rows: [] };
   let tot = 0;
   ks.forEach((k) => (tot += a.byCat[k]));
@@ -196,7 +200,7 @@ export function calendar(s: AppState, year: number, month: number, now: number):
       today: td.getFullYear() === year && td.getMonth() === month && td.getDate() === i,
     });
   }
-  const title = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) + ' (' + fmt(total) + ' ' + s.cur + ')';
+  const title = MONTH_LONG.format(new Date(year, month, 1)) + ' (' + fmt(total) + ' ' + s.cur + ')';
   return { title, cells, total };
 }
 
