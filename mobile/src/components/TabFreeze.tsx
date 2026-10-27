@@ -22,12 +22,12 @@ function Suspender({ freeze, children }: { freeze: boolean; children: ReactNode 
 }
 
 interface Nav {
-  isFocused: () => boolean;
   addListener: (type: 'focus' | 'blur', cb: () => void) => () => void;
 }
 
 export function TabFreeze({ navigation, children }: { navigation: Nav; children: ReactNode }) {
-  const [front, setFront] = useState(() => navigation.isFocused());
+  // a tab is first drawn when it is opened (the tabs are lazy), so it starts in front; the listeners say the rest
+  const [front, setFront] = useState(true);
   const [frozen, setFrozen] = useState(false);
   useEffect(() => {
     const off1 = navigation.addListener('focus', () => setFront(true));
