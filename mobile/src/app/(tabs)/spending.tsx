@@ -8,6 +8,7 @@ import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Hero } from '@/components/home/Hero';
+import { KeyboardSpace } from '@/components/keyboard';
 import { Sections, TabEntrance } from '@/components/TabEntrance';
 import { useTabPage } from '@/components/tabPage';
 import { CalendarPanel } from '@/components/spending/CalendarPanel';
@@ -19,7 +20,6 @@ import { Transactions } from '@/components/spending/Transactions';
 import { useTheme } from '@/theme';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
-
 export default function Spending() {
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
@@ -91,6 +91,7 @@ export default function Spending() {
           <PatternsFold />
         </Sections>
       </TabEntrance>
+      <KeyboardSpace />
     </AnimatedScrollView>
   );
 }

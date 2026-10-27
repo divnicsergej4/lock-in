@@ -1,10 +1,11 @@
-// The app's toast (prototype #toast): a bar above the tab bar that shows for 5.2 s. Line breaks are kept
+// The app's toast (prototype #toast): a bar just above the tab bar that shows for 5.2 s, or until the next
+// touch. Line breaks are kept
 // (white-space: pre-line). In the prototype it appears and disappears at once (transition: none).
 // During the guided tour it moves to the top, or to the bottom when the light or the bubble is there
 // (prototype body.tuton #toast).
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { StyleSheet, Text, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -19,15 +20,30 @@ export const useAppToast = () => useContext(Ctx);
 export function AppToastProvider({ children }: { children: ReactNode }) {
   const [text, setText] = useState('');
   const t = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const on = useRef(false);
   const show = useCallback((msg: string) => {
     setText(msg);
+    on.current = !!msg;
     if (t.current) clearTimeout(t.current);
-    t.current = setTimeout(() => setText(''), 5200);
+    t.current = setTimeout(() => {
+      on.current = false;
+      setText('');
+    }, 5200);
   }, []);
   useEffect(() => () => void (t.current && clearTimeout(t.current)), []);
+  // the toast never stays over a button the user is reaching for: the next touch anywhere puts it away (the
+  // touch itself still goes through to what is under it)
+  const touch = useCallback(() => {
+    if (!on.current) return;
+    on.current = false;
+    if (t.current) clearTimeout(t.current);
+    setText('');
+  }, []);
   return (
     <Ctx.Provider value={show}>
-      {children}
+      <View style={{ flex: 1 }} onTouchStart={touch}>
+        {children}
+      </View>
       <AppToast text={text} />
     </Ctx.Provider>
   );
@@ -39,7 +55,8 @@ function AppToast({ text }: { text: string }) {
   const { c } = useTheme();
   const th = useSharedValue(52);
   const place = useAnimatedStyle(() => {
-    if (!tourOnSV.value) return { top: undefined, bottom: 98 + insets.bottom };
+    // prototype: bottom: calc(78px + env(safe-area-inset-bottom)), just above the tab bar
+    if (!tourOnSV.value) return { top: undefined, bottom: 78 + insets.bottom };
     const yT = insets.top + 54;
     const yB = vh - th.value - 16;
     const H = tourHole.value;

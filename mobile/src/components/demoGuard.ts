@@ -6,12 +6,12 @@ import { useCallback } from 'react';
 
 import { useAppToast } from '@/components/AppToast';
 import { DEMO_NO } from '@/logic/demo';
-import { useStore } from '@/store/StoreProvider';
+import { useDemo } from '@/store/StoreProvider';
 
 let last = 0;
 
 export function useDemoGuard() {
-  const { demo } = useStore();
+  const demo = useDemo();
   const toast = useAppToast();
   const no = useCallback(() => {
     if (Date.now() - last > 2500) {

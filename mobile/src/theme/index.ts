@@ -1,4 +1,4 @@
-import { useStore } from '@/store/StoreProvider';
+import { useThemeName } from '@/store/StoreProvider';
 import type { ThemeName } from '@/logic/types';
 
 // Colours from the prototype's CSS (dark is the default, html[data-theme=light] the light theme),
@@ -167,7 +167,6 @@ export const inter = {
 export const radius = { card: 20, input: 16, button: 12 } as const;
 
 export function useTheme(): { name: ThemeName; c: Palette } {
-  const { state } = useStore();
-  const name = state.theme === 'light' ? 'light' : 'dark';
+  const name = useThemeName();
   return { name, c: palettes[name] };
 }

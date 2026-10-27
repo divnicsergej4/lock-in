@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppToast } from '@/components/AppToast';
 import { useTabPage } from '@/components/tabPage';
+import { KeyboardSpace } from '@/components/keyboard';
 import { Sections, TabEntrance } from '@/components/TabEntrance';
 import { AffordFold } from '@/components/home/AffordFold';
 import { BalanceCard } from '@/components/home/BalanceCard';
@@ -65,6 +66,7 @@ export default function Home() {
           <AffordFold />
         </Sections>
       </TabEntrance>
+      <KeyboardSpace />
     </Animated.ScrollView>
   );
 }

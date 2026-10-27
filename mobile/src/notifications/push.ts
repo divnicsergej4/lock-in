@@ -10,8 +10,14 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
-import { Notifications } from './expoNotifications';
+import { inExpoGo, Notifications } from './expoNotifications';
 import { askPermission } from './local';
+
+/** The push token, loaded only here (on the user's tap) and never in Expo Go, which has no push modules. */
+async function expoPushToken(projectId: string): Promise<string> {
+  const { getExpoPushTokenAsync } = require('expo-notifications/build/getExpoPushTokenAsync') as typeof import('expo-notifications/build/getExpoPushTokenAsync');
+  return (await getExpoPushTokenAsync({ projectId })).data;
+}
 
 const KEY = 'lockin-push-token'; // which token this phone registered, to remove it again
 export type PushResult = { ok: true } | { ok: false; error: string };
@@ -23,11 +29,11 @@ export function projectId(): string | undefined {
 export async function enableGoalAlerts(client: SupabaseClient): Promise<PushResult> {
   if (Platform.OS === 'web' || !Device.isDevice) return { ok: false, error: 'Shared goal alerts need a real phone.' };
   const pid = projectId();
-  if (!pid || !Notifications) return { ok: false, error: 'Shared goal alerts come with the full app build.' };
+  if (!pid || !Notifications || inExpoGo) return { ok: false, error: 'Shared goal alerts come with the full app build.' };
   if (!(await askPermission())) return { ok: false, error: 'Allow notifications for Lock In in your phone’s Settings first.' };
   let token: string;
   try {
-    token = (await Notifications.getExpoPushTokenAsync({ projectId: pid })).data;
+    token = await expoPushToken(pid);
   } catch {
     return { ok: false, error: 'Couldn’t turn on alerts on this phone. Try again later.' };
   }

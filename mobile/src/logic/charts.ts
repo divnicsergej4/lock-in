@@ -230,7 +230,7 @@ export type TxRow =
   | { kind: 'tx'; key: string; ref: { list: 'exp' | 'ins'; i: number }; income: boolean; cat: string; color: string; icon: string; note: string; auto: boolean; amount: string };
 
 /** Newest first, at most 150, with a date heading for each day ("21.10.2026."). */
-export function transactions(s: AppState, filter: TxFilter): TxRow[] {
+export function transactions(s: Pick<AppState, 'exp' | 'ins' | 'cats' | 'cur2'>, filter: TxFilter): TxRow[] {
   const L: { k: 'o' | 'i'; i: number; a: number; t: number; c: string; n: string; au?: boolean; c2?: boolean; oa?: number }[] = [];
   if (filter !== 'in') s.exp.forEach((e, i) => L.push({ k: 'o', i, a: e.amt, t: e.t, c: e.cat, n: e.note || '', au: e.auto, c2: e.c2, oa: e.oa }));
   if (filter !== 'out') (s.ins || []).forEach((e, i) => L.push({ k: 'i', i, a: e.amt, t: e.t, c: e.type || 'Salary', n: e.note || '', au: e.auto, c2: e.c2, oa: e.oa }));

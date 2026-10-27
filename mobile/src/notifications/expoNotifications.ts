@@ -1,16 +1,21 @@
-// expo-notifications, or null where it cannot load. In Expo Go on Android (SDK 58) just importing it throws
-// "Cannot find native module 'ExpoTopicSubscriptionModule'" (Expo Go has no push modules there), which took the
-// whole app down at start. There the app runs without phone notifications (the reminder card on Home still
-// works); Expo Go on iPhone and real builds have the module.
+// The local notifications part of expo-notifications (expoLocal.ts), or null where it cannot load. The whole
+// package is never imported at start: in Expo Go on Android (SDK 58) its push modules are missing and the import
+// threw "Cannot find native module 'ExpoTopicSubscriptionModule'", which took the whole app down. Local
+// reminders work in Expo Go too; push (shared goal alerts) only in a real build, loaded when turned on (push.ts).
 
-import type * as ExpoNotifications from 'expo-notifications';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 
-function load(): typeof ExpoNotifications | null {
+import type * as Local from './expoLocal';
+
+function load(): typeof Local | null {
   try {
-    return require('expo-notifications');
+    return require('./expoLocal');
   } catch {
     return null;
   }
 }
 
 export const Notifications = load();
+
+/** Running inside Expo Go (no push there on Android since SDK 53). */
+export const inExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;

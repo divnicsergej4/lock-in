@@ -22,6 +22,10 @@ interface Store {
 }
 
 const StoreContext = createContext<Store | null>(null);
+// The theme and the demo flag on their own: most parts only need these (colours, "look only" in the demo), and
+// reading them through useStore re-rendered every button and list row at every change of the data.
+const ThemeContext = createContext<'light' | 'dark'>('dark');
+const DemoContext = createContext(false);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(initialState);
@@ -76,7 +80,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setEpoch((e) => e + 1);
   }, []);
 
-  return <StoreContext.Provider value={{ state, ready, update, demo, startDemo, endDemo, tourStart, tourEnd, epoch }}>{children}</StoreContext.Provider>;
+  return (
+    <StoreContext.Provider value={{ state, ready, update, demo, startDemo, endDemo, tourStart, tourEnd, epoch }}>
+      <ThemeContext.Provider value={state.theme === 'light' ? 'light' : 'dark'}>
+        <DemoContext.Provider value={demo}>{children}</DemoContext.Provider>
+      </ThemeContext.Provider>
+    </StoreContext.Provider>
+  );
+}
+
+/** The theme in use; re-renders only when it changes. */
+export function useThemeName(): 'light' | 'dark' {
+  return useContext(ThemeContext);
+}
+
+/** Whether the demo is on; re-renders only when it changes. */
+export function useDemo(): boolean {
+  return useContext(DemoContext);
 }
 
 export function useStore(): Store {

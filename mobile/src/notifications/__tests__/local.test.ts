@@ -1,6 +1,6 @@
 // Planning the local notifications on the phone, with expo-notifications replaced by a stand-in that keeps
 // what was scheduled (the real one needs a phone).
-jest.mock('expo-notifications', () => {
+jest.mock('../expoLocal', () => {
   const planned = new Map<string, unknown>();
   const perm = { granted: false, status: 'undetermined' };
   return {
@@ -26,7 +26,7 @@ jest.mock('expo-notifications', () => {
   };
 });
 
-import * as Notifications from 'expo-notifications';
+import * as Notifications from '../expoLocal';
 
 import { NUDGES, STREAK_NUDGE } from '@/logic/nudges';
 import { REMINDER_TITLE } from '@/logic/settings';

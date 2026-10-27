@@ -6,6 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, type TextInpu
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
+import { KeyboardSpace, useScrollFieldInView } from '@/components/keyboard';
 import { CURRENCIES, currencyLabel, type SetupInput } from '@/logic/setup';
 import { brico } from '@/theme';
 
@@ -23,8 +24,9 @@ export function SetupScreen({ onStart }: { onStart: (input: SetupInput) => void 
   const [v, setV] = useState<SetupInput>({ amount: '', cur: 'EUR', cur2: '', amount2: '', income: '', save: '', age: '' });
   const [more, setMore] = useState(false);
   const set = (k: keyof SetupInput) => (t: string) => setV((x) => ({ ...x, [k]: t }));
+  const kb = useScrollFieldInView(insets.top);
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: '#f4f8f5' }} contentContainerStyle={{ paddingBottom: 14 + insets.bottom }} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
+    <ScrollView ref={kb.ref} onScroll={kb.onScroll} style={{ flex: 1, backgroundColor: '#f4f8f5' }} contentContainerStyle={{ paddingBottom: 14 + insets.bottom }} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
       <Enter kind="pop" delay={0} style={[st.hero, { paddingTop: 20 + insets.top }]}>
         <Text style={st.h1}>Lock In 🗿</Text>
         <Text style={st.sub}>The money tracker that calls you out when you spend like cash grows on trees.</Text>
@@ -73,6 +75,7 @@ export function SetupScreen({ onStart }: { onStart: (input: SetupInput) => void 
         </Pressable>
         <Text style={st.trk}>🔒 Amounts, descriptions and categories stay on your phone only.</Text>
       </Enter>
+      <KeyboardSpace />
     </ScrollView>
   );
 }

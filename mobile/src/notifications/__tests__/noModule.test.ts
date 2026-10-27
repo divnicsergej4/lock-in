@@ -1,6 +1,6 @@
 // Expo Go on Android (SDK 58): importing expo-notifications throws because a native module is missing. The app
 // must keep running, just without phone notifications.
-jest.mock('expo-notifications', () => {
+jest.mock('../expoLocal', () => {
   throw new Error("Cannot find native module 'ExpoTopicSubscriptionModule'");
 });
 

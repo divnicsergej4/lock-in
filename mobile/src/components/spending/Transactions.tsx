@@ -1,7 +1,7 @@
 // "All transactions" (prototype section[data-fold=tx] + the ✎ edit sheet): filter, a heading per day,
 // each entry with its icon, note, 🔁 for automatic ones, the amount, ✎ to edit and ✕ to delete.
 
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppToast } from '@/components/AppToast';
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { Button, Field, Fold, Ghost, Small } from '@/components/home/Section';
+import { useLiftAboveKeyboard } from '@/components/keyboard';
 import { Select } from '@/components/onboarding/Select';
 import { editCategories, transactions, TX_EMPTY, type TxFilter, type TxRow } from '@/logic/charts';
 import { deleteExpense, deleteIncome, editAmount, editEntry } from '@/logic/entries';
@@ -53,6 +54,9 @@ function EditSheet({ target, onClose }: { target: { list: 'exp' | 'ins'; i: numb
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target]);
   const slide = useAnimatedStyle(() => ({ transform: [{ translateY: y.value * h }] }));
+  // Android: the sheet moves up above the keyboard (the window no longer gets shorter for it)
+  const box = useRef<ComponentRef<typeof View>>(null);
+  const lift = useLiftAboveKeyboard(box);
   if (!target || !e) return null;
   const exp = target.list === 'exp';
   const options = (exp ? editCategories(state, cat) : ['Salary', 'Gift']).map((v) => ({ value: v, label: v }));
@@ -69,8 +73,9 @@ function EditSheet({ target, onClose }: { target: { list: 'exp' | 'ins'; i: numb
       <Pressable style={st.scrim} onPress={onClose} />
       {touring && <TourPauseNote />}
       <Animated.View
+        ref={box}
         onLayout={(ev) => setH(ev.nativeEvent.layout.height)}
-        style={[st.sheet, { backgroundColor: c.card, borderColor: c.line, paddingBottom: 20 + insets.bottom }, slide]}
+        style={[st.sheet, { backgroundColor: c.card, borderColor: c.line, paddingBottom: 20 + insets.bottom }, lift ? { bottom: lift } : null, slide]}
       >
         <Text style={[st.h3, { color: c.ink }]}>✎ Edit</Text>
         <Text style={[st.label, { color: c.mute }]}>Amount</Text>
@@ -89,7 +94,11 @@ function EditSheet({ target, onClose }: { target: { list: 'exp' | 'ins'; i: numb
   );
 }
 
-function Row({ r, first, onEdit, onDelete }: { r: Extract<TxRow, { kind: 'tx' }>; first: boolean; onEdit: () => void; onDelete: () => void }) {
+type TxRef = { list: 'exp' | 'ins'; i: number };
+
+// memo: a row is drawn again only when its own entry changed (opening a section elsewhere used to redraw all
+// 150 rows: 120 of the 158 ms of such a tap on Spending, measured with the React Profiler)
+const Row = memo(function Row({ r, first, onEdit, onDelete }: { r: Extract<TxRow, { kind: 'tx' }>; first: boolean; onEdit: (ref: TxRef) => void; onDelete: (ref: TxRef) => void }) {
   const { c, name } = useTheme();
   const minus = name === 'light' ? '#d93a3a' : '#ff7b7b';
   const ref = useTourTarget(first ? 'hist-li' : undefined); // the tour shows the first entry
@@ -106,22 +115,23 @@ function Row({ r, first, onEdit, onDelete }: { r: Extract<TxRow, { kind: 'tx' }>
       <View style={st.right}>
         <Text style={[st.amt, { color: r.income ? c.accent : minus }]}>{r.amount}</Text>
         {/* the HTML has a space between the amount and the buttons (≈ 4.45 px at 16 px Inter) */}
-        <Ghost title="✎" onPress={onEdit} style={[st.icon, { marginLeft: 6 + 4.45 }]} />
-        <Ghost title="✕" onPress={onDelete} style={st.icon} />
+        <Ghost title="✎" onPress={() => onEdit(r.ref)} style={[st.icon, { marginLeft: 6 + 4.45 }]} />
+        <Ghost title="✕" onPress={() => onDelete(r.ref)} style={st.icon} />
       </View>
     </View>
   );
-}
+});
 
 export function Transactions() {
   const { state, update } = useStore();
   const { c } = useTheme();
   const [f, setF] = useState<TxFilter>('all');
-  const [edit, setEdit] = useState<{ list: 'exp' | 'ins'; i: number } | null>(null);
-  const rows = transactions(state, f);
+  const [edit, setEdit] = useState<TxRef | null>(null);
+  const { exp, ins, cats, cur2 } = state;
+  const rows = useMemo(() => transactions({ exp, ins, cats, cur2 }, f), [exp, ins, cats, cur2, f]);
   const firstTx = rows.findIndex((r) => r.kind === 'tx');
   const fltRef = useTourTarget('flt');
-  const del = (ref: { list: 'exp' | 'ins'; i: number }) => update((s) => (ref.list === 'exp' ? deleteExpense(s, ref.i) : deleteIncome(s, ref.i)));
+  const del = useCallback((ref: TxRef) => update((s) => (ref.list === 'exp' ? deleteExpense(s, ref.i) : deleteIncome(s, ref.i))), [update]);
   return (
     <>
       <Fold id="tx" title="All transactions" defaultOpen headTourId="tx-h2">
@@ -149,7 +159,7 @@ export function Transactions() {
                   {r.text}
                 </Text>
               ) : (
-                <Row key={r.key} r={r} first={rows[firstTx] === r} onEdit={() => setEdit(r.ref)} onDelete={() => del(r.ref)} />
+                <Row key={r.key} r={r} first={rows[firstTx] === r} onEdit={setEdit} onDelete={del} />
               ),
             )
           ) : (

@@ -18,6 +18,7 @@ import {
   vec,
   type SkPath,
 } from '@shopify/react-native-skia';
+import { useIsFocused } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import Animated, {
@@ -142,9 +143,15 @@ export function Flame({ tier = 'or', style, levelUp = 0 }: { tier?: FlameTier; s
   const col = FLAME_COLORS[tier];
   const reduce = useReducedMotion();
   const clock = useSharedValue(0);
-  useFrameCallback((f) => {
-    if (!reduce) clock.value = f.timeSinceFirstFrame;
-  });
+  // the clock runs only while its screen is in front (all tabs stay mounted: Home's flame used to be stepped
+  // every frame while another tab was open); it carries on from where it stopped
+  const focused = useIsFocused();
+  const frame = useFrameCallback((f) => {
+    if (!reduce) clock.value += f.timeSincePreviousFrame ?? 0;
+  }, false);
+  useEffect(() => {
+    frame.setActive(focused);
+  }, [focused, frame]);
   // svg 54×68 showing a 64×80 viewBox: scale 0.84375, centred vertically
   const s = 54 / 64;
   const fk1 = (t: number) => {

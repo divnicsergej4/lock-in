@@ -1,7 +1,7 @@
 // Each tab's scroll view, known to the guided tour (it scrolls a part into view and keeps its highlight
 // on it while the page scrolls). One per tab, registered when the tab mounts.
 
-import { useIsFocused } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect } from 'react';
 import type { View } from 'react-native';
 import type Animated from 'react-native-reanimated';
@@ -28,7 +28,6 @@ export function useTabPage(tab: number) {
   const ref = useAnimatedRef<Animated.ScrollView>();
   const anchor = useAnimatedRef<View>();
   const offset = useScrollViewOffset(ref);
-  const focused = useIsFocused();
   const top = usePageTop();
   const contentH = useSharedValue(0);
   const onContentSizeChange = useCallback((_w: number, h: number) => void (contentH.value = h), [contentH]);
@@ -38,12 +37,14 @@ export function useTabPage(tab: number) {
       if (tabScrolls[tab]?.ref === ref) tabScrolls[tab] = undefined;
     };
   }, [tab, ref, offset, anchor, top, contentH]);
-  // the page in front shares its scroll offset with the tour's light (on the UI thread, every frame)
-  useEffect(() => {
-    if (!focused) return;
-    activeTab.value = tab;
-    pageY.value = offset.value;
-  }, [focused, tab, offset]);
+  // the page in front shares its scroll offset with the tour's light (on the UI thread, every frame); a focus
+  // effect, not useIsFocused, so the whole page is not drawn again each time its tab is entered or left
+  useFocusEffect(
+    useCallback(() => {
+      activeTab.value = tab;
+      pageY.value = offset.value;
+    }, [tab, offset]),
+  );
   useAnimatedReaction(
     () => offset.value,
     (v) => {

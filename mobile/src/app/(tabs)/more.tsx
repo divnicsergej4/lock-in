@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Hero } from '@/components/home/Hero';
+import { KeyboardSpace } from '@/components/keyboard';
 import { useTabPage } from '@/components/tabPage';
 import { BackupFold } from '@/components/more/BackupFold';
 import { ReportFold } from '@/components/more/ReportFold';
@@ -36,6 +37,7 @@ export default function More() {
           <SettingsFold />
         </Sections>
       </TabEntrance>
+      <KeyboardSpace />
     </Animated.ScrollView>
   );
 }

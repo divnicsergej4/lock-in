@@ -1,15 +1,18 @@
 import { Redirect, Tabs } from 'expo-router';
-import { useEffect, type ComponentProps } from 'react';
+import { useCallback, useEffect, type ComponentProps } from 'react';
 import { AppState as RNAppState, Pressable, StyleSheet, Text, type PressableProps } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { runOnUI, scrollTo } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DemoBar } from '@/components/DemoBar';
+import { useKeepFieldInView } from '@/components/keyboard';
+import { TabFreeze } from '@/components/TabFreeze';
 import { TabIcon, type TabIconName } from '@/components/TabIcon';
+import { tabScrolls } from '@/components/tabPage';
 import { processRecurring } from '@/logic/recurring';
 import { useStore } from '@/store/StoreProvider';
 import { inter, useTheme } from '@/theme';
-import { useTourTarget } from '@/tour/registry';
+import { activeTab, useTourTarget } from '@/tour/registry';
 import { TourOverlay } from '@/tour/TourOverlay';
 
 /** Props Tabs passes to tabBar (state, emitter, navigateToTab; there is no `navigation` here). */
@@ -69,6 +72,18 @@ function NavButton({ i, ...props }: PressableProps & { i: number }) {
 export default function TabLayout() {
   const { c } = useTheme();
   const { state, update, epoch } = useStore();
+  const insets = useSafeAreaInsets();
+  // Android: the page in front scrolls the field being typed in (and its button) above the keyboard
+  const scrollFront = useCallback((dy: number) => {
+    const sc = tabScrolls[activeTab.value];
+    if (!sc) return;
+    const { ref, offset } = sc;
+    runOnUI(() => {
+      'worklet';
+      scrollTo(ref, 0, Math.max(0, offset.value + dy), true);
+    })();
+  }, []);
+  useKeepFieldInView(scrollFront, insets.top);
   // recurring entries whose day has come are logged when the app opens and when it comes back
   // (prototype: recProcess at every render)
   useEffect(() => {
@@ -82,7 +97,13 @@ export default function TabLayout() {
   // epoch: after the demo or the tour every page starts fresh (fields empty, Home, at the top)
   return (
     <>
-      <Tabs key={epoch} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: c.bg } }} tabBar={(p) => <NavBar {...p} />}>
+      {/* TabFreeze: a tab that is not in front does not re-render (see TabFreeze.tsx) */}
+      <Tabs
+        key={epoch}
+        screenLayout={({ children, navigation }) => <TabFreeze navigation={navigation}>{children}</TabFreeze>}
+        screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: c.bg } }}
+        tabBar={(p) => <NavBar {...p} />}
+      >
       {TABS.map((t) => (
         <Tabs.Screen key={t.name} name={t.name} options={{ title: t.title }} />
       ))}

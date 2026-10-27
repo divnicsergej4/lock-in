@@ -13,6 +13,7 @@ import { sendCode, signInWithApple, signInWithGoogle, verifyCode, type SignInRes
 import { supabase } from '@/auth/supabase';
 import { useAppToast } from '@/components/AppToast';
 import { Button, Field, Ghost, Small } from '@/components/home/Section';
+import { KeyboardSpace, useScrollFieldInView } from '@/components/keyboard';
 import { TurnstileHost } from '@/components/TurnstileHost';
 import { inter, useTheme } from '@/theme';
 
@@ -33,6 +34,7 @@ export default function SignIn() {
   const [now, setNow] = useState(Date.now());
   const [apple, setApple] = useState(false);
   const codeRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const kb = useScrollFieldInView(insets.top);
 
   const wait = resendIn(otp, now);
   useEffect(() => {
@@ -115,6 +117,8 @@ export default function SignIn() {
 
   return (
     <ScrollView
+      ref={kb.ref}
+      onScroll={kb.onScroll}
       style={{ flex: 1, backgroundColor: c.bg }}
       contentContainerStyle={[st.page, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 32 }]}
       keyboardShouldPersistTaps="handled"
@@ -196,6 +200,7 @@ export default function SignIn() {
       )}
 
       {!!error && <Text style={[st.err, { color: c.err }]}>{error}</Text>}
+      <KeyboardSpace />
     </ScrollView>
   );
 }
