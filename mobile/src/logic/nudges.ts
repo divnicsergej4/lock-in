@@ -6,7 +6,7 @@ import { todayCount } from './money';
 import type { AppState } from './types';
 
 // ---------------------------------------------------------------------------
-// Sergej's texts (26 Oct 2026), copied exactly: do not "fix" spelling, quotes, spaces or emojis.
+// Andrija's texts (26 Oct 2026), copied exactly: do not "fix" spelling, quotes, spaces or emojis.
 // ---------------------------------------------------------------------------
 /** The rotation: 9:00 and 15:00 on a day with nothing logged yet, and 21:00 on a day with something logged. */
 export const NUDGES = [
@@ -26,7 +26,7 @@ export const NUDGES = [
 export const STREAK_NUDGE = 'you’ve been doing good. don’t ruin the streak now 🔥';
 
 /**
- * Sergej's schedule: on a day with nothing logged, 9:00 and 15:00 (rotation) and 20:00 (STREAK_NUDGE); once
+ * Andrija's schedule: on a day with nothing logged, 9:00 and 15:00 (rotation) and 20:00 (STREAK_NUDGE); once
  * something is logged that day, the rest of the day's are dropped and one comes at 21:00 (rotation). "Logged"
  * also counts "I didn't spend anything today" (it keeps the streak too). Never between 23:00 and 9:00.
  */

@@ -1,6 +1,6 @@
 # Zaštita od zloupotrebe i troškova
 
-Šta je urađeno u kodu i šta Sergej mora sam da podesi po dashboard-ima. Nikome (ni Claude-u) ne šalji
+Šta je urađeno u kodu i šta Andrija mora sam da podesi po dashboard-ima. Nikome (ni Claude-u) ne šalji
 `service_role` ključ, lozinku baze, Resend ključ, ni RevenueCat tajnu. Sve tajne se lepe samo u
 dashboard tog servisa ili u Supabase > Edge Functions > Secrets.
 
@@ -62,7 +62,7 @@ Testovi: `handler_test.ts` u sva tri foldera (19 provera) i `backend/tests/delet
 šta se briše, šta ostaje drugima, aplikacija ne može sama da briše korisnike, ponovna registracija istim mejlom
 počinje od nule, i da svaki budući FK na `auth.users` mora biti `cascade` ili `set null`).
 
-## 3. Šta Sergej podešava, korak po korak
+## 3. Šta Andrija podešava, korak po korak
 
 ### 3.1 Supabase: baza
 1. Supabase > **SQL Editor** > New query > nalepi ceo `backend/supabase/migrations/0002_limits_and_quotas.sql` > Run
@@ -445,15 +445,15 @@ them now while you remember.“), i to samo ako tog dana još ništa nije upisan
 today“ ni odgovoreno na karticu. Planira se 10 dana unapred i ponovo pri svakom otvaranju aplikacije.
 
 **2. „Don’t waste money“** (Settings > Reminder): lokalno, bez servera, podrazumevano isključeno. Raspored i
-tekstovi su Sergejevi (26. oktobra 2026, `mobile/src/logic/nudges.ts`, prepisani tačno):
+tekstovi su Andrijini (26. oktobra 2026, `mobile/src/logic/nudges.ts`, prepisani tačno):
 - dan bez upisa: **9 h i 15 h** jedan tekst iz rotacije (11 tekstova, redom, nikad isti dva puta zaredom) i
   **20 h** „you’ve been doing good. don’t ruin the streak now 🔥“ (samo tada, nije deo rotacije);
 - čim se tog dana nešto upiše (ili „I didn’t spend anything today“), ostatak tog dana otpada i stiže **jedno u
   21 h** iz rotacije; sutradan opet 9, 15, 20;
 - nikad od 23 do 9 h. Izbor „svakih 6 / 12 / 24 h“ je izbačen jer ga ovaj raspored zamenjuje;
-- dva odvojena prekidača (Sergej: neko možda hoće samo streak): „Don’t waste money“ (9, 15 / 21 h) i
+- dva odvojena prekidača (Andrija: neko možda hoće samo streak): „Don’t waste money“ (9, 15 / 21 h) i
   „Streak reminder“ (20 h). Svaki se uključuje i isključuje sam, pa može da ostane samo streak.
-Tekstovi nisu podeljeni po jačini poruka (Gentle / Normal / No mercy): svi idu u svakom modu, dok Sergej ne označi
+Tekstovi nisu podeljeni po jačini poruka (Gentle / Normal / No mercy): svi idu u svakom modu, dok Andrija ne označi
 koji su jaki. Planira se 10 dana unapred (najviše 30 + 10 podsetnika; iOS dozvoljava 64) i ponovo pri svakom
 otvaranju i upisu; ko ne otvori aplikaciju 10 dana, prestaju. Ako su uključeni i podsetnik za troškove u 20:00 i
 ovaj, u 20 h na dan bez upisa stignu oba.
@@ -463,7 +463,7 @@ ovaj, u 20 h na dan bez upisa stignu oba.
   svi **ostali** članovi koji imaju uključene „Shared goal alerts“; onaj ko je to uradio ne dobija; kad neko doda
   prijatelja, ne dobijaju ga ni onaj ko je dodao ni onaj koji je dodat;
 - član kome je istekla proba/pretplata dobija **samo** „X left …“ (odluka jer nije rečeno: ostalo ne može ni da
-  menja; Sergej može da promeni u `app.queue_goal_push`);
+  menja; Andrija može da promeni u `app.queue_goal_push`);
 - **protiv spama**: najviše **jedno obaveštenje po osobi po cilju na 10 minuta**; sve između se spoji u jedno
   („Marko added €120 to Summer trip (3 payments)“, „Summer trip: Marko added €120, Ana joined, Eva left“). Uplate i
   dodavanje u cilj su i dalje ograničeni iz `0002` (60 / 30 na sat po korisniku);

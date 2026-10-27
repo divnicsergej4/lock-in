@@ -72,7 +72,7 @@ test('reminder and nudges are planned, within the iOS limit of 64', async () => 
   expect([...mock.__planned.values()].every((r) => r.trigger.date > NOW)).toBe(true);
 });
 
-test('Sergej’s texts go out as they are; 20:00 is the streak one; nothing at night', async () => {
+test('Andrija’s texts go out as they are; 20:00 is the streak one; nothing at night', async () => {
   mock.__perm.granted = true;
   await syncLocalNotifications(state({ nag: { on: true } }), NOW);
   for (const r of mock.__planned.values()) {

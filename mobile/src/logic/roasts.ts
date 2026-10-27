@@ -1,4 +1,4 @@
-// Roasts and critiques. Sergej's texts: copy EXACTLY (typos, spacing, emoji). Source of truth: docs/FORE.md.
+// Roasts and critiques. Andrija's texts: copy EXACTLY (typos, spacing, emoji). Source of truth: docs/FORE.md.
 // Lines starting with "!" are the hard ones: only at "No mercy", and there they come up ~70% of the time.
 
 import { fmt, pick } from './format';

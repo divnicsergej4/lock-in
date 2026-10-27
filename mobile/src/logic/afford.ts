@@ -1,4 +1,4 @@
-// "Can I afford it?" Texts are Sergej's: copy exactly (see docs/FORE.md, section 4).
+// "Can I afford it?" Texts are Andrija's: copy exactly (see docs/FORE.md, section 4).
 
 import { day0, DAY_MS, formatDate } from './dates';
 import { fmt, fmt0 } from './format';

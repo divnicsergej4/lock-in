@@ -1,6 +1,6 @@
 # Lock In: all roasts and critiques (English, exactly as in the app)
 
-Generated from the prototype code (`index.html` on branch `razvoj`). Sergej wrote/edited these himself: copy them **exactly**, typos and spacing included (e.g. "you will  be drunk" has two spaces on purpose). Do not reword, "fix" or translate them.
+Generated from the prototype code (`index.html` on branch `razvoj`). Andrija wrote/edited these: copy them **exactly**, typos and spacing included (e.g. "you will  be drunk" has two spaces on purpose). Do not reword, "fix" or translate them.
 
 ## 1. After logging an expense, by category
 One line is picked at random. Lines marked **[No mercy]** only show at the "No mercy" roast level, and there they come up about 70% of the time (the rest are normal lines). `{age}` = the user's age rounded down to tens (20, 30, 40…); users under 20 or without an age never get that line.

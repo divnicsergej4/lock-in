@@ -7,14 +7,15 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
 
 ## 1. Ko, šta i za koga
 
-- **Vlasnik:** Sergej (student, trenira MMA). Aplikaciju pravi sa kolegom; cilj je da zarađuje.
+- **Vlasnik i izdavač aplikacije: Andrija Dmitrović** (to ime ide u Privacy Policy, Terms, App Store i Google Play;
+  ranije je ovde greškom pisalo drugo ime). Student, trenira MMA. Aplikaciju pravi sa kolegom; cilj je da zarađuje.
 - **Lock In** je aplikacija za praćenje troškova koja te „proziva“ kad trošiš (roast poruke), broji dane
   zaredom (plamen), vodi koverte i ciljeve štednje i pokazuje grafikone.
 - **Tržište:** globalno, pre svega SUA i drugo englesko govorno područje.
 - **Jezik aplikacije: samo engleski.** Srpski je izbačen (dupli posao, a fore bolje zvuče na engleskom).
   Dvojezična verzija je sačuvana na grani `arhiva-srpski`.
 
-## 2. Kako Sergej radi i kako da mu odgovaraš
+## 2. Kako Andrija radi i kako da mu odgovaraš
 
 - Piše ćirilicom ili latinicom. **Odgovaraj na srpskom, latinicom.**
 - Želi da budeš **strog i kritičan** prema njegovim idejama (hoće da projekat uspe), ali bez dramatizovanja.
@@ -39,12 +40,12 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
 | `arhiva-srpski` | Prototip pre izbacivanja srpskog (dvojezičan), za svaki slučaj |
 | `v2-puna` | Stara rana verzija prototipa, ne dirati |
 
-- **`main` se ne menja dok Sergej izričito ne kaže** (ni ispravke grešaka).
+- **`main` se ne menja dok Andrija izričito ne kaže** (ni ispravke grešaka).
 - Objavljivanje prototipa na link samo na njegove reči tipa: „objavi“, „pošalji testerima“, „postavi na link“,
   „izbaci na github“, „apdejtuj na link“. Tada se `razvoj` spaja u `main` i proveri da je GitHub Pages
   objavio (`gh api repos/divnicsergej4/lock-in/actions/runs?per_page=1`).
 - **Nikad ne traži i ne prihvataj tajne ključeve** (Supabase `service_role`, lozinka baze, tokeni). Aplikacija koristi samo
-  javni (anon) ključ; sva zaštita je u pravilima baze. Sergej sam pokreće SQL u Supabase dashboard-u.
+  javni (anon) ključ; sva zaštita je u pravilima baze. Andrija sam pokreće SQL u Supabase dashboard-u.
 - Prototip šalje anonimno brojanje korišćenja (samo da li je i kog dana korišćen) u Supabase tabelu `events`,
   i to samo sa javnog linka. Iznosi, opisi i kategorije nikad ne napuštaju telefon.
 
@@ -56,13 +57,13 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   ali ništa ne može da se upiše. Uključuje se iz Settings > Help > Demo i sa ekrana za plaćanje.
 - Pretplata ide preko App Store-a i Google Play-a. Predlog (nije još potvrđen): RevenueCat za oba.
 - Cene na ekranu za plaćanje su za sada probne: $6.99 mesečno, $45 godišnje, $69 doživotno. Konačne cene
-  Sergej dogovara sa kolegom.
+  Andrija dogovara sa kolegom.
 - AI funkcija (odgovaranje od skupe ili glupe kupovine i jeftinija alternativa) se **ne pravi u prvoj verziji**:
-  Sergej je odlučio da je izbaci. Izbačena je i iz plana u `docs/ZASTITA.md`.
+  Andrija je odlučio da je izbaci. Izbačena je i iz plana u `docs/ZASTITA.md`.
 
 ## 5. Tehnička odluka za pravu aplikaciju
 
-- **React Native za iOS i Android. Ne WebView / WebKit omotač** (Sergej ne želi seckanje koje WebKit pravi).
+- **React Native za iOS i Android. Ne WebView / WebKit omotač** (Andrija ne želi seckanje koje WebKit pravi).
 - Predlog alata: Expo (TypeScript, expo-router sa 4 taba), react-native-reanimated + react-native-gesture-handler
   za animacije, @shopify/react-native-skia za holo prsten i lika na uvodu, lokalno čuvanje podataka na telefonu.
 - **Lična potrošnja ostaje samo na telefonu.** Na serveru je samo ono što mora: nalozi, prijatelji, zajednički ciljevi, pretplata.
@@ -87,7 +88,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   cilj ubaci još 3 osobe pa izađe, sve ostaje isto za ostale.
 - **Ko izađe iz cilja, njegov ulog se briše** (više ne važi).
 - Svaki član mora da ima probu ili pretplatu.
-- Odluke koje sam doneo jer nisu bile rečene (Sergej može da promeni):
+- Odluke koje sam doneo jer nisu bile rečene (Andrija može da promeni):
   - prijatelj se u cilj dodaje bez novog prihvatanja (pristanak je dao prihvatanjem prijateljstva) i može da izađe kad hoće;
   - bilo koji član može da doda svoje prijatelje, da promeni naziv i iznos cilja;
   - svako upisuje i menja samo svoje uplate;
@@ -106,7 +107,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
    odleću novčanice sa krilima, telefon zavibrira, trgne se („!“), ispravi se i gleda u telefon, iznad iskoči katanac i
    zaključa se, tad se iscrta podvlaka ispod „Then lock the fuck in.“. Ispod je „račun“: Bank login NOT NEEDED,
    Spreadsheets NOT NEEDED, Your data ON YOUR PHONE, TOTAL STRESS 0.
-   (Sergej: „on your phone“ znači „sve na jednom mestu, na tvom telefonu“, ne obećanje da je samo na telefonu.)
+   (Andrija: „on your phone“ znači „sve na jednom mestu, na tvom telefonu“, ne obećanje da je samo na telefonu.)
 2. Tri ekrana koja se mogu preskočiti: Spending (troškovi uleću, stanje se smanjuje), Roasts (upisan trošak + poruka
    + prekidač Gentle / Normal / No mercy koji se sam menja), Streak (plamen 14 dana + nedelja).
 3. Podešavanje: koliko para imaš, valuta (+ druga valuta), mesečni prihod, koliko želiš da uštediš,
@@ -156,7 +157,7 @@ na kraju, posle preskakanja i ako se aplikacija zatvori usred obilaska. Ponovo s
 ## 8. Stanje i sledeći koraci
 
 Urađeno:
-- Prototip je završen po izgledu i funkcijama (Sergej: „završio sam skroz izgled i funkcije“).
+- Prototip je završen po izgledu i funkcijama (Andrija: „završio sam skroz izgled i funkcije“).
 - Backend za naloge, prijatelje i zajednički cilj (Supabase migracija + testovi) na grani `aplikacija`.
 - Zaštita od zloupotrebe i troškova (`backend/supabase/migrations/0002_limits_and_quotas.sql`, `docs/ZASTITA.md`):
   limiti po korisniku u bazi (pozivi 10/sat, 30/dan, ista adresa 3/nedeljno; odgovori, novi ciljevi i dodavanje u cilj
@@ -165,7 +166,7 @@ Urađeno:
   Napisane serverske funkcije `revenuecat-webhook` (prima samo zahteve sa tajnim Authorization zaglavljem) i
   `send-invite-email` (Resend); još nisu postavljene. Testovi: 49 starih + 59 novih provera baze, 15 provera funkcija.
   Provereno: u repou i git istoriji nema tajnih ključeva (samo javni ključ prototipa), RLS je na svakoj tabeli.
-  Aplikacija (`mobile/`) nije menjana. Šta Sergej klikće po dashboard-ima (Supabase Auth, Turnstile, spend cap,
+  Aplikacija (`mobile/`) nije menjana. Šta Andrija klikće po dashboard-ima (Supabase Auth, Turnstile, spend cap,
   Resend, RevenueCat, Expo): `docs/ZASTITA.md`, deo 3.
 - Korak 1: kostur Expo aplikacije u `mobile/` (SDK 58, expo-router, 4 taba, tema i fontovi, čuvanje na telefonu,
   logika iz prototipa sa testovima). Ekrani su još prazni osim kartice Available i plamena na Home i izbora teme na More.
@@ -217,7 +218,7 @@ Urađeno:
   upisuje, prevlači i dodiruje; osvetljen deo, ostalo zamagljeno (expo-blur) i zatamnjeno; „Skip step“ posle 15 s,
   „Skip tour“ uvek vidljivo; prozor za izmenu unosa pauzira obilazak. Probni unosi se brišu na kraju, posle preskakanja i ako
   se aplikacija zatvori usred obilaska; posle toga se ide na Home. Pokreće se sam kod korisnika koji ga nije video (i kod
-  postojećih podataka bez oznake, npr. Sergejevih, jednom) i ponovo iz Settings > Help > App tour.
+  postojećih podataka bez oznake, npr. Andrijinih, jednom) i ponovo iz Settings > Help > App tour.
   Stranica se skroluje prevlačenjem bilo gde po ekranu, i preko zamagljenog dela (tap na zamagljeno i dalje ne radi ništa,
   kao u prototipu). Korak u kom se kuca završava se tek kad korisnik 2 s ne pritisne nijedan taster (ne čim upiše
   prvu cifru ili dva slova). Posle te pauze tastatura pređe na sledeće prazno polje koraka (tekst ili broj, npr.
@@ -225,33 +226,33 @@ Urađeno:
   Provereno u pregledaču od 1. do 38. koraka; na pravom telefonu nije provereno. Iz teksta koraka 37 izbačeno je „language“,
   jer izbora jezika nema (jedina namerna razlika od prototipa).
 - Prijava u aplikaciji (`mobile/src/auth/`, ekran `mobile/src/app/sign-in.tsx`, detalji u `docs/ZASTITA.md` deo 4).
-  Dogovoreno (Sergej): **prijava bez lozinke**, nigde nema polja za lozinku: kod od 6 cifara na mejl (ne magic link),
+  Dogovoreno (Andrija): **prijava bez lozinke**, nigde nema polja za lozinku: kod od 6 cifara na mejl (ne magic link),
   Google i Sign in with Apple. „Send code“ se zaključa na 60 s, posle 5 pogrešnih kodova traži se novi kod.
   Sesija je šifrovana u AsyncStorage, a ključ u SecureStore (Keychain/Keystore); odjava i brisanje naloga brišu oba.
   Prava (proba/pretplata) se uvek pitaju od servera (`my_access`) i RevenueCat-a, nikad se ne čuvaju na telefonu;
   sve na serveru i dalje štiti baza. Brisanje naloga: Settings > Danger zone > Delete account → serverska funkcija
   `delete-account` (briše samo onoga čiji je token; baza briše ostalo). Turnstile ima pripremljeno mesto
   (`mobile/src/auth/captcha.ts`), još nije ugrađen.
-  Odluke koje sam doneo jer nisu bile rečene (Sergej može da promeni):
+  Odluke koje sam doneo jer nisu bile rečene (Andrija može da promeni):
   - aplikacija radi i bez naloga (lična potrošnja je samo na telefonu); prijava se otvara iz Shared goal i Settings > Account;
   - Apple dugme samo na iPhone-u (Apple ga traži samo za App Store; na Android-u bi trebao tajni ključ koji ističe na 6 meseci);
   - Google ide preko pregledača (PKCE), ne preko posebne Google biblioteke, da bi radio i u Expo Go;
   - za šifrovanje je uzet `aes-js` (AES-256-CTR, tačno kako Supabase preporučuje), nasumični ključ iz `expo-crypto`;
   - „Sign out“ odjavljuje samo taj telefon; brisanje naloga ne dira podatke na telefonu (za to je Reset everything);
-  - identifikator aplikacije (Sergej: "neka bude lockintracker"): `com.lockintracker.app` za iOS (`bundleIdentifier`) i
+  - identifikator aplikacije (Andrija: "neka bude lockintracker"): `com.lockintracker.app` za iOS (`bundleIdentifier`) i
     Android (`package`, Android traži bar dva dela pa je dodato `com.` i `.app`); šema linkova ostaje `lockin`;
   - RevenueCat entitlement se zove `access`; ime sa Apple-a se upisuje kao ime koje prijatelji vide, ako ga nema.
   Testovi: 24 provere u `mobile/src/auth/__tests__/` (šifrovanje i brisanje sesije i sa pravim supabase-js,
   60 s / 5 kodova, prava), 25 provera brisanja naloga u bazi i 4 provere funkcije `delete-account`.
   Nije provereno na pravom telefonu ni sa pravim Supabase projektom (nema ključeva u repou): to je sledeći korak.
-  Sergej podešava: `docs/ZASTITA.md` 3.2 (Email, šabloni mejla, SMTP, Rate Limits, URL-ovi, Google, Apple),
+  Andrija podešava: `docs/ZASTITA.md` 3.2 (Email, šabloni mejla, SMTP, Rate Limits, URL-ovi, Google, Apple),
   3.5 (postaviti `delete-account`), 3.6 (entitlement `access`), i javne ključeve u `mobile/.env.local`.
-- Lozinke zatvorene u bazi (Sergej: „ne ostavljamo za kasnije“): migracija `0003_no_passwords.sql`, triger
+- Lozinke zatvorene u bazi (Andrija: „ne ostavljamo za kasnije“): migracija `0003_no_passwords.sql`, triger
   BEFORE INSERT OR UPDATE na `auth.users` koji uvek prazni `encrypted_password`, pa prijava lozinkom ne radi nikome,
   ni posle potvrde mejla. Zatvara i preuzimanje naloga (neko napravi nalog sa tuđim mejlom i lozinkom, pa uđe kad
   se vlasnik prijavi kodom; Supabase Auth tu lozinku sam ne briše). Kod, Google i Apple lozinku ne čitaju.
   Testovi: 23 provere (`backend/tests/no_passwords.test.mjs`), uz kontrolu da napad bez `0003` uspeva. Pravi Supabase
-  Auth nije pokrenut (nema Docker-a): Sergej jednom proverava na projektu (`docs/ZASTITA.md`, deo 4).
+  Auth nije pokrenut (nema Docker-a): Andrija jednom proverava na projektu (`docs/ZASTITA.md`, deo 4).
   „Confirm email“ mora ostati uključeno. Lista stvari koje se sklanjaju pre objave: `docs/ZASTITA.md`, deo 6.
 - Bezbednosna provera pre objave (`docs/ZASTITA.md`, deo 7): mejl sa pozivom samo običan tekst, ime pošiljaoca
   očišćeno (ne može postati HTML ni link, do 40 znakova), bez imena „A friend“ umesto mejla pošiljaoca; migracija
@@ -260,15 +261,15 @@ Urađeno:
   NULL); Turnstile ugrađen na ekranu za prijavu (Managed + interaction-only, u WebView-u); Dependabot nedeljno;
   istorija svih grana bez tajni; upozorenje ispod rezervne kopije. `npm audit` u `mobile/`: 8 ranjivosti u Expo
   alatima za razvoj (ne u aplikaciji), bez ispravke koja ne kvari Expo; čeka se Expo zakrpa.
-- Obaveštenja (`docs/ZASTITA.md`, deo 8; Sergej je tražio tri vrste):
+- Obaveštenja (`docs/ZASTITA.md`, deo 8; Andrija je tražio tri vrste):
   1. podsetnik za troškove: ostaje žuta kartica iz prototipa, plus pravo lokalno obaveštenje u izabrano vreme, samo
      ako tog dana još ništa nije upisano;
-  2. „Don’t waste money“: lokalno, svoj prekidač u Settings > Reminder. Sergejev raspored i tekstovi (26. oktobar,
+  2. „Don’t waste money“: lokalno, svoj prekidač u Settings > Reminder. Andrijin raspored i tekstovi (26. oktobar,
      prepisani tačno u `mobile/src/logic/nudges.ts`): dan bez upisa 9 h i 15 h iz rotacije od 11 tekstova i 20 h
      „you’ve been doing good. don’t ruin the streak now 🔥“ (nije u rotaciji); posle upisa tog dana samo jedno u
      21 h; nikad 23–9 h. Izbor 6 / 12 / 24 h izbačen (raspored ga zamenjuje). Streak (20 h) ima svoj prekidač
      „Streak reminder“, odvojen od „Don’t waste money“, da bi neko mogao da ostavi samo njega. Tekstovi idu u svakoj jačini poruka
-     dok Sergej ne označi jake;
+     dok Andrija ne označi jake;
   3. zajednički cilj (push sa servera, `0005` + `send-goal-push` + pg_cron): ostali članovi dobijaju uplatu, ulazak i
      izlazak, onaj ko je to uradio ne; najviše jedno obaveštenje po osobi po cilju na 10 minuta (spajaju se);
      prekidač „Shared goal alerts“ u Settings > Account.
@@ -276,7 +277,7 @@ Urađeno:
   podrazumevano isključen dok ga korisnik ne uključi (dozvola se ne sme tražiti ranije); „I didn’t spend anything
   today“ se računa kao upis; član sa isteklom pretplatom dobija samo „left“; kad neko doda prijatelja,
   obaveštenje ne dobijaju ni onaj ko je dodao ni dodati.
-- Domen (`docs/DOMEN.md`): Sergej ga kupuje sam (predlog Cloudflare Registrar). Folder `web/` (engleski, statično,
+- Domen (`docs/DOMEN.md`): Andrija ga kupuje sam (predlog Cloudflare Registrar). Folder `web/` (engleski, statično,
   bez praćenja): Privacy Policy, Terms of Use, Support (`support@<domen>`), početna i Turnstile stranica koju
   aplikacija sad otvara sa domena (`https://<domen>/turnstile/`, kako Cloudflare preporučuje), postavlja se na
   Cloudflare Pages iz grane `aplikacija` (nikako `divnicsergej4.github.io`). Privacy i Terms nisu pravni savet: u
@@ -290,7 +291,7 @@ Urađeno:
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
    fontovi (Bricolage Grotesque, Inter), lokalno čuvanje podataka, prenos logike iz prototipa sa testovima.
-2. Supabase projekat: Sergej primeni migraciju u SQL Editor-u. Prijava (kod na mejl + Google + **Sign in with Apple**)
+2. Supabase projekat: Andrija primeni migraciju u SQL Editor-u. Prijava (kod na mejl + Google + **Sign in with Apple**)
    je napravljena u aplikaciji; ostaje podešavanje iz `docs/ZASTITA.md` (3.2: Email, šabloni, SMTP, Rate Limits,
    URL-ovi, Google, Apple; spend cap) i provera na telefonu. **CAPTCHA (Cloudflare Turnstile, nevidljiv) ugraditi u
    `mobile/src/auth/captcha.ts`** (traži se samo kad se šalje kod na mejl), pa je tek onda uključiti u Supabase-u.

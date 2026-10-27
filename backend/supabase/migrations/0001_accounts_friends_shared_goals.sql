@@ -1,6 +1,6 @@
 -- Lock In: accounts, friends and shared goals
 --
--- Rules (from Sergej):
+-- Rules (from Andrija):
 --   * Every user pays (7-day trial, then a subscription). Anything that changes data needs an active trial or subscription.
 --   * People connect through "Add a friend": an invite goes to an email address, the other person accepts it.
 --   * Friends can be put into a shared goal. Everyone in a goal is equal: there is no owner or admin.

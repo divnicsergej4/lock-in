@@ -9,7 +9,7 @@ const day = (t: number) => new Date(t).getDate();
 const s = (over: Partial<AppState> = {}): AppState => ({ ...initialState, nag: { on: true }, streakNag: true, ...over });
 const logged = (t: number) => s({ exp: [{ amt: 4, cat: 'Coffee', t, note: 'latte' }] });
 
-describe('Sergej’s texts, exactly', () => {
+describe('Andrija’s texts, exactly', () => {
   test('11 in the rotation, the streak one apart', () => {
     expect(NUDGES).toEqual([
       'remember what you’re saving for, g',
