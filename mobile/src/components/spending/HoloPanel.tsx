@@ -2,15 +2,17 @@
 // fading grid, corner marks, the scan line and flash when it becomes the front panel, and the dimming
 // when it turns away. Its content measures itself so the ring can make all three panels equally tall.
 
-import { useEffect, type ReactNode } from 'react';
+import { memo, useEffect, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
 import Svg, { Defs, G, Line, LinearGradient, Mask, Rect, Stop } from 'react-native-svg';
 
 import { holo, useTheme } from '@/theme';
 
+// Grid and Corners are memo: they never change while the ring turns, and the grid is some 40 SVG lines
+
 /** Fading 24 px grid (.vzp::before: lines every 24 px, faded out towards the bottom). */
-function Grid({ w, h, color }: { w: number; h: number; color: string }) {
+const Grid = memo(function Grid({ w, h, color }: { w: number; h: number; color: string }) {
   const xs: number[] = [];
   const ys: number[] = [];
   for (let x = 23; x < w; x += 24) xs.push(x + 0.5);
@@ -37,10 +39,10 @@ function Grid({ w, h, color }: { w: number; h: number; color: string }) {
       </G>
     </Svg>
   );
-}
+});
 
 /** The eight corner marks (.vzp::after: 13 × 1.5 px, 9 px in from the edges). */
-function Corners({ color }: { color: string }) {
+const Corners = memo(function Corners({ color }: { color: string }) {
   const a = 13;
   const t = 1.5;
   const marks: object[] = [];
@@ -56,7 +58,7 @@ function Corners({ color }: { color: string }) {
       ))}
     </>
   );
-}
+});
 
 export function HoloPanel({
   w,

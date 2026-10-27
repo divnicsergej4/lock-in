@@ -4,7 +4,7 @@
 // refresh rate (120 Hz on ProMotion) and never waits for JavaScript.
 
 import { useIsFocused } from 'expo-router';
-import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -100,6 +100,25 @@ function RingPanel({
     </Animated.View>
   );
 }
+
+/**
+ * A panel's content (chart, calendar), drawn again only when its own arrival, extra height or data change. Each
+ * turn of the ring re-rendered all three panels' contents two or three times (measured with the React Profiler:
+ * about 35 ms per render in a desktop browser, seconds of a blocked JavaScript thread on an Android phone).
+ */
+const PanelContent = memo(function PanelContent({
+  render,
+  activation,
+  grow,
+  onNatural,
+}: {
+  render: (p: PanelProps) => ReactNode;
+  activation: number;
+  grow: number;
+  onNatural: (h: number) => void;
+}) {
+  return <>{render({ activation, grow, onNatural })}</>;
+});
 
 /**
  * `scrolling`: true while the page is being dragged or is gliding (set on the UI thread by the page's
@@ -287,7 +306,11 @@ export const HoloRing = memo(function HoloRing({
     return 0;
   });
   const ph = nat.every((n) => n > 0) ? T + 16 + 14 + 2 : undefined;
-  const onNatural = (i: number) => (h: number) => setNat((a) => (Math.abs(a[i] - h) < 0.5 ? a : a.map((x, j) => (j === i ? h : x))));
+  // one function per panel, the same on every render (PanelContent is drawn again only when its props change)
+  const onNatural = useMemo(
+    () => Array.from({ length: HN }, (_, i) => (h: number) => setNat((a) => (Math.abs(a[i] - h) < 0.5 ? a : a.map((x, j) => (j === i ? h : x))))),
+    [],
+  );
 
   // ---- the glowing base: two ellipses and the dashed ring ----
   const bw = Math.min(W * 0.88, 430);
@@ -328,7 +351,7 @@ export const HoloRing = memo(function HoloRing({
                 activation={act[i]}
                 onPressSide={front ? null : () => tapTo(i)}
               >
-                {render({ activation: act[i], grow: grow[i], onNatural: onNatural(i) })}
+                <PanelContent render={render} activation={act[i]} grow={grow[i]} onNatural={onNatural[i]} />
               </RingPanel>
             );
           })}
