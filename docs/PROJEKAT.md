@@ -285,7 +285,10 @@ Urađeno:
   `[SUPABASE REGION]`). Domen je kupljen: **`lockintracker.app`** (Cloudflare Registrar), upisan u
   `mobile/src/config/domain.ts` i `web/`. Privacy i Terms: „Andrija Dmitrović, Serbia“, support@lockintracker.app,
   Supabase Frankfurt (EU); adresa namerno nije na javnoj stranici. Settings > **Legal & support**: Privacy Policy,
-  Terms of Use, Support (otvaraju se u pregledaču; rade i u demu). Mejl ide sa poddomena `mail.lockintracker.app`. Lokalna obaveštenja rade u Expo Go; push iz cilja traži
+  Terms of Use, Support (otvaraju se u pregledaču; rade i u demu). Mejl ide sa poddomena `mail.lockintracker.app`. Lokalna obaveštenja rade u Expo Go na iPhone-u; u Expo Go na
+  Android-u (SDK 58) sam uvoz `expo-notifications` puca (fali `ExpoTopicSubscriptionModule`) i obarao je celu
+  aplikaciju, pa se paket sad učitava oprezno (`mobile/src/notifications/expoNotifications.ts`) i tamo aplikacija
+  radi bez obaveštenja telefona (žuta kartica na Home i dalje radi). Push iz cilja traži
   development build, EAS projekat i Apple nalog (`docs/ZASTITA.md` 3.9).
 - Vodič za pravi Supabase projekat (`docs/TESTIRANJE.md`, 27. oktobar 2026; Andrija pravi projekat): projekat u
   Frankfurtu i samo publishable ključ u `mobile/.env.local`, migracije 0001–0005 sa SQL proverom posle svake, Resend

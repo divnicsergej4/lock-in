@@ -8,9 +8,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
+import { Notifications } from './expoNotifications';
 import { askPermission } from './local';
 
 const KEY = 'lockin-push-token'; // which token this phone registered, to remove it again
@@ -23,7 +23,7 @@ export function projectId(): string | undefined {
 export async function enableGoalAlerts(client: SupabaseClient): Promise<PushResult> {
   if (Platform.OS === 'web' || !Device.isDevice) return { ok: false, error: 'Shared goal alerts need a real phone.' };
   const pid = projectId();
-  if (!pid) return { ok: false, error: 'Shared goal alerts come with the full app build.' };
+  if (!pid || !Notifications) return { ok: false, error: 'Shared goal alerts come with the full app build.' };
   if (!(await askPermission())) return { ok: false, error: 'Allow notifications for Lock In in your phone’s Settings first.' };
   let token: string;
   try {

@@ -3,7 +3,6 @@
 // the 10 days ahead keep moving). Not in the demo (its data is not the user's). A tap on a shared goal alert
 // opens Savings.
 
-import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState as RNAppState } from 'react-native';
@@ -12,6 +11,7 @@ import { dayKey } from '@/logic/dates';
 import { todayCount } from '@/logic/money';
 import { useStore } from '@/store/StoreProvider';
 
+import { Notifications } from './expoNotifications';
 import { syncLocalNotifications } from './local';
 
 export function useNotifications() {
@@ -37,6 +37,7 @@ export function useNotifications() {
   }, [ready, demo]);
 
   useEffect(() => {
+    if (!Notifications) return;
     const sub = Notifications.addNotificationResponseReceivedListener((r) => {
       if (r.notification.request.content.data?.url === 'lockin://savings') router.navigate('/savings');
     });
