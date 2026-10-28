@@ -3,7 +3,7 @@
 // when it turns away. Its content measures itself so the ring can make all three panels equally tall.
 
 import { memo, useEffect, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
 import Svg, { Defs, G, Line, LinearGradient, Mask, Rect, Stop } from 'react-native-svg';
 
@@ -60,6 +60,25 @@ const Corners = memo(function Corners({ color }: { color: string }) {
   );
 });
 
+const ANDROID = Platform.OS === 'android';
+
+/** A CSS box-shadow list split into its inset and outer shadows (commas inside rgba() are kept). */
+export function splitShadows(css: string): { inset: string; outer: string } {
+  const parts: string[] = [];
+  let depth = 0;
+  let cur = '';
+  for (const ch of css) {
+    if (ch === '(') depth++;
+    if (ch === ')') depth--;
+    if (ch === ',' && depth === 0) {
+      parts.push(cur.trim());
+      cur = '';
+    } else cur += ch;
+  }
+  if (cur.trim()) parts.push(cur.trim());
+  return { inset: parts.filter((p) => p.startsWith('inset')).join(', '), outer: parts.filter((p) => !p.startsWith('inset')).join(', ') };
+}
+
 export function HoloPanel({
   w,
   h,
@@ -99,23 +118,35 @@ export function HoloPanel({
   const flashStyle = useAnimatedStyle(() => ({ opacity: flash.value }));
   const dimStyle = useAnimatedStyle(() => ({ opacity: dim.value }));
 
+  const look = (
+    <>
+      {!!h && (
+        <View style={[StyleSheet.absoluteFill, { borderRadius: 21, overflow: 'hidden' }]}>
+          <Grid w={w - 2} h={inner} color={k.grid} />
+        </View>
+      )}
+      <Corners color={k.hc} />
+    </>
+  );
+  const sh = splitShadows(k.panelShadow);
   return (
     <View style={[st.vzp, { width: w, height: h }]}>
       {/* the panel's still look (gradient, border, grid, corner marks and its three shadows) is drawn once
-          and kept as a bitmap; otherwise iOS redraws the masked shadows on every frame of a scroll (not on
-          Android: its bitmap ends at the panel's edge and would cut the glow and the shadow off) */}
-      <View
-        pointerEvents="none"
-        shouldRasterizeIOS
-        style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: k.panelShadow }]}
-      >
-        {!!h && (
-          <View style={[StyleSheet.absoluteFill, { borderRadius: 21, overflow: 'hidden' }]}>
-            <Grid w={w - 2} h={inner} color={k.grid} />
+          and kept as a bitmap; otherwise iOS redraws the masked shadows on every frame of a scroll */}
+      {ANDROID ? (
+        // Android's bitmap ends at the view's edge, so the glow and the drop shadow (outside the panel) sit on
+        // their own view and only what is inside the panel is kept as a bitmap. Without the bitmap, Android
+        // drew the gradient, the masked grid and the shadows again on every frame the ring floated or turned.
+        <View pointerEvents="none" style={[st.chrome, { borderWidth: 0, boxShadow: sh.outer }]}>
+          <View renderToHardwareTextureAndroid style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: sh.inset }]}>
+            {look}
           </View>
-        )}
-        <Corners color={k.hc} />
-      </View>
+        </View>
+      ) : (
+        <View pointerEvents="none" shouldRasterizeIOS style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: k.panelShadow }]}>
+          {look}
+        </View>
+      )}
       <Animated.View style={[st.vzi, flashStyle]}>{children}</Animated.View>
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 21, overflow: 'hidden' }, scanBox]}>
         <Animated.View style={[st.scan, { backgroundImage: k.scan }, scanStyle]} />
