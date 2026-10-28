@@ -336,7 +336,9 @@ Sledeće, ovim redom:
 4. Prenos ekrana iz prototipa jedan po jedan (Home, Spending sa holo prstenom, Savings sa fiokom, More, uvod sa likom,
    obilazak, demo).
 5. Zajednički cilj vezan za backend; slanje mejla sa pozivom (napisano: `backend/supabase/functions/send-invite-email`,
-   preko Resend-a; treba postaviti i podesiti domen).
+   preko Resend-a; treba postaviti i podesiti domen). Dogovoreno (Andrija, 28. okt.): aplikacija nema polje za ime,
+   pa bi skoro svi u pozivu i u cilju bili „A friend“ / „Someone“. Pri prvoj prijavi ili prvom pozivu pitati
+   „What should friends call you?“ i upisati u `profiles.display_name` (mejl se nikad ne koristi kao ime).
 6. Kad zajednički cilj počne da radi preko servera, dopuniti tekst o privatnosti („…stay on your phone only, except shared
    goals, which sync with the people you share them with“).
 
