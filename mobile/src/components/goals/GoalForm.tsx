@@ -1,5 +1,6 @@
 // "Make a goal" and "Edit goal": a name, an amount, a due date if you want one, and (when making it) which friends
-// are in. Every member can edit; the currency stays the one the goal was made in.
+// are in. A new goal gets its currency picked from the intro's list (the main currency first); every member can
+// edit, and the currency stays the one the goal was made in.
 
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
@@ -9,6 +10,8 @@ import { Avatar, GoldButton, SheetField } from './bits';
 import { F, useLook } from './look';
 import { Sheet } from './Sheet';
 import { useAppToast } from '@/components/AppToast';
+import { Select } from '@/components/onboarding/Select';
+import { CURRENCIES, currencyLabel } from '@/logic/setup';
 import { createGoal, editGoal } from '@/goals/api';
 import { useGoals } from '@/goals/GoalsProvider';
 import { parseAmount } from '@/logic/format';
@@ -37,7 +40,9 @@ export function GoalForm({
   const [who, setWho] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const now = Date.now();
-  const cur = goal?.currency ?? currency;
+  // a new goal: any currency from the intro's list, the main one first picked; an existing goal keeps its own
+  const [picked, setPicked] = useState(CURRENCIES.some((c) => c[0] === currency) ? currency : 'EUR');
+  const cur = goal?.currency ?? picked;
 
   const tomorrow = () => {
     const d = new Date();
@@ -80,7 +85,21 @@ export function GoalForm({
     <Sheet title={goal ? 'Edit goal' : 'Make a goal'} onClose={onClose}>
       <SheetField label="Name" value={name} onChangeText={setName} placeholder="E.g. Summer trip" autoFocus={!goal} />
       <SheetField label="Amount" value={amt} onChangeText={setAmt} placeholder="0" numeric />
-      <Text style={[st.note, { color: g.mute }]}>In {cur}. A goal keeps one currency.</Text>
+      {goal ? (
+        <Text style={[st.note, { color: g.mute }]}>In {cur}. A goal keeps one currency.</Text>
+      ) : (
+        <View style={{ marginBottom: 14 }}>
+          <Text style={[st.label, { color: g.mute }]}>Currency</Text>
+          <Select
+            label="Currency"
+            value={picked}
+            options={CURRENCIES.map(([code]) => ({ value: code, label: currencyLabel(code) }))}
+            onChange={setPicked}
+            look={{ bg: g.bg, border: g.line, ink: g.ink, mute: g.mute, sheet: g.card, font: F.text }}
+            style={{ borderRadius: 12, paddingVertical: 12 }}
+          />
+        </View>
+      )}
 
       <Text style={[st.label, { color: g.mute }]}>Due date</Text>
       <View style={st.dateRow}>

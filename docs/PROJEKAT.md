@@ -106,7 +106,8 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   Andrija je odobrio spisak svih novih tekstova (29. okt.): „Every euro“ u uvodu piše valutu cilja (euro, dollar,
   krona…), bez naloga je isti izgled sa šarenim S M A i „Sign in to get started“, prekidač za nudge gasi samo push
   (red „Luka nudged you“ i dalje stoji u aplikaciji, onaj ko šalje ne saznaje), valuta cilja je glavna valuta u
-  trenutku pravljenja, „On track“ = prosek uplata u poslednje 4 nedelje ≥ koliko treba nedeljno do roka.
+  trenutku pravljenja (ispravljeno 29. okt., Andrija: „lepo sam ti bio rekao da stavis da se bira koja valuta je za
+  cilj“: pri pravljenju cilja bira se valuta sa liste iz uvoda, podrazumevana je glavna; posle se ne menja), „On track“ = prosek uplata u poslednje 4 nedelje ≥ koliko treba nedeljno do roka.
   Za `no_access` se prikazuje „Your trial or plan has ended. …“ umesto „subscription required“ iz baze.
 
 ## 7. Šta aplikacija ima (inventar iz prototipa)
