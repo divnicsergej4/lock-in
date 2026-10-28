@@ -16,6 +16,10 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a",
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=-Xmx3g -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=1 -Dorg.gradle.daemon=false"
+      },
       "android": {
         "buildType": "apk"
       }
