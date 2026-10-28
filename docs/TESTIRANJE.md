@@ -62,9 +62,12 @@ issue detected… destructive operation“, to je zbog `drop`/`update` u migraci
    - Organization: tvoja; Project name: `lock-in`;
    - Database Password: **Generate a password**, sačuvaj u menadžer lozinki. Nikome je ne šalješ; za ovaj vodič ti
      ne treba;
-   - Region: **Central EU (Frankfurt)** (`eu-central-1`); to piše i u Privacy Policy;
-   - plan: Free. Ako vidiš „Enable Data API“: **uključeno** (aplikacija preko njega zove bazu). Ostalo ostavi kako
-     jeste. **Create new project** i sačekaj par minuta da bude spreman.
+   - Region: ne ostavljaj samo „Europe“ (to može biti London): **Need a specific region?** > **Central EU
+     (Frankfurt)** (`eu-central-1`); to piše i u Privacy Policy. Region posle ne može da se promeni (samo brisanje
+     projekta i nov);
+   - plan: Free. Security: „Enable Data API“ **uključeno** (aplikacija preko njega zove bazu), „Automatically expose
+     new tables“ **isključeno** (migracije same daju prava), „Enable automatic RLS“ **uključeno**. GitHub ne
+     povezuj. **Create new project** i sačekaj par minuta da bude spreman.
 3. Project Settings > **General**: prepiši **Project ID** (npr. `abcdefghijklmnopqrst`). U ovom vodiču je to
    `<REF>`, a adresa projekta je `https://<REF>.supabase.co`.
 4. Project Settings > **API Keys**: kopiraj **Publishable key** (`sb_publishable_…`). **Secret key ne diraj** i ne
@@ -157,7 +160,9 @@ select 'šalje samo server', has_function_privilege('service_role', 'public.clai
 ```
 
 ### 2.6 Završna provera (posle svih pet)
-Oba upita moraju da vrate **prazno** („Success. No rows returned“). Ako nešto ispišu, pošalji mi.
+Oba upita moraju da vrate **prazno** („Success. No rows returned“). Ako nešto ispišu, pošalji mi. Izuzetak: ako je
+pri pravljenju projekta uključeno „Enable automatic RLS“, drugi upit pokaže funkciju `rls_auto_enable`. Nju pravi
+Supabase za to podešavanje, ne može da se pozove spolja i to je u redu.
 ```sql
 -- tabele bez RLS-a (ne sme da postoji nijedna)
 select n.nspname, c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
@@ -224,8 +229,8 @@ Save. Bez ovoga Supabase šalje najviše 2 mejla na sat za ceo projekat.
 - „Allow manual linking“: **isključeno**;
 - otvori **Email**: „Enable Email provider“ **uključeno**, „Confirm email“ **uključeno** (mora: kad je isključeno,
   svako može da napravi prijavljen nalog sa tuđim mejlom), „Secure email change“ **uključeno**,
-  „Email OTP Expiration“ **600**, „Email OTP Length“ **6**. Polja o lozinci ostavi kako jesu (lozinka se nikad ne
-  čuva). Save.
+  „Email OTP Expiration“ **600**, „Email OTP Length“ **6**. Novi projekat ima 3600 i **8**: dužina mora na 6, jer
+  aplikacija prima tačno 6 cifara. Polja o lozinci ostavi kako jesu (lozinka se nikad ne čuva). Save.
 
 ### 3.4 Šabloni mejla
 **Authentication > Emails > Templates**. U **Magic Link** i u **Confirm signup** obriši sav tekst i nalepi:
@@ -261,9 +266,11 @@ Save. Zašto baš ovi brojevi: `docs/ZASTITA.md` 3.2, korak 4.
   `docs/ZASTITA.md` 3.2, koraci 6–8. CAPTCHA (korak 9 tamo) je ovde deo 7.
 
 ### 3.7 Prva prijava na oba telefona
-1. U PowerShell-u, u folderu `C:\dev\lock-in\mobile`: `npx expo start --clear` (posle svake izmene `.env.local`
-   Expo mora da se pokrene ponovo). Telefoni na istom Wi-Fi-ju kao računar; ako ne vide računar,
-   `npx expo start --clear --tunnel`.
+1. U PowerShell-u, u folderu `C:\dev\lock-in\mobile` (ne iz drugog foldera): `npx expo start --clear --tunnel --go`
+   (posle svake izmene `.env.local` Expo mora da se pokrene ponovo). `--go` je obavezan otkad projekat ima
+   `expo-dev-client`: bez njega QR kod vodi u development build, pa iPhone kaže „No usable data found“. Iznad QR koda
+   mora da piše „Using Expo Go“. `--tunnel` radi i kad telefon ne vidi računar preko Wi-Fi-ja. Na Android-u QR
+   skeniraš iz same Expo Go aplikacije.
 2. **Telefon A**: skeniraj QR (iPhone: kamera). U aplikaciji Savings > Shared goal > **Sign in to get started**
    (ili Settings > Account). Upiši A_MEJL > **Send code**.
 3. Mejl mora da stigne od **Lock In &lt;no-reply@mail.lockintracker.app&gt;**, naslov „Your Lock In code“, 6 cifara.
@@ -315,12 +322,16 @@ Mora da vrati dva reda sa `manual_test` i datumom za 30 dana. Ponovo pokrenut, s
 (pretplate) i `send-goal-push` (push iz zajedničkog cilja).
 
 ### 5.1 Tajne (lepiš sam, u dashboard)
-Dve tajne su nasumičan tekst koji praviš sam. U PowerShell 7, za svaku posebno (ispis vidiš samo ti; ne šalji ga):
+Dve tajne su nasumičan tekst koji praviš sam (lozinke između servera; korisnici ih nikad ne vide). U PowerShell-u
+(radi i u starom Windows PowerShell-u), za svaku posebno (ispis vidiš samo ti; ne šalji ga):
 ```
-'Bearer ' + [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+$b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); 'Bearer ' + (($b | ForEach-Object { $_.ToString('x2') }) -join '')
 ```
-Sačuvaj obe u menadžer lozinki: `REVENUECAT_WEBHOOK_AUTH` će ti trebati u RevenueCat-u, a `PUSH_CRON_AUTH` u
-Vault-u (5.4).
+Ne moraš da ih čuvaš: `REVENUECAT_WEBHOOK_AUTH` odmah nalepi u Secrets (kad se bude podešavao RevenueCat, pravi se
+nova i stavlja na oba mesta), a `PUSH_CRON_AUTH` odmah nalepi i u Secrets i u Vault (5.4, korak 2). Proveri da su
+iste: `select encode(sha256(convert_to(decrypted_secret, 'utf8')), 'hex') from vault.decrypted_secrets where name =
+'push_cron_auth';` mora da se poklapa sa DIGEST kolonom pored `PUSH_CRON_AUTH`. Resend ključ `invite-function` napravi
+tek sad i nalepi odmah. Posle čuvanja proveri da `RESEND_API_KEY` i `INVITE_FROM` nisu zamenjeni (lako se desi).
 
 Supabase > **Edge Functions > Secrets** > Add new secret, jedan po jedan:
 

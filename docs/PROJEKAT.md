@@ -299,7 +299,18 @@ Urađeno:
   pozive i zajednički cilj, pa se te stavke proveravaju u SQL Editor-u kao korisnik A ili B (iste baze, ista pravila),
   a pravi mejl sa pozivom šalje nova skripta `backend/scripts/send-test-invite.mjs` (radi samo dok je CAPTCHA
   isključena). Svi SQL blokovi iz vodiča pušteni na lokalnoj bazi sa svim migracijama (prolaze); skripte provere
-  na lažnom serveru. Na pravom projektu još ništa nije pokrenuto.
+  na lažnom serveru.
+  **Pravi projekat podešen i proveren (27–28. okt. 2026):** Supabase `lock-in-finance-tarcker` (ref
+  `jezdcanghhdnwnnnntzh`, Frankfurt, Free; „expose new tables“ isključeno, automatic RLS uključen), svih 5 migracija
+  sa proverama, Resend `mail.lockintracker.app` (EU) sa SPF/DKIM/DMARC PASS, SMTP (pošiljalac „Lock In - Finance
+  tracker“, Andrijin izbor; isto u `INVITE_FROM`), Auth podešavanja (OTP 6 cifara / 600 s), 4 funkcije postavljene
+  (bez prijave 401), cron `send-goal-push` svaki minut, Turnstile (site key u `mobile/.env.local`) i CAPTCHA uključena
+  u Supabase-u (skripta bez tokena odbijena). Provereno na telefonima: prijava kodom (iPhone i Android, Turnstile sa
+  kvadratićem), 60 s, 5 pogrešnih kodova, odjava, brisanje naloga (Android). Prijava lozinkom odbijena. Kao korisnik
+  u SQL-u: poziv (pravi mejl stigao, kod jednog primaoca u Promotions), prihvatanje, cilj, uplate, uplata na tuđe ime
+  odbijena, izlazak briše uplate, brisanje naloga briše nalog, profil, prijateljstvo i uplate, a cilj ostaje drugima.
+  Probne pretplate `manual_test` za Andrijin nalog (do 26. nov.); probni cilj „Summer trip test“ i poziv za
+  `andrijadmitrovicc@gmail.com` (bez naloga) su ostali. Expo Go: `npx expo start --clear --tunnel --go` iz `mobile/`.
 - Android (prvi put isproban 27–28. oktobra 2026, Redmi Note 15 Pro). Uzroci i popravke, izmereno (React Profiler
   na web build-u, Perf Monitor na telefonu), ne nagađano:
   - pad pri pokretanju u Expo Go-u: učitava se samo lokalni deo `expo-notifications` (`notifications/expoLocal.ts`),
