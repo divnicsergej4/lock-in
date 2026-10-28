@@ -30,6 +30,9 @@ Ovde je baza za naloge, prijatelje i zajednički cilj. Lična potrošnja se ne �
    unosa (`docs/ZASTITA.md`, deo 7).
 6. Isto za `supabase/migrations/0005_goal_push.sql` (posle 0004): obaveštenja iz zajedničkog cilja (`docs/ZASTITA.md`,
    delovi 3.9 i 8, uključujući cron posao).
+7. Isto za `supabase/migrations/0006_goal_deadline_nudges_pins.sql` (posle 0005): rok cilja, nudge (jedan dnevno istoj
+   osobi po cilju, prekidač „Nudges from friends“) i push kad grupa pređe pin ili otključa cilj. Posle nje ponovo
+   postaviti `send-goal-push` (novi tekstovi): `npx supabase functions deploy send-goal-push --no-verify-jwt`.
 
 Ceo vodič za pravi projekat, sa SQL proverom posle svake migracije i proverom na dva telefona: `docs/TESTIRANJE.md`.
 Skripte za pravi projekat (samo javni URL i ključ iz `mobile/.env.local`): `scripts/check-no-password-login.mjs`
@@ -60,6 +63,7 @@ Postgres i Python nisu potrebni).
   čita i zove.
 - `tests/input_checks.test.mjs`: 68 provera unosa (`0004`): tekstovi, iznosi, valuta, adrese, bez dinamičkog SQL-a.
 - `tests/push.test.mjs`: 43 provere za `0005` (tokeni, ko dobija obaveštenje, najviše jedno na 10 minuta).
+- `tests/goal_extras.test.mjs`: 38 provera za `0006` (rok, nudge i ko ga vidi, prekidač, pinovi i otključavanje).
 - `supabase/functions/*/handler_test.ts`: 29 provera serverskih funkcija (Deno).
 - `tests/test_shared_goals.py`: ista 49 provera na pravom Postgres-u (`python3 tests/test_shared_goals.py -h … -p … -U …`).
 

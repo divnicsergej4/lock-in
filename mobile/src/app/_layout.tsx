@@ -17,6 +17,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider } from '@/auth/AuthProvider';
 import { AppToastProvider } from '@/components/AppToast';
+import { GoalsProvider } from '@/goals/GoalsProvider';
 import { useNotifications } from '@/notifications/useNotifications';
 import { StoreProvider, useStore } from '@/store/StoreProvider';
 import { useTheme } from '@/theme';
@@ -68,13 +69,18 @@ function App() {
 
   return (
     <AppToastProvider>
-      <StatusBar style={name === 'dark' ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="welcome" options={{ animation: 'fade', contentStyle: { backgroundColor: '#f4f8f5' } }} />
-        <Stack.Screen name="sign-in" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="auth-callback" options={{ animation: 'none' }} />
-      </Stack>
+      <GoalsProvider>
+        <StatusBar style={name === 'dark' ? 'light' : 'dark'} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="welcome" options={{ animation: 'fade', contentStyle: { backgroundColor: '#f4f8f5' } }} />
+          <Stack.Screen name="sign-in" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="auth-callback" options={{ animation: 'none' }} />
+          <Stack.Screen name="goal/[id]" />
+          <Stack.Screen name="unlocked/[id]" options={{ animation: 'fade' }} />
+          <Stack.Screen name="friends" />
+        </Stack>
+      </GoalsProvider>
     </AppToastProvider>
   );
 }

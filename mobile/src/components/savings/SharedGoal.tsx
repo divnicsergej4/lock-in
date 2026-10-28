@@ -1,136 +1,265 @@
-// "Shared goal" (prototype section[data-fold=team], gold): what saving together looks like, with a
-// sample goal, and the button that opens sign-in. The shared goal itself does not sync yet.
+// "Shared goal" on Savings (Andrija's design, 28 October 2026). Signed out: what saving together is, with the
+// S M A avatars and "Sign in to get started". Signed in without goals: friend requests, "Lock in together." and
+// the three steps. With goals: one card per goal (small ring and lock, chips, the latest thing that happened),
+// "New goal" and "Friends · N". The demo shows the same with its sample goal.
 
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAuth } from '@/auth/AuthProvider';
 import { useAppToast } from '@/components/AppToast';
-import { Button, Field, Fold, Ghost, Small } from '@/components/home/Section';
-import { teamSummary } from '@/logic/demo';
+import { Avatar, Avatars, Chevron, Chip, GoldButton, OutlineButton } from '@/components/goals/bits';
+import { GoalForm } from '@/components/goals/GoalForm';
+import { F, useLook } from '@/components/goals/look';
+import { DashedLock, LockRing, segments } from '@/components/goals/LockRing';
+import { respondInvite } from '@/goals/api';
+import { useGoals } from '@/goals/GoalsProvider';
+import {
+  amount, dayLabel, goalsHeader, goalTags, goalView, initial, introText, lastActivity, MEMBER_COLORS, money, nameOf,
+  type FriendRequest, type GoalView, type Snapshot,
+} from '@/logic/goals';
 import { useStore } from '@/store/StoreProvider';
-import { inter, useTheme } from '@/theme';
+import { useTourTarget } from '@/tour/registry';
 
-const PEOPLE: [string, string][] = [
-  ['S', '#22e07a'],
-  ['M', '#5aa9f0'],
-  ['A', '#ff7eb6'],
+const SAMPLE = [
+  { initial: 'S', color: MEMBER_COLORS[0] },
+  { initial: 'M', color: MEMBER_COLORS[1] },
+  { initial: 'A', color: MEMBER_COLORS[2] },
 ];
 
-/**
- * In the demo (prototype #team-body) the goal is a real one with three people: what each put in, the
- * bar, and the fields to set a goal or pay in (switched off, like every input in the demo).
- */
-function DemoTeam() {
-  const { state } = useStore();
-  const { c } = useTheme();
-  const t = teamSummary(state);
-  const half = { flex: 1, flexBasis: 0, minWidth: 0 } as const;
-  const noop = () => {};
+function GoldSection({ children }: { children: React.ReactNode }) {
+  const g = useLook();
+  const ref = useTourTarget('team');
   return (
-    <Fold id="team" title="Shared goal" kind="pro" defaultOpen tourId="team">
+    <View ref={ref} style={[st.gold, { backgroundImage: g.goldBg, borderColor: g.goldLine }]}>
+      {children}
+    </View>
+  );
+}
+
+/** "Marko wants to save with you" with Accept / Decline. */
+function RequestCard({ r, s }: { r: FriendRequest; s: Snapshot }) {
+  const g = useLook();
+  const { run } = useGoals();
+  const [busy, setBusy] = useState(false);
+  const name = nameOf(s, r.from_user);
+  const answer = async (accept: boolean) => {
+    if (busy) return;
+    setBusy(true);
+    await run((db) => respondInvite(db, r.id, accept));
+    setBusy(false);
+  };
+  return (
+    <View style={{ marginBottom: 14 }}>
+      <View style={[st.req, { backgroundColor: g.card, borderColor: g.line }]}>
+        <Avatar letter={initial(name)} color={MEMBER_COLORS[1]} size={37} />
+        <View style={{ flex: 1 }}>
+          <Text style={[st.reqT, { color: g.ink }]} numberOfLines={2}>
+            {name} wants to save with you
+          </Text>
+          <Text style={[st.reqS, { color: g.mute }]}>Friend request · {dayLabel(Date.parse(r.created_at), Date.now())}</Text>
+        </View>
+      </View>
       <View style={st.row}>
-        <Field placeholder="E.g. a trip" accessibilityLabel="Goal name" style={half} />
-        <Field placeholder="Goal" keyboardType="decimal-pad" accessibilityLabel="Goal amount" style={half} />
+        <GoldButton title="Accept" onPress={() => answer(true)} style={{ flex: 1, minHeight: 42, borderRadius: 14 }} dim={busy} />
+        <OutlineButton title="Decline" onPress={() => answer(false)} plain style={{ flex: 1, minHeight: 42, borderRadius: 14, backgroundColor: g.card }} />
       </View>
-      <Ghost title="Set goal" onPress={noop} style={{ alignSelf: 'flex-start', marginTop: 8 }} />
-      <View style={[st.row, { marginTop: 8 }]}>
-        <Field placeholder="Who's paying in" accessibilityLabel="Who's paying in" style={half} />
-        <Field placeholder="Amount" keyboardType="decimal-pad" accessibilityLabel="Payment amount" style={half} />
+    </View>
+  );
+}
+
+function Requests({ s }: { s: Snapshot }) {
+  const g = useLook();
+  if (!s.requestsIn.length) return null;
+  const more = s.requestsIn.length - 1;
+  return (
+    <>
+      <RequestCard r={s.requestsIn[0]} s={s} />
+      {more > 0 && (
+        <Pressable accessibilityRole="button" onPress={() => router.push('/friends')} style={{ marginTop: -4, marginBottom: 14, paddingHorizontal: 4 }}>
+          <Text style={[st.more, { color: g.goldInk }]}>{more === 1 ? '1 more friend request' : `${more} more friend requests`}</Text>
+        </Pressable>
+      )}
+    </>
+  );
+}
+
+const STEPS: [string, string][] = [
+  ['Add a friend', 'Send an invite to their email.'],
+  ['Make a goal', 'A name, an amount, a date if you want one.'],
+  ['Put money in', "Everyone logs their own. Nobody's the boss."],
+];
+
+/** "Lock in together." with the three steps. Signed out: the S M A avatars and "Sign in to get started". */
+function Intro({ signedOut, currency, onMake }: { signedOut?: boolean; currency: string; onMake?: () => void }) {
+  const g = useLook();
+  const toast = useAppToast();
+  const { available } = useAuth();
+  return (
+    <GoldSection>
+      <Text style={[st.kicker, { color: g.goldInk }]}>SHARED GOAL</Text>
+      <View style={{ alignItems: 'center', marginTop: 18 }}>
+        <DashedLock size={128} />
+        {signedOut && (
+          <View style={{ marginTop: 14 }}>
+            <Avatars people={SAMPLE} size={26} />
+          </View>
+        )}
+        <Text style={[st.big, { color: g.ink }]}>Lock in together.</Text>
+        <Text style={[st.intro, { color: g.ink }]}>{introText(currency)}</Text>
       </View>
-      <Button title="Pay in" onPress={noop} />
-      <View style={{ marginTop: 10 }}>
-        {t ? (
-          <>
-            <Text style={[st.b, { color: c.ink }]}>{t.name}</Text>
-            <View style={st.bar}>
-              <View style={st.barT}>
-                <Text style={[st.t14, { color: c.ink }]}>{t.line}</Text>
-                <Text style={[st.t14, { color: c.ink, fontFamily: inter[700] }]}>{t.pct + '%'}</Text>
-              </View>
-              <View style={[st.track, { backgroundColor: c.line }]}>
-                <View style={{ width: t.pct + '%', height: '100%', backgroundColor: c.accent }} />
-              </View>
+      <View style={{ marginTop: 18, gap: 16 }}>
+        {STEPS.map(([t, d], i) => (
+          <View key={t} style={st.step}>
+            <View style={[st.num, { borderColor: g.gold }]}>
+              <Text style={[st.numT, { color: g.goldInk }]}>{i + 1}</Text>
             </View>
-            {t.people.map((p) => (
-              <Small key={p}>{p}</Small>
+            <View style={{ flex: 1 }}>
+              <Text style={[st.stepT, { color: g.ink }]}>{t}</Text>
+              <Text style={[st.stepD, { color: g.mute }]}>{d}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      {signedOut ? (
+        <GoldButton
+          title="Sign in to get started"
+          onPress={() => (available ? router.push('/sign-in') : toast('Accounts are coming soon. For now this is a preview.'))}
+          style={{ marginTop: 18 }}
+        />
+      ) : (
+        <>
+          <GoldButton title="Add a friend" onPress={() => router.push('/friends')} style={{ marginTop: 18 }} />
+          <OutlineButton title="Make a goal" onPress={onMake ?? (() => {})} style={{ marginTop: 12, backgroundColor: 'transparent' }} />
+        </>
+      )}
+    </GoldSection>
+  );
+}
+
+function GoalCard({ v }: { v: GoalView }) {
+  const g = useLook();
+  const now = Date.now();
+  const last = lastActivity(v, now);
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => router.push({ pathname: '/goal/[id]', params: { id: v.goal.id } })}
+      style={({ pressed }) => [st.card, { borderColor: g.goldLine, backgroundColor: 'rgba(5,11,8,0.35)' }, pressed && { opacity: 0.85 }]}
+    >
+      <View style={st.cardTop}>
+        <LockRing size={58} small segs={segments(v.members, v.goal.target)} unlocked={v.unlocked} />
+        <View style={{ flex: 1 }}>
+          <Text style={[st.cardName, { color: g.ink }]} numberOfLines={2}>
+            {v.goal.name}
+          </Text>
+          <Text style={[st.cardSum, { color: g.goldSoft }]}>
+            {amount(v.saved)} / {money(v.goal.target, v.goal.currency)} · {v.pct}%
+          </Text>
+        </View>
+        <Chevron color={g.mute} />
+      </View>
+      <View style={st.tags}>
+        <Avatars people={v.members} size={22} />
+        {goalTags(v, now).map((t) => (
+          <Chip key={t.t} tag={t} />
+        ))}
+      </View>
+      <View style={[st.last, { borderTopColor: g.line }]}>
+        {last ? (
+          <Text style={[st.lastT, { color: g.mute }]} numberOfLines={1}>
+            {last.parts.map((p, i) => (
+              <Text key={i} style={p.role === 'name' ? { color: g.ink, fontFamily: F.bold } : undefined}>
+                {p.t}
+              </Text>
             ))}
-          </>
+            {' · ' + last.when}
+          </Text>
         ) : (
-          <Small>Set the shared goal name and amount, then log payments.</Small>
+          <Text style={[st.lastT, { color: g.mute }]}>No money in yet</Text>
         )}
       </View>
-      <Small style={{ marginTop: 12.8, marginBottom: 12.8 }}>Saved only on this phone. Live sharing needs the real app.</Small>
-    </Fold>
+    </Pressable>
   );
 }
 
 export function SharedGoal() {
-  const { c } = useTheme();
-  const toast = useAppToast();
-  const { demo } = useStore();
-  const { available, session } = useAuth();
-  if (demo) return <DemoTeam />;
+  const g = useLook();
+  const { state } = useStore();
+  const { on, snap, status, refresh, run } = useGoals();
+  const [making, setMaking] = useState(false);
+  const make = () => run(async () => ({ ok: true as const, data: undefined }), { named: true, quiet: true }).then((r) => r && setMaking(true));
+
+  if (!on) return <Intro signedOut currency={state.cur} />;
+  if (!snap) {
+    return (
+      <GoldSection>
+        <Text style={[st.kicker, { color: g.goldInk }]}>SHARED GOAL</Text>
+        {status === 'error' ? (
+          <View style={{ paddingVertical: 18, gap: 12 }}>
+            <Text style={[st.stepD, { color: g.mute }]}>Couldn't load your goals. Check your connection.</Text>
+            <OutlineButton title="Try again" onPress={refresh} />
+          </View>
+        ) : (
+          <ActivityIndicator color={g.gold} style={{ marginVertical: 40 }} />
+        )}
+      </GoldSection>
+    );
+  }
+  const now = Date.now();
+  const views = snap.goals.map((x) => goalView(snap, x.id, now)).filter((x): x is GoalView => !!x);
   return (
-    <Fold id="team" title="Shared goal" kind="pro" defaultOpen tourId="team">
-      <Small style={{ marginTop: 0.8 }}>
-        Save together with friends or your partner: for a trip, a gift or a place. Everyone logs what they put in, and everyone sees how much is left.
-      </Small>
-      {/* .tmd: the sample goal (margins collapse with the text above: 12.8) */}
-      <View style={st.tmd}>
-        <View style={st.tmh}>
-          <Text style={[st.b, { color: c.ink }]}>Summer trip to Greece</Text>
-          <View style={st.tav}>
-            {PEOPLE.map(([l, bg]) => (
-              <View key={l} style={[st.av, { backgroundColor: bg, borderColor: c.card }]}>
-                <Text style={st.avT}>{l}</Text>
-              </View>
+    <>
+      <Requests s={snap} />
+      {views.length === 0 ? (
+        <Intro currency={state.cur} onMake={make} />
+      ) : (
+        <GoldSection>
+          <View style={st.head}>
+            <Text style={[st.h, { color: g.ink }]}>Shared goals</Text>
+            <Text style={[st.count, { color: g.mute }]}>{goalsHeader(views.length, snap.friends.length)}</Text>
+          </View>
+          <View style={{ gap: 14 }}>
+            {views.map((v) => (
+              <GoalCard key={v.goal.id} v={v} />
             ))}
           </View>
-        </View>
-        <View style={st.bar}>
-          <View style={st.barT}>
-            <Text style={[st.t14, { color: c.ink }]}>1,240 / 2,000 €</Text>
-            <Text style={[st.t14, { color: c.ink, fontFamily: inter[700] }]}>62%</Text>
+          <View style={[st.row, { marginTop: 16, marginBottom: 0 }]}>
+            <GoldButton title="New goal" plus onPress={make} style={{ flex: 1 }} />
+            <OutlineButton title={`Friends · ${snap.friends.length}`} onPress={() => router.push('/friends')} style={{ flex: 1, backgroundColor: 'transparent' }} />
           </View>
-          <View style={[st.track, { backgroundColor: c.line }]}>
-            <View style={{ width: '62%', height: '100%', backgroundColor: c.accent }} />
-          </View>
-        </View>
-        <View style={st.tmr}>
-          {['Sergej put in 520 €', 'Marko 400 €', 'Ana 320 €'].map((t) => (
-            <Text key={t} style={[st.tmrT, { color: c.mute }]}>
-              {t}
-            </Text>
-          ))}
-        </View>
-      </View>
-      {session ? (
-        <Small style={{ marginTop: 12 }}>You’re signed in. Shared goals with friends are coming soon.</Small>
-      ) : (
-        <Button
-          title="Sign in to get started"
-          onPress={() => (available ? router.push('/sign-in') : toast('Accounts are coming soon. For now this is a preview.'))}
-          style={{ backgroundColor: '#f5c84b' }}
-          textStyle={{ color: '#1a1000' }}
-        />
+        </GoldSection>
       )}
-    </Fold>
+      {making && <GoalForm currency={state.cur} onClose={() => setMaking(false)} onMade={(id) => router.push({ pathname: '/goal/[id]', params: { id } })} />}
+    </>
   );
 }
 
+// sizes measured on Andrija's screenshots (drawn at 2x)
 const st = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 8 },
-  tmd: { marginTop: 12.8, marginBottom: 4, padding: 14, borderRadius: 14, backgroundColor: 'rgba(127,127,127,0.08)' },
-  tmh: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
-  b: { flexShrink: 1, fontFamily: inter[700], fontSize: 16, lineHeight: 23.2 },
-  tav: { flexDirection: 'row' },
-  av: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, marginLeft: -6, alignItems: 'center', justifyContent: 'center' },
-  avT: { fontFamily: inter[800], fontSize: 11.52, lineHeight: 16.7, color: '#04140a' },
-  bar: { marginVertical: 8 },
-  barT: { flexDirection: 'row', justifyContent: 'space-between' },
-  t14: { fontFamily: inter[400], fontSize: 14.4, lineHeight: 20.88 },
-  track: { height: 10, borderRadius: 6, marginTop: 3, overflow: 'hidden' },
-  tmr: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 4, columnGap: 14 },
-  tmrT: { fontFamily: inter[400], fontSize: 12.48, lineHeight: 18.1 },
+  gold: { borderWidth: 1, borderRadius: 24, padding: 16, marginBottom: 14 },
+  kicker: { fontFamily: F.heavy, fontSize: 11.5, letterSpacing: 1.4 },
+  big: { fontFamily: F.display, fontSize: 25, lineHeight: 30, letterSpacing: -0.5, marginTop: 16, textAlign: 'center' },
+  intro: { fontFamily: F.text, fontSize: 13.5, lineHeight: 20, textAlign: 'center', marginTop: 8, opacity: 0.86 },
+  step: { flexDirection: 'row', alignItems: 'center', gap: 11 },
+  num: { width: 27, height: 27, borderRadius: 14, borderWidth: 1.4, alignItems: 'center', justifyContent: 'center' },
+  numT: { fontFamily: F.heavy, fontSize: 12 },
+  stepT: { fontFamily: F.bold, fontSize: 14.5, lineHeight: 19 },
+  stepD: { fontFamily: F.text, fontSize: 12.5, lineHeight: 17 },
+  row: { flexDirection: 'row', gap: 10, marginTop: 10 },
+  req: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderRadius: 18, padding: 13 },
+  reqT: { fontFamily: F.bold, fontSize: 14.5, lineHeight: 19 },
+  reqS: { fontFamily: F.text, fontSize: 12, lineHeight: 16, marginTop: 2 },
+  more: { fontFamily: F.semi, fontSize: 12.5 },
+  head: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 11 },
+  h: { fontFamily: F.display, fontSize: 19, lineHeight: 24, letterSpacing: -0.2 },
+  count: { fontFamily: F.text, fontSize: 12 },
+  card: { borderWidth: 1, borderRadius: 18, padding: 13 },
+  cardTop: { flexDirection: 'row', alignItems: 'center', gap: 13 },
+  cardName: { fontFamily: F.display, fontSize: 15.5, lineHeight: 20 },
+  cardSum: { fontFamily: F.medium, fontSize: 12.5, marginTop: 3 },
+  tags: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 11 },
+  last: { borderTopWidth: 1, marginTop: 12, paddingTop: 10 },
+  lastT: { fontFamily: F.text, fontSize: 12.5 },
 });

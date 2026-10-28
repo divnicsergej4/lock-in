@@ -73,6 +73,8 @@ export interface AppState {
   nag?: { on: boolean }; // "don't waste money" nudges (local notifications, logic/nudges.ts), off until turned on
   streakNag?: boolean; // the 20:00 streak notification, its own switch (can be the only one on)
   goalPush?: boolean; // shared goal alerts were turned on on this phone (the token itself is on the server)
+  goalPushAsked?: boolean; // the first time in a goal, the app offered shared goal alerts (only once)
+  unlockSeen?: Record<string, 1>; // shared goals whose "Unlocked." screen this phone has shown
   tutSeen?: number; // the guided tour has been shown (1)
   team?: { n: string; t: number; c: { who: string; amt: number; t?: number }[] }; // shared goal kept on the phone (demo)
 }

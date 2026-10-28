@@ -68,7 +68,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   za animacije, @shopify/react-native-skia za holo prsten i lika na uvodu, lokalno čuvanje podataka na telefonu.
 - **Lična potrošnja ostaje samo na telefonu.** Na serveru je samo ono što mora: nalozi, prijatelji, zajednički ciljevi, pretplata.
 - **Backend: Supabase.** Migracije su u `backend/supabase/migrations/` (`0001` nalozi, prijatelji, zajednički cilj;
-  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa; `0005` obaveštenja iz cilja), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
+  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa; `0005` obaveštenja iz cilja; `0006` rok cilja, nudge, push za pinove), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
   (`npm test` u folderu `backend`, radi i na Windows-u bez Postgres-a). Detalji u `backend/README.md`,
   zaštita i podešavanja po dashboard-ima u `docs/ZASTITA.md`.
 - **Prototip je specifikacija.** `index.html` na grani `razvoj` je tačan izgled i ponašanje svakog ekrana. Pri prenosu u
@@ -97,6 +97,17 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   - kad pretplata istekne: cilj se i dalje vidi, ali ništa ne može da se menja; izaći se uvek može.
 - U prototipu: sekcija ima zlatni izgled, primer „Summer trip to Greece“ (S, M, A) i dugme **„Sign in to get started“**
   (za sada prikazuje „Accounts are coming soon“). Oznaka „Pro“ je skinuta.
+- **U aplikaciji (Andrijin dizajn, 28. okt. 2026, slike i prompt):** cilj je zlatni katanac u sredini prstena; prsten
+  se puni segmentima u boji svakog člana (#22e07a, #5aa9f0, #ff7eb6, #ffab3d redom), pinovi na 25/50/75/100% (pređeni
+  puni zlatni, sledeći prazan), pri prelasku pina animacija i haptic, na 100% se katanac otvori i ide ekran „Unlocked.“.
+  Rok (`deadline`) nije obavezan i menjaju ga svi. Nudge: push drugom članu, najviše 1 od iste osobe istoj osobi po
+  cilju na 24 h, ne sebi, traži probu/pretplatu, prekidač „Nudges from friends“. Push i za pređen pin i otključan cilj.
+  Squad streak, fer deo, tempo i pinovi se računaju u aplikaciji (`mobile/src/logic/goals.ts`), bez novih tabela.
+  Andrija je odobrio spisak svih novih tekstova (29. okt.): „Every euro“ u uvodu piše valutu cilja (euro, dollar,
+  krona…), bez naloga je isti izgled sa šarenim S M A i „Sign in to get started“, prekidač za nudge gasi samo push
+  (red „Luka nudged you“ i dalje stoji u aplikaciji, onaj ko šalje ne saznaje), valuta cilja je glavna valuta u
+  trenutku pravljenja, „On track“ = prosek uplata u poslednje 4 nedelje ≥ koliko treba nedeljno do roka.
+  Za `no_access` se prikazuje „Your trial or plan has ended. …“ umesto „subscription required“ iz baze.
 
 ## 7. Šta aplikacija ima (inventar iz prototipa)
 
@@ -332,6 +343,22 @@ Urađeno:
   - stanje (Andrija, 28. okt.): sve van holo-a glatko; holo mnogo bolji, ali ne savršen kao na iPhone-u. Ostavljeno
     za kasnije: pre objave izmeriti sa „Profile HWUI rendering“ (opcije za programere) šta tačno kasni na holo-u.
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
+- Prijatelji i zajednički cilj u aplikaciji, vezani za pravi Supabase (29. okt. 2026, Andrijin dizajn iz dela 6):
+  Savings (bez naloga, bez ciljeva sa „Lock in together.“, lista ciljeva sa malim prstenom), ekran cilja
+  (`mobile/src/app/goal/[id].tsx`: katanac u prstenu, pinovi, „Put money in“, tempo, squad streak, „Who put in what“
+  sa Nudge, Activity sa izmenom/brisanjem svojih uplata, Edit / Leave), „Unlocked.“ (`app/unlocked/[id].tsx`, jednom po
+  cilju na telefonu), Friends (`app/friends.tsx`: poziv mejlom, zahtevi, poslati pozivi, prijatelji), „What should
+  friends call you?“ posle prve prijave i pre prvog poziva/cilja, Settings > Account: „Your name“ i „Nudges from
+  friends“. Server: `mobile/src/goals/` (učitavanje navedenih kolona, akcije, Realtime za ciljeve, članove, uplate,
+  pozive, prijateljstva i nudge-ove, osvežavanje pri povratku u aplikaciju). Istekla pretplata: sve se vidi, sve osim
+  izlaska (i brisanja svoje uplate) daje jasnu poruku. „Shared goal alerts“ se nude jednom, posle prvog pravljenja
+  cilja ili uplate (u Expo Go-u se ne broje, pa ih pravi build ponudi). Demo: isti izgled sa „Summer trip to Greece“
+  (Sergej, Marko, Ana; 520 + 400 + 320 od 2,000 €, rok May 1, streak 3 nedelje). Tekst o privatnosti dopunjen (korak 6).
+  Migracija `0006` + nova verzija `send-goal-push` (tekstovi za nudge, pin i otključavanje). Testovi: 18 provera logike
+  cilja, 38 provera za `0006`, spisak kolona i RPC-ova u `privacy.test.mjs` dopunjen, 7 novih provera teksta push-a.
+  Provereno u pregledaču (demo, tamna i svetla tema, mere prema slikama). Nije provereno na telefonima ni sa pravim
+  projektom: Andrija pokreće `0006`, ponovo postavlja `send-goal-push` (`docs/TESTIRANJE.md` 2.5a) i proba na dva
+  telefona. Haptic je `expo-haptics` (radi u Expo Go); push (nudge, pin) traži pravi build.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
@@ -346,12 +373,8 @@ Sledeće, ovim redom:
    aplikacije kad proba istekne.
 4. Prenos ekrana iz prototipa jedan po jedan (Home, Spending sa holo prstenom, Savings sa fiokom, More, uvod sa likom,
    obilazak, demo).
-5. Zajednički cilj vezan za backend; slanje mejla sa pozivom (napisano: `backend/supabase/functions/send-invite-email`,
-   preko Resend-a; treba postaviti i podesiti domen). Dogovoreno (Andrija, 28. okt.): aplikacija nema polje za ime,
-   pa bi skoro svi u pozivu i u cilju bili „A friend“ / „Someone“. Pri prvoj prijavi ili prvom pozivu pitati
-   „What should friends call you?“ i upisati u `profiles.display_name` (mejl se nikad ne koristi kao ime).
-6. Kad zajednički cilj počne da radi preko servera, dopuniti tekst o privatnosti („…stay on your phone only, except shared
-   goals, which sync with the people you share them with“).
+5. ~~Zajednički cilj vezan za backend~~ (urađeno 29. okt., vidi gore); ostaje provera na dva telefona.
+6. ~~Tekst o privatnosti~~ (urađeno 29. okt.).
 
 Za objavu u prodavnicama trebaće: Apple Developer nalog ($99 godišnje), Google Play nalog ($25 jednom), a za iOS build
 Mac sa Xcode-om ili Expo EAS Build.

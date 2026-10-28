@@ -76,8 +76,9 @@ const allowed = [
   'friend_requests.status', 'friend_requests.to_email',
   'friendships.created_at', 'friendships.user_a', 'friendships.user_b',
   'goal_members.added_by', 'goal_members.goal_id', 'goal_members.joined_at', 'goal_members.user_id',
+  'goal_nudges.created_at', 'goal_nudges.from_user', 'goal_nudges.goal_id', 'goal_nudges.id', 'goal_nudges.to_user', // 0006: only your own (RLS)
   'goal_totals.currency', 'goal_totals.goal_id', 'goal_totals.members', 'goal_totals.name', 'goal_totals.saved', 'goal_totals.target',
-  'goals.created_at', 'goals.created_by', 'goals.currency', 'goals.id', 'goals.name', 'goals.target', 'goals.updated_at',
+  'goals.created_at', 'goals.created_by', 'goals.currency', 'goals.deadline', 'goals.id', 'goals.name', 'goals.target', 'goals.updated_at',
   'profiles.display_name', 'profiles.id',
   'push_tokens.created_at', 'push_tokens.platform', 'push_tokens.token', // 0005: only your own rows (RLS)
   'subscriptions.active_until', 'subscriptions.product', 'subscriptions.updated_at', 'subscriptions.user_id',
@@ -87,7 +88,7 @@ ok(out === allowed, 'the app can read exactly these columns and no others (no em
 ok(out === '0', 'a signed-out visitor can read nothing', out);
 [, out] = await psql(`select string_agg(p.proname, ' ' order by p.proname) from pg_proc p
                        where p.pronamespace = 'public'::regnamespace and has_function_privilege('authenticated', p.oid, 'execute')`);
-ok(out === 'add_friend_to_goal claim_invite_email create_goal leave_goal my_access register_push_token respond_friend_request send_friend_request unregister_push_token',
+ok(out === 'add_friend_to_goal claim_invite_email create_goal leave_goal my_access nudge nudge_alerts register_push_token respond_friend_request send_friend_request set_nudge_alerts unregister_push_token',
   'the app can call exactly these RPCs', out);
 [, out] = await psql(`select count(*) from pg_proc p where p.pronamespace = 'public'::regnamespace and has_function_privilege('anon', p.oid, 'execute')`);
 ok(out === '0', 'a signed-out visitor can call no RPC', out);

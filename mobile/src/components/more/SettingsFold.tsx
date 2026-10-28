@@ -13,6 +13,8 @@ import { accessText } from '@/auth/access';
 import { useAuth } from '@/auth/AuthProvider';
 import { supabase } from '@/auth/supabase';
 import { webUrl } from '@/config/domain';
+import { nudgeAlerts, setNudgeAlerts } from '@/goals/api';
+import { useGoals } from '@/goals/GoalsProvider';
 import { askPermission } from '@/notifications/local';
 import { disableGoalAlerts, enableGoalAlerts } from '@/notifications/push';
 import { useAppToast } from '@/components/AppToast';
@@ -241,6 +243,19 @@ export function SettingsFold() {
     update((s) => ({ ...s, goalPush: on }));
     toast(on ? 'Shared goal alerts on' : 'Shared goal alerts off');
   };
+  // Nudges from friends: kept on the server (it sends the push), on unless switched off
+  const goals = useGoals();
+  const myName = auth.session ? goals.snap?.names[auth.session.user.id] ?? null : null;
+  const [nudgesOn, setNudgesOn] = useState(true);
+  const uid = auth.session?.user.id;
+  useEffect(() => {
+    if (!supabase || !uid) return;
+    nudgeAlerts(supabase).then((v) => v != null && setNudgesOn(v));
+  }, [uid]);
+  const nudgeAlertsSwitch = async (on: boolean) => {
+    const r = await goals.run((db) => setNudgeAlerts(db, on), { always: true, quiet: true });
+    if (r?.ok) setNudgesOn(on);
+  };
   const deleteAccount = async () => {
     if (deleting) return;
     if (!sureDel) {
@@ -414,12 +429,20 @@ export function SettingsFold() {
           {auth.session ? (
             <>
               <Row icon="user" title={auth.session.user.email || 'Signed in'} hint={accessText(auth.access, Date.now())} />
+              <Row icon="user" title="Your name" hint={myName || 'Not set'} right={<Arrow />} onPress={goals.askName} top />
               <Row
                 icon="team"
                 title="Shared goal alerts"
                 hint="When someone in your goal pays in, joins or leaves"
                 top
                 right={<Switch on={!!state.goalPush} label="Shared goal alerts" onChange={goalAlerts} />}
+              />
+              <Row
+                icon="team"
+                title="Nudges from friends"
+                hint="When someone in your goal nudges you"
+                top
+                right={<Switch on={nudgesOn} label="Nudges from friends" onChange={nudgeAlertsSwitch} />}
               />
               <Row icon="out" title="Sign out" hint="Only on this phone" right={<Arrow />} onPress={signOut} top />
             </>
@@ -437,7 +460,7 @@ export function SettingsFold() {
         <Row
           icon="lock"
           title="Your data is yours"
-          hint="Amounts, descriptions and categories stay on your phone only."
+          hint="Amounts, descriptions and categories stay on your phone only, except shared goals, which sync with the people you share them with."
           hintStyle={{ lineHeight: 17.92 }} // .trk: line-height 1.4
         />
       </Group>

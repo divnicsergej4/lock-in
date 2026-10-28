@@ -7,7 +7,13 @@
 import { sameSecret } from '../_shared/secret.ts';
 import { safeName } from '../_shared/text.ts';
 
-export type GoalEvent = { kind: 'paid' | 'joined' | 'left'; actor: string | null; actor_name: string | null; amount: number | null };
+export type GoalEvent = {
+  kind: 'paid' | 'joined' | 'left' | 'nudged' | 'pin' | 'unlocked';
+  actor: string | null;
+  actor_name: string | null;
+  amount: number | null;
+  pct?: number | null; // 'pin': 25, 50 or 75 (0006)
+};
 export type Group = {
   ids: number[];
   recipient: string;
@@ -46,21 +52,26 @@ export function money(amount: number, currency: string | null): string {
 
 /**
  * The text for one person and one goal. One thing happened: "Marko added €50 to Summer trip", "Ana joined Summer
- * trip", "Eva left Summer trip". Several (merged): payments per person are added up,
- * "Summer trip: Marko added €120 (3 payments), Ana joined, Eva left", at most 3 parts, then "and N more".
+ * trip", "Eva left Summer trip", "Luka nudged you: Summer trip is waiting on you 👀", "Summer trip: the 50% pin
+ * clicked", "Summer trip is unlocked 🔓 Now book it before anyone spends it.". Several (merged): payments per
+ * person are added up, "Summer trip: Marko added €120 (3 payments), Ana joined, Eva left", at most 3 parts, then
+ * "and N more".
  */
 export function goalText(g: Pick<Group, 'goal_name' | 'currency' | 'events'>): string {
   const goal = Array.from((g.goal_name ?? '').trim()).slice(0, 60).join('') || 'your shared goal';
-  const parts: { kind: GoalEvent['kind']; name: string; sum: number; n: number }[] = [];
+  const parts: { kind: GoalEvent['kind']; name: string; sum: number; n: number; pct: number }[] = [];
   for (const e of g.events) {
     const name = safeName(e.actor_name) || 'Someone';
     const same = e.kind === 'paid' ? parts.find((p) => p.kind === 'paid' && p.name === name) : undefined;
     if (same) {
       same.sum += Number(e.amount) || 0;
       same.n += 1;
-    } else parts.push({ kind: e.kind, name, sum: Number(e.amount) || 0, n: 1 });
+    } else parts.push({ kind: e.kind, name, sum: Number(e.amount) || 0, n: 1, pct: Number(e.pct) || 0 });
   }
   const say = (p: (typeof parts)[number], withGoal: boolean) => {
+    if (p.kind === 'nudged') return withGoal ? `${p.name} nudged you: ${goal} is waiting on you 👀` : `${p.name} nudged you`;
+    if (p.kind === 'pin') return withGoal ? `${goal}: the ${p.pct}% pin clicked` : `the ${p.pct}% pin clicked`;
+    if (p.kind === 'unlocked') return withGoal ? `${goal} is unlocked 🔓 Now book it before anyone spends it.` : 'unlocked';
     if (p.kind === 'paid') return `${p.name} added ${money(p.sum, g.currency)}${withGoal ? ` to ${goal}` : ''}${p.n > 1 ? ` (${p.n} payments)` : ''}`;
     return `${p.name} ${p.kind}${withGoal ? ` ${goal}` : ''}`;
   };

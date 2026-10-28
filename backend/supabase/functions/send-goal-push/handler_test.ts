@@ -41,6 +41,18 @@ Deno.test('many payments in 10 minutes become one notification', () => {
     'Summer trip: A joined, B joined, C left and 2 more');
 });
 
+Deno.test('nudges, pins and unlocking (0006)', () => {
+  const e = (kind: GoalEvent['kind'], name: string | null, pct: number | null = null): GoalEvent => ({ kind, actor: 'a', actor_name: name, amount: null, pct });
+  assertEquals(goalText(group([e('nudged', 'Luka')])), 'Luka nudged you: Summer trip is waiting on you 👀');
+  assertEquals(goalText(group([e('nudged', null)])), 'Someone nudged you: Summer trip is waiting on you 👀');
+  assertEquals(goalText(group([e('pin', null, 50)])), 'Summer trip: the 50% pin clicked');
+  assertEquals(goalText(group([e('unlocked', null)])), 'Summer trip is unlocked 🔓 Now book it before anyone spends it.');
+  assertEquals(goalText(group([paid('Marko', 50), e('pin', null, 50), e('nudged', 'Luka')])),
+    'Summer trip: Marko added €50, the 50% pin clicked, Luka nudged you');
+  assertEquals(goalText(group([paid('Marko', 50), e('pin', null, 75), e('unlocked', null)])),
+    'Summer trip: Marko added €50, the 75% pin clicked, unlocked');
+});
+
 Deno.test('names cannot become links or markup; other currencies', () => {
   assertEquals(goalText(group([paid('<a href="https://evil.com">x</a>', 5)])).includes('evil.com'), false);
   assertEquals(goalText(group([ev('joined', 'www.evil.com')])), 'www evil com joined Summer trip');

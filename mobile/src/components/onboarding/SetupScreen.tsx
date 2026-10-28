@@ -73,7 +73,7 @@ export function SetupScreen({ onStart }: { onStart: (input: SetupInput) => void 
         <Pressable accessibilityRole="button" onPress={() => onStart(v)} style={({ pressed }) => [st.go, pressed && { opacity: 0.85 }]}>
           <Text style={st.goT}>Start</Text>
         </Pressable>
-        <Text style={st.trk}>🔒 Amounts, descriptions and categories stay on your phone only.</Text>
+        <Text style={st.trk}>🔒 Amounts, descriptions and categories stay on your phone only, except shared goals, which sync with the people you share them with.</Text>
       </Enter>
       <KeyboardSpace />
     </ScrollView>

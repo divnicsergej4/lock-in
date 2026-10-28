@@ -11,7 +11,7 @@ lozinku, pa provera ne bi ništa dokazala. Ovde je redosled kojim se radi:
 | Deo | Šta | Tvoja tačka |
 |---|---|---|
 | 1 | Projekat (Frankfurt) i `mobile/.env.local` | 1 |
-| 2 | Migracije 0001–0005 i provera posle svake | 2 |
+| 2 | Migracije 0001–0006 i provera posle svake | 2 |
 | 3 | Prijava kodom: Resend, DNS, SMTP, Auth podešavanja, prva prijava | 3 |
 | 4 | Probna pretplata za tebe i drugi nalog (SQL) | 7 |
 | 5 | Edge funkcije, tajne, cron za push, proba mejla sa pozivom | 4 |
@@ -159,7 +159,26 @@ select 'šalje samo server', has_function_privilege('service_role', 'public.clai
    and not has_function_privilege('authenticated', 'public.claim_goal_pushes(integer)', 'execute');
 ```
 
-### 2.6 Završna provera (posle svih pet)
+### 2.5a `0006_goal_deadline_nudges_pins.sql` (rok, nudge, pinovi; dodato 29. okt. 2026)
+Pokreni je posle `0005`, pa ponovo postavi funkciju sa novim tekstovima:
+`npx supabase functions deploy send-goal-push --no-verify-jwt` (iz `C:\dev\lock-in\backend`).
+```sql
+select 'goals.deadline postoji' as provera, exists (select 1 from information_schema.columns
+ where table_schema = 'public' and table_name = 'goals' and column_name = 'deadline') as ok
+union all
+select 'goal_nudges sa RLS', (select relrowsecurity from pg_class where oid = 'public.goal_nudges'::regclass)
+union all
+select 'nudge se ne upisuje direktno', not has_table_privilege('authenticated', 'public.goal_nudges', 'insert')
+union all
+select 'ko je isključio nudge, ne vidi niko', not has_table_privilege('authenticated', 'app.nudge_alerts_off', 'select')
+union all
+select 'triger za pinove', exists (select 1 from pg_trigger where tgname = 'push_on_pin')
+union all
+select 'aplikacija zove nudge', has_function_privilege('authenticated', 'public.nudge(uuid, uuid)', 'execute');
+```
+Svih šest redova mora da ima `ok = true`.
+
+### 2.6 Završna provera (posle svih šest)
 Oba upita moraju da vrate **prazno** („Success. No rows returned“). Ako nešto ispišu, pošalji mi. Izuzetak: ako je
 pri pravljenju projekta uključeno „Enable automatic RLS“, drugi upit pokaže funkciju `rls_auto_enable`. Nju pravi
 Supabase za to podešavanje, ne može da se pozove spolja i to je u redu.
