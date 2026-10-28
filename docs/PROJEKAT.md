@@ -300,6 +300,27 @@ Urađeno:
   a pravi mejl sa pozivom šalje nova skripta `backend/scripts/send-test-invite.mjs` (radi samo dok je CAPTCHA
   isključena). Svi SQL blokovi iz vodiča pušteni na lokalnoj bazi sa svim migracijama (prolaze); skripte provere
   na lažnom serveru. Na pravom projektu još ništa nije pokrenuto.
+- Android (prvi put isproban 27–28. oktobra 2026, Redmi Note 15 Pro). Uzroci i popravke, izmereno (React Profiler
+  na web build-u, Perf Monitor na telefonu), ne nagađano:
+  - pad pri pokretanju u Expo Go-u: učitava se samo lokalni deo `expo-notifications` (`notifications/expoLocal.ts`),
+    push token tek kad se uključi i nikad u Expo Go-u;
+  - dodir kasnio 2–5 s: svaka promena stanja (i otvaranje sekcije) crtala je sva 4 taba (160 od 187 ms u skrivenom
+    Spending-u), `useTheme`/`useDemoGuard` čitali ceo store, `fmt` je na Android-u pravio Java formatter pri svakom
+    pozivu. Sada: `TabFreeze` (tab koji nije napred se ne crta), tema i demo u svojim kontekstima, memo redova
+    transakcija i sadržaja holo panela, jedan Intl formatter. Tap 187 → ~20 ms;
+  - tastatura (edge-to-edge, prozor se ne skraćuje): `components/keyboard.tsx`, samo Android; toast na 78 px kao u
+    prototipu i sklanja se na prvi dodir;
+  - holo: zIndex prednjeg panela na UI niti, providnost kao celina (`needsOffscreenAlphaCompositing`), unutrašnjost
+    panela sačuvana kao slika a spoljne senke na svom sloju (samo Android; iOS isto kao pre);
+  - **Expo Go na Android-u nije merilo brzine**: Reanimated tamo svaku promenu u frejmu provlači kroz ceo ShadowTree
+    (UI ~30 fps dok je holo na ekranu, drugde 120). Zato postoji sopstveni build: `expo-dev-client`, `eas.json`
+    (profili `development` i `preview`, samo arm64 i Gradle jedan po jedan jer je EAS inače ostajao bez memorije),
+    `package.json` → `reanimated.staticFeatureFlags.ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS: true`. EAS projekat
+    `@lockeddevs/lock-in`. Brzinu meriti samo na `preview` APK-u (`npx eas-cli build --profile preview --platform
+    android`); `development` je debug i spor. Preview APK nema ključeve iz `.env.local` (prijava tu ne radi);
+  - stanje (Andrija, 28. okt.): sve van holo-a glatko; holo mnogo bolji, ali ne savršen kao na iPhone-u. Ostavljeno
+    za kasnije: pre objave izmeriti sa „Profile HWUI rendering“ (opcije za programere) šta tačno kasni na holo-u.
+    U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
