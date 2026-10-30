@@ -374,6 +374,11 @@ Sledeće, ovim redom:
    aplikacije kad proba istekne.
 4. Prenos ekrana iz prototipa jedan po jedan (Home, Spending sa holo prstenom, Savings sa fiokom, More, uvod sa likom,
    obilazak, demo).
+Odluka (Andrija, 30. okt. 2026): pravni pregled Privacy Policy i Terms se ne radi sad i računa se kao završen za
+potrebe objave; tekst se ažurira kasnije po potrebi. Spisak pitanja za pravnika ostaje u `docs/ZA-PRAVNIKA.md`.
+Privacy Policy je dopunjena nudge-ovima, rokom cilja i obaveštenjima za pinove. Supabase je na Free planu (bez
+doplata, spend cap nije potreban dok se ne pređe na Pro).
+
 5. ~~Zajednički cilj vezan za backend~~ (urađeno 29. okt., vidi gore); ostaje provera na dva telefona.
 6. ~~Tekst o privatnosti~~ (urađeno 29. okt.).
 
