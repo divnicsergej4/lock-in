@@ -2,6 +2,7 @@
 // database rules (RLS and the RPC checks), not by the app. See docs/ZASTITA.md.
 
 import 'react-native-url-polyfill/auto';
+import './webCrypto'; // SHA-256 for the PKCE challenge of the Google sign-in
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { AppState, Platform } from 'react-native';

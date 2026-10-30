@@ -286,7 +286,11 @@ Aplikacija i dalje radi bez naloga: lična potrošnja je samo na telefonu, nalog
   se zaključa i traži se novi kod. Pogrešan kod se broji samo kad server kaže da je kod pogrešan ili istekao
   (ne kad nema mreže). Ovo je za korisnika; pravu granicu drže limiti u Supabase-u (3.2, korak 4).
 - **Google:** prijava u sistemskom prozoru pregledača, **PKCE** (kod koji Google vrati važi samo uz tajnu koja ostaje
-  na telefonu). Radi i u Expo Go.
+  na telefonu). Radi i u Expo Go. React Native nema Web Crypto, pa je supabase-js slao tajnu kao „plain“
+  (upozorenje „WebCrypto API is not supported“); od 31. okt. 2026 `mobile/src/auth/webCrypto.ts` daje SHA-256 i
+  sigurne nasumične bajtove iz `expo-crypto`, pa je izazov S256 (test `auth/__tests__/webCrypto.test.ts`).
+  Podešeno i provereno na pravom projektu 31. okt.: Google Cloud projekat „Lock In“ (In production, Web klijent,
+  redirect `https://<ref>.supabase.co/auth/v1/callback`), za Expo Go dodat redirect `exps://…on.expo.app/--/auth-callback`.
 - **Sign in with Apple:** samo iPhone, ugrađeno Apple dugme, `signInWithIdToken` sa jednokratnim `nonce`
   (Apple dobija SHA-256, Supabase original), pa token ne može da se iskoristi dvaput. Ime koje Apple da pri prvoj
   prijavi upisuje se kao ime koje prijatelji vide, ako ga još nema.
@@ -377,7 +381,7 @@ Sve ovo služi samo za probu (Expo Go, test nalozi). Pre slanja na App Store / G
 
 1. Supabase > Authentication > Sign In / Providers > **Apple** > Client IDs: obriši `host.exp.Exponent`
    (to je Expo Go; ostaje samo `com.lockintracker.app`).
-2. Supabase > Authentication > **URL Configuration** > Redirect URLs: obriši sve `exp://…` adrese
+2. Supabase > Authentication > **URL Configuration** > Redirect URLs: obriši sve `exp://…` i `exps://…` adrese
    (ostaje samo `lockin://auth-callback`). Site URL mora biti `lockin://auth-callback`, ne `localhost`.
 3. Supabase > Authentication > **Users**: obriši probne naloge (npr. onaj iz provere lozinke u delu 4).
    U SQL Editor-u obriši probne redove iz `public.subscriptions` koje si eventualno upisao ručno.
