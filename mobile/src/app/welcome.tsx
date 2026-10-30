@@ -1,5 +1,5 @@
-// Intro for a new user: the character screen → three skippable slides → setup.
-// (In the prototype the paywall and the guided tour come after setup; they are not built yet.)
+// Intro for a new user: the character screen → three skippable slides → setup → the plans screen (paywall.tsx),
+// and from there the guided tour.
 
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -22,7 +22,8 @@ export default function Welcome() {
     const r = completeSetup(state, input, Date.now());
     if (!r.ok) return toast.show(r.error);
     update(() => r.state);
-    router.replace('/');
+    // as in the prototype: setup → the plans screen → the guided tour (it starts by itself on Home)
+    router.replace('/paywall');
   };
 
   return (

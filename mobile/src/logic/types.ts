@@ -76,6 +76,7 @@ export interface AppState {
   goalPushAsked?: boolean; // the first time in a goal, the app offered shared goal alerts (only once)
   unlockSeen?: Record<string, 1>; // shared goals whose "Unlocked." screen this phone has shown
   tutSeen?: number; // the guided tour has been shown (1)
+  trialRem?: boolean; // the reminder 2 days before the free trial ends; on unless switched off (false)
   team?: { n: string; t: number; c: { who: string; amt: number; t?: number }[] }; // shared goal kept on the phone (demo)
 }
 

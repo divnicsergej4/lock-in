@@ -325,8 +325,15 @@ select u.email, s.active_until, s.product
 ```
 Mora da vrati dva reda sa `manual_test` i datumom za 30 dana. Ponovo pokrenut, samo produži za 30 dana od sada.
 
-- Aplikacija na telefonu za sada ništa ne zaključava po pretplati (ekran za plaćanje ne postoji); ovo menja samo
-  šta baza dozvoljava.
+- Aplikacija (od 30. okt.) se **zaključa** kod prijavljenog korisnika bez probe/pretplate: vidi se samo ekran za
+  plaćanje bez ✕ (demo i Restore rade). Proba zaključavanja: istekla pretplata za tvoj nalog, pa izađi iz aplikacije
+  i vrati se (provera ide pri svakom povratku):
+  ```sql
+  update public.subscriptions set active_until = now() - interval '1 minute', updated_at = now()
+   where product = 'manual_test' and user_id = (select id from auth.users where email = lower('A_MEJL'));
+  ```
+  Otključavanje: isti `insert … on conflict` sa početka ovog dela, pa ponovo izađi i vrati se.
+  Bez naloga se zaključava tek kad u build-u budu RevenueCat ključevi.
 - Kad proradi RevenueCat, njegov događaj koji stigne posle ovog upisa pregazi ga sam.
 - Pre objave u prodavnicama obriši probne redove (`docs/ZASTITA.md` deo 6, tačka 3):
   ```sql

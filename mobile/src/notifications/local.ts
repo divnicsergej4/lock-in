@@ -20,7 +20,7 @@ Notifications?.setNotificationHandler({
   handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
 });
 
-async function channels() {
+export async function channels() {
   if (Platform.OS !== 'android' || !Notifications) return;
   await Notifications.setNotificationChannelAsync(CHANNEL_REMINDERS, { name: 'Reminders', importance: Notifications.AndroidImportance.DEFAULT });
   await Notifications.setNotificationChannelAsync(CHANNEL_GOALS, { name: 'Shared goals', importance: Notifications.AndroidImportance.HIGH });

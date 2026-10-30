@@ -79,6 +79,7 @@ function App() {
           <Stack.Screen name="goal/[id]" />
           <Stack.Screen name="unlocked/[id]" options={{ animation: 'fade' }} />
           <Stack.Screen name="friends" />
+          <Stack.Screen name="paywall" options={{ animation: 'fade', contentStyle: { backgroundColor: '#050b08' } }} />
         </Stack>
       </GoalsProvider>
     </AppToastProvider>

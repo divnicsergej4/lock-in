@@ -57,7 +57,8 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   ali ništa ne može da se upiše. Uključuje se iz Settings > Help > Demo i sa ekrana za plaćanje.
 - Pretplata ide preko App Store-a i Google Play-a. Predlog (nije još potvrđen): RevenueCat za oba.
 - Cene na ekranu za plaćanje su za sada probne: $6.99 mesečno, $45 godišnje, $69 doživotno. Konačne cene
-  Andrija dogovara sa kolegom.
+  Andrija dogovara sa kolegom. U aplikaciji cene nisu u kodu: čitaju se iz RevenueCat ponude (menjaju se u
+  App Store Connect / Google Play Console); probne cene postoje samo za razvoj bez ključeva (`auth/testStore.ts`).
 - AI funkcija (odgovaranje od skupe ili glupe kupovine i jeftinija alternativa) se **ne pravi u prvoj verziji**:
   Andrija je odlučio da je izbaci. Izbačena je i iz plana u `docs/ZASTITA.md`.
 
@@ -360,6 +361,37 @@ Urađeno:
   Provereno u pregledaču (demo, tamna i svetla tema, mere prema slikama). Nije provereno na telefonima ni sa pravim
   projektom: Andrija pokreće `0006`, ponovo postavlja `send-goal-push` (`docs/TESTIRANJE.md` 2.5a) i proba na dva
   telefona. Haptic je `expo-haptics` (radi u Expo Go); push (nudge, pin) traži pravi build.
+- Ekran za plaćanje i zaključavanje (30. okt. 2026, Andrijin dizajn `docs/dizajn/placanje/` 06–11; zamenjuje ekran
+  iz prototipa). Ruta `mobile/src/app/paywall.tsx`, delovi u `components/paywall/`, tekstovi i datumi u
+  `logic/paywall.ts`, prodavnica u `auth/purchases.ts`. Uvod: podešavanje → ekran za plaćanje → vođeni obilazak
+  („Show me around“) ili Home („Skip the tour“). „Lock-in Pro“ u Settings otvara ekran; dodato „Manage subscription“
+  (stranica pretplata u App Store-u / Google Play-u) i „Trial reminder“ dok traje proba.
+  **Odakle počinje proba (odluka):** proba je besplatna nedelja **prodavnice** (RevenueCat introductory offer), i
+  počinje kad korisnik na ekranu za plaćanje pritisne „Start my free week“ i potvrdi u prozoru App Store-a /
+  Google Play-a. Nalog za to ne treba: kupovina pripada Apple ID-u / Google nalogu (RevenueCat anonimni id), pa je
+  Restore vraća i na novom telefonu. Aplikacija sama ne broji dane i ništa ne čuva kao „plaćeno“. Zašto: (1) to je
+  jedini način da posle 7 dana naplata krene sama, (2) prodavnica ne daje drugu besplatnu nedelju istom Apple ID-u
+  (brisanje aplikacije ili Reset ne daju novu), (3) lokalni brojač bi se varao reinstalacijom, a proba na serveru bi
+  terala svakoga da napravi nalog. Ko zatvori prozor prodavnice nema probu: aplikacija ostaje zaključana (vidi se
+  samo ekran za plaćanje, demo i Restore). Ko kupi bez naloga pa se kasnije prijavi: `Purchases.logIn` spoji kupovinu
+  sa nalogom, a nova funkcija `sync-store-access` je upiše na server (webhook to ne javlja do sledeće obnove).
+  **Zaključavanje:** prijavljen korisnik bez probe/pretplate (server) ili, bez naloga, bez kupovine u RevenueCat-u.
+  Ne zaključava se offline ni dok se proverava; build bez RevenueCat ključeva ne zaključava korisnike bez naloga.
+  Doživotni plan nema probu („Buy for <cena>“). Kad je proba već iskorišćena (prodavnica kaže), nema „7 DAYS FREE“
+  ni linije, piše „Your free week is over.“ i „Subscribe for <cena> a year“.
+  Šta sam dodao jer ga dizajn nema (Andrija: „šta fali, dodaj“): ✕ kad aplikacija nije zaključana (otvoreno iz
+  Settings, ili build bez prodavnice); taj drugi naslov za iskorišćenu probu; tekst ispod dugmeta za doživotni
+  („One payment of $69. No subscription.“); kartica „Couldn't reach the App Store.“ kad nema mreže; uspeh za
+  doživotni / plaćeni plan bez probe (bez reda „Then“ i bez podsetnika); „No purchase found“ kao sistemska poruka;
+  na Android-u svuda „Google Play“ umesto „App Store“.
+  Podsetnik: lokalno obaveštenje u 10:00 dva dana pre **pravog** kraja probe (datum iz prodavnice), podrazumevano
+  uključeno, prekidač na „You're locked in.“ i u Settings > Subscription; ne šalje se ako je proba otkazana.
+  Bez RevenueCat ključeva (Expo Go) ekran radi na probnim cenama iz dizajna sa oznakom „TEST PRICES · NO STORE YET“, a
+  dugme nudi izbor šta „prodavnica“ odgovara (uspeh, zatvoren prozor, odbijena kartica, čeka odobrenje, nema mreže),
+  da se svi ekrani vide na telefonu; to ništa ne otključava. Testovi: 16 provera (`logic/__tests__/paywall.test.ts`)
+  i 6 za `sync-store-access`. Provereno u pregledaču (06, 08, 09, 10, uvod → plaćanje → obilazak, Settings, demo);
+  11 („Welcome back.“) i sistemske poruke se na web-u ne vide. Nije provereno na telefonu ni sa pravom prodavnicom.
+  Andrija podešava kad otvori naloge: `docs/ZASTITA.md` 3.5 (`sync-store-access`) i 3.6 koraci 6–7.
 
 Sledeće, ovim redom:
 1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
@@ -369,9 +401,8 @@ Sledeće, ovim redom:
    URL-ovi, Google, Apple; spend cap) i provera na telefonu. **CAPTCHA (Cloudflare Turnstile, nevidljiv) ugraditi u
    `mobile/src/auth/captcha.ts`** (traži se samo kad se šalje kod na mejl), pa je tek onda uključiti u Supabase-u.
    Sign in with Apple i Google ne traže CAPTCHA.
-3. Pretplata: 7 dana probe preko App Store-a / Google Play-a (predlog RevenueCat) + webhook koji puni tabelu
-   `subscriptions` (napisan: `backend/supabase/functions/revenuecat-webhook`, treba ga postaviti); zaključavanje
-   aplikacije kad proba istekne.
+3. Pretplata: ekran za plaćanje, zaključavanje i webhook su gotovi (30. okt.); ostaje povezivanje kad Andrija otvori
+   Apple Developer i Google Play naloge (proizvodi, RevenueCat ponuda, ključevi, `docs/ZASTITA.md` 3.6) i proba u Sandbox-u.
 4. Prenos ekrana iz prototipa jedan po jedan (Home, Spending sa holo prstenom, Savings sa fiokom, More, uvod sa likom,
    obilazak, demo).
 Odluka (Andrija, 30. okt. 2026): pravni pregled Privacy Policy i Terms se ne radi sad i računa se kao završen za

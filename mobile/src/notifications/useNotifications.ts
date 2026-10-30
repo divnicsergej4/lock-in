@@ -7,12 +7,15 @@ import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState as RNAppState } from 'react-native';
 
+import { useAuth } from '@/auth/AuthProvider';
+import { paymentsReady } from '@/auth/purchases';
 import { dayKey } from '@/logic/dates';
 import { todayCount } from '@/logic/money';
 import { useStore } from '@/store/StoreProvider';
 
 import { Notifications } from './expoNotifications';
 import { syncLocalNotifications } from './local';
+import { syncTrialReminder } from './trial';
 
 export function useNotifications() {
   const { state, ready, demo } = useStore();
@@ -35,6 +38,16 @@ export function useNotifications() {
     const sub = RNAppState.addEventListener('change', (s) => s === 'active' && syncLocalNotifications(latest.current));
     return () => sub.remove();
   }, [ready, demo]);
+
+  // the reminder before the free trial ends, from the store's own trial end (only where there is a store)
+  const { store } = useAuth();
+  const trialKey = JSON.stringify([store?.active, store?.trial, store?.until, store?.willRenew, state.trialRem !== false]);
+  const storeRef = useRef(store);
+  storeRef.current = store;
+  useEffect(() => {
+    if (!ready || demo || !paymentsReady()) return;
+    syncTrialReminder(storeRef.current, latest.current.trialRem !== false);
+  }, [trialKey, ready, demo]);
 
   useEffect(() => {
     if (!Notifications) return;

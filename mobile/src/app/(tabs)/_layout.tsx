@@ -4,6 +4,7 @@ import { AppState as RNAppState, Pressable, StyleSheet, Text, type PressableProp
 import Animated, { runOnUI, scrollTo } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/auth/AuthProvider';
 import { DemoBar } from '@/components/DemoBar';
 import { useKeepFieldInView } from '@/components/keyboard';
 import { TabFreeze } from '@/components/TabFreeze';
@@ -71,7 +72,8 @@ function NavButton({ i, ...props }: PressableProps & { i: number }) {
 
 export default function TabLayout() {
   const { c } = useTheme();
-  const { state, update, epoch } = useStore();
+  const { state, update, epoch, demo } = useStore();
+  const { locked } = useAuth();
   const insets = useSafeAreaInsets();
   // Android: the page in front scrolls the field being typed in (and its button) above the keyboard
   const scrollFront = useCallback((dy: number) => {
@@ -94,6 +96,8 @@ export default function TabLayout() {
   }, [update]);
   // a new user (no starting balance yet) sees the intro first, like in the prototype
   if (!(state.start > 0)) return <Redirect href="/welcome" />;
+  // no trial or plan (7 days free, then everyone pays): only the plans screen, and the demo from it
+  if (locked && !demo) return <Redirect href="/paywall" />;
   // epoch: after the demo or the tour every page starts fresh (fields empty, Home, at the top)
   return (
     <>

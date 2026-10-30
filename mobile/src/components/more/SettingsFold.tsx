@@ -9,8 +9,9 @@ import { Linking, Pressable, StyleSheet, Text, View, type TextStyle, type ViewSt
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SvgXml } from 'react-native-svg';
 
-import { accessText } from '@/auth/access';
+import { accessText, type Access } from '@/auth/access';
 import { useAuth } from '@/auth/AuthProvider';
+import { managementUrl, storeName } from '@/auth/purchases';
 import { supabase } from '@/auth/supabase';
 import { webUrl } from '@/config/domain';
 import { nudgeAlerts, setNudgeAlerts } from '@/goals/api';
@@ -22,6 +23,7 @@ import { DEMO_FADE, useDemoGuard } from '@/components/demoGuard';
 import { Button, Field, Fold, Ghost } from '@/components/home/Section';
 import { Select } from '@/components/onboarding/Select';
 import { DEMO_ON, demoData } from '@/logic/demo';
+import { longDate, reminderDay, shortDate, type StoreEntitlement } from '@/logic/paywall';
 import { resetAll, setAge, setIncome, setReminder, setReminderTime, setSecondCurrency } from '@/logic/settings';
 import { CURRENCIES } from '@/logic/setup';
 import type { RoastLevel, ThemeName } from '@/logic/types';
@@ -59,7 +61,19 @@ const ICONS = {
   trash: '<path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10.2 10.5v5.5M13.8 10.5v5.5"/>',
   user: '<circle cx="12" cy="9" r="3.6"/><path d="M5.5 19.5c.9-3.4 3.4-5.3 6.5-5.3s5.6 1.9 6.5 5.3"/><circle cx="12" cy="12" r="9"/>',
   out: '<path d="M14 4.5H6.5v15H14"/><path d="M10.5 12h9"/><path d="m16.5 9 3 3-3 3"/>',
+  card: '<rect x="3.5" y="6" width="17" height="12.5" rx="2.5"/><path d="M3.5 10h17M7 15h3"/>',
 };
+
+/** The line under "Lock-in Pro": the trial or plan the store (or the server) knows of, else the plans. */
+function planText(store: StoreEntitlement | null, access: Access): string {
+  if (store?.active) {
+    if (store.until == null) return 'Lifetime';
+    if (store.trial) return `Free week until ${shortDate(store.until)}`;
+    return `${store.willRenew ? 'Renews' : 'Ends'} ${longDate(store.until)}`;
+  }
+  if (access.kind === 'active') return accessText(access, Date.now());
+  return 'See plans';
+}
 type IconName = keyof typeof ICONS;
 
 function Icon({ name, color }: { name: IconName; color: string }) {
@@ -194,8 +208,6 @@ export function SettingsFold() {
   // Reminder
   const rem = state.rem || { on: false, time: '20:00' };
 
-  // Subscription: the plans screen comes in a later step
-  const soon = () => toast('Coming soon.');
   // Help: the guided tour, and the demo (sample data, nothing saved; not while the tour runs; it opens on Home)
   const demoOn = () => {
     if (isTourRunning()) return;
@@ -453,7 +465,35 @@ export function SettingsFold() {
       )}
 
       <Group label="Subscription">
-        <Row icon="star" title="Lock-in Pro" hint="See plans (demo)" right={<Arrow />} onPress={soon} />
+        <Row icon="star" title="Lock-in Pro" hint={planText(auth.store, auth.access)} right={<Arrow />} onPress={() => router.push('/paywall')} demoOk />
+        <Row
+          icon="card"
+          title="Manage subscription"
+          hint={`Cancel or change your plan in ${storeName()}`}
+          right={<Arrow />}
+          onPress={() => managementUrl().then((u) => Linking.openURL(u)).catch(() => {})}
+          demoOk
+          top
+        />
+        {auth.store?.active && auth.store.trial && (
+          <Row
+            icon="bell"
+            title="Trial reminder"
+            hint={auth.store.until ? `On ${shortDate(reminderDay(auth.store.until))}, 2 days before the free week ends` : '2 days before the free week ends'}
+            top
+            right={
+              <Switch
+                on={state.trialRem !== false}
+                label="Trial reminder"
+                onChange={async (on) => {
+                  if (on && !(await askPermission())) return toast('Allow notifications for Lock In in your phone’s Settings first.');
+                  update((s) => ({ ...s, trialRem: on }));
+                  toast(on ? 'Trial reminder on' : 'Trial reminder off');
+                }}
+              />
+            }
+          />
+        )}
       </Group>
 
       <Group label="Privacy">

@@ -57,6 +57,12 @@ preterano se odbija, brojači su nedostupni aplikaciji, RLS je uključen na svak
   kom je bio sam nestaje (triger `goal_member_left`), ciljevi sa drugima ostaju njima, sa njihovim uplatama.
   Ako Auth odbije, vraća 502 i aplikacija ne odjavljuje korisnika. RevenueCat kupac se ne briše (za to treba
   RevenueCat tajni ključ); pretplatu korisnik otkazuje sam u App Store-u / Google Play-u.
+- `backend/supabase/functions/sync-store-access` (30. okt. 2026): aplikacija je zove kad RevenueCat kaže da korisnik
+  ima probu/pretplatu, a server još ne zna (neko je počeo besplatnu nedelju bez naloga, pa se tek onda prijavio:
+  RevenueCat spoji kupovinu sa nalogom, ali webhook stiže tek pri sledećoj obnovi). Funkcija pita **RevenueCat REST
+  API** (tajni ključ `REVENUECAT_SECRET_KEY`, samo na serveru), ne veruje telefonu, sinhronizuje **samo onoga čiji je
+  token** i upisuje samo aktivnu probu/pretplatu (nikad ne skraćuje i ne gasi pristup; to radi webhook).
+  Testovi: 6 provera u `handler_test.ts`.
 
 Testovi: `handler_test.ts` u sva tri foldera (19 provera) i `backend/tests/delete_account.test.mjs` (25 provera:
 šta se briše, šta ostaje drugima, aplikacija ne može sama da briše korisnike, ponovna registracija istim mejlom
@@ -189,8 +195,11 @@ nova provera. **Nije provereno na telefonu.**
    npx supabase functions deploy revenuecat-webhook --no-verify-jwt
    npx supabase functions deploy send-invite-email
    npx supabase functions deploy delete-account
+   npx supabase functions deploy sync-store-access
    ```
    `delete-account` ne traži nijednu tajnu koju ti upisuješ. Dok nije postavljena, „Delete account“ javlja grešku.
+   `sync-store-access` traži tajnu `REVENUECAT_SECRET_KEY` (3.6, korak 6); bez nje vraća 500 i aplikacija i dalje
+   radi (pristup tad vidi samo iz RevenueCat-a, a baza ga priznaje tek kad stigne webhook).
    (`--no-verify-jwt` samo za webhook: RevenueCat nema Supabase prijavu, njega štiti tajno zaglavlje.)
 
 ### 3.6 RevenueCat
@@ -203,6 +212,19 @@ nova provera. **Nije provereno na telefonu.**
 4. Events: All events; Environment: oba (Sandbox treba za TestFlight).
 5. Pritisni „Send test event“: odgovor mora biti 200 („ignored“, jer test ne menja ništa).
    Za proveru zaštite: ako privremeno promeniš vrednost u RevenueCat-u, odgovor mora biti 401.
+6. **API keys > + New secret API key** (verzija **v1**, samo čitanje je dovoljno): nalepi ga sam u Supabase >
+   Edge Functions > Secrets kao `REVENUECAT_SECRET_KEY`, pa postavi `sync-store-access` (3.5). Nikome ga ne šalji.
+7. **Proizvodi i ponuda (ekran za plaćanje ih čita odatle, cene nisu u kodu):**
+   - App Store Connect: dve pretplate u **istoj** Subscription Group (mesečna i godišnja), obe sa Introductory Offer
+     „Free“ 1 Week; doživotna kao **Non-Consumable**. Google Play: dve pretplate sa base plan-om i ponudom
+     „Free trial“ 7 dana (samo za nove korisnike), doživotna kao jednokratni proizvod.
+   - RevenueCat > Product catalog > **Offerings**: ponuda `default` (Current) sa tri paketa standardnog tipa:
+     **Annual** (`$rc_annual`), **Monthly** (`$rc_monthly`), **Lifetime** (`$rc_lifetime`), svaki sa proizvodom za
+     iOS i Android, i svi zakačeni na entitlement `access`.
+   - Aplikacija sama pita prodavnicu da li je korisnik već iskoristio probu: ako jeste, nema „7 DAYS FREE“ ni
+     vremenske linije, dugme glasi „Subscribe for …“.
+   - App Store Connect > App Information: Privacy Policy URL `https://lockintracker.app/privacy/`; u opis aplikacije
+     (ili kao EULA) link na `https://lockintracker.app/terms/` (Apple traži link na uslove i u prodavnici, ne samo u aplikaciji).
 
 ### 3.7 Resend (mejlovi)
 1. resend.com > **Domains**: dodaj svoj domen i podesi DNS zapise (SPF/DKIM), inače mejlovi idu u spam.
@@ -290,8 +312,13 @@ povratku u aplikaciju pita server (`my_access()`, tabela `subscriptions` koju pu
 (entitlement `access`). Server je glavni: ako kaže da važi, važi; ako RevenueCat kaže da je upravo kupljeno, a
 webhook još nije stigao, piše „finishing setup“; ako server ne može da se pita, stanje je „unknown“, ne „active“.
 To menja samo prikaz. Sve što ide na server i dalje proverava baza (`app.require_access`, RLS).
-Provereno 25. oktobra: nijedan ekran ne zaključava ni ne otključava ništa po probi ili pretplati, i u stanju na
-telefonu (`AppState`) ne postoji oznaka „plaćeno“. „Lock-in Pro / See plans“ u Settings je i dalje samo „Coming soon.“
+**Zaključavanje (30. okt. 2026, `isLocked` u `access.ts`):** bez probe ili pretplate vidi se samo ekran za plaćanje
+(bez ✕), demo sa njega i Restore purchase. Prijavljen korisnik: odlučuje server (i RevenueCat). Bez naloga: odlučuje
+RevenueCat (proba počinje kupovinom u prodavnici, vidi `docs/PROJEKAT.md`). Ne zaključava se dok odgovor ne stigne
+ili kad ne može da se pita (offline; RevenueCat SDK čuva svoj poslednji odgovor, pa plaćena aplikacija radi i bez
+mreže). Build bez RevenueCat ključeva nikog ne zaključava po prodavnici (u njemu ništa ne može da se kupi); zato
+ključevi moraju biti u build-u za prodavnice (deo 6). I dalje u stanju na telefonu (`AppState`) nema oznake
+„plaćeno“: čuva se samo prekidač podsetnika za kraj probe (`trialRem`).
 - Posle prijave `Purchases.logIn(<Supabase user id>)`, pri odjavi i brisanju `Purchases.logOut()`.
 - Ključevi samo javni, u `mobile/.env.local` (primer: `mobile/.env.example`): `EXPO_PUBLIC_SUPABASE_URL`,
   `EXPO_PUBLIC_SUPABASE_ANON_KEY`, `EXPO_PUBLIC_REVENUECAT_IOS_KEY`, `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`,
@@ -366,6 +393,10 @@ Sve ovo služi samo za probu (Expo Go, test nalozi). Pre slanja na App Store / G
 10. Pokrenuti proveru iz dela 4 (lozinke) i SQL iz 3.1, korak 2 na pravom projektu.
 11. Turnstile: Cloudflare test ključevi (`1x000…`) zamenjeni pravim, u `.env.local` / EAS i u Supabase-u (3.3).
 12. GitHub > Settings > Code security: „Dependabot alerts“ i „Dependabot security updates“ uključeni (deo 7).
+13. RevenueCat javni ključevi (`EXPO_PUBLIC_REVENUECAT_IOS_KEY`, `…_ANDROID_KEY`) **moraju** biti u production build-u:
+    bez njih aplikacija nikog bez naloga ne zaključava (besplatna je). Na ekranu za plaćanje ne sme da piše
+    „TEST PRICES · NO STORE YET“ (to se vidi samo u razvoju bez ključeva).
+14. Probati pravu kupovinu u Sandbox-u / TestFlight-u (proba, odbijena kartica, Ask to Buy, Restore) pre slanja.
 
 ## 7. Bezbednosna provera pre objave (25. oktobar 2026)
 
