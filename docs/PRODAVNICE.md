@@ -9,7 +9,7 @@ Privacy Policy.
 | Šta | Zašto |
 |---|---|
 | ~~Ikonica~~ | Urađeno 2. nov.: Andrijin dizajn „Lock In$“ (`docs/dizajn/ikonica/ikonica-izvor.jpg`, 1024×1024). Iz njega: `icon.png` (bez providnosti), Android prednji sloj (samo tekst, smanjen da stane u krug), pozadina `#060c08`, jednobojna verzija i splash (samo tekst). Za Google Play ikonicu 512×512 smanji `icon.png`. Vidi se tek u novom build-u (Expo Go pokazuje svoju). |
-| **iPad: da ili ne** | `app.json` ima `ios.supportsTablet: true`. Tada Apple traži i slike ekrana za iPad 13" i proverava aplikaciju na iPad-u. Predlog: `false` (aplikacija je pravljena za telefon); javi pa menjam. |
+| ~~iPad~~ | Andrija (2. nov.): samo telefon, `ios.supportsTablet: false`. Slike za iPad ne trebaju. |
 | **Slike ekrana** | Prave slike sa telefona u demo režimu (Settings > Help > Demo), vidi 4. |
 | **Stranica za brisanje naloga** | Google Play traži javnu adresu gde piše kako se briše nalog. Predlog: `https://lockintracker.app/delete-account/` (pravim je kad kažeš). |
 
@@ -19,7 +19,7 @@ Ime u obe prodavnice ima najviše **30 znakova**, pa „Lock In - Finance Tracke
 
 | Polje | Ograničenje | Predlog |
 |---|---|---|
-| Ime (oba) | 30 | `Lock In: Finance Tracker` (24) |
+| Ime (oba) | 30 | **`Lock In: Finance Tracker`** (24), Andrija potvrdio 2. nov. |
 | Apple podnaslov | 30 | `Budgeting that roasts you` (25) |
 | Google kratak opis | 80 | `Track spending, keep your streak, save with friends. Gets roasted when you slip.` (80) |
 | Apple ključne reči | 100, zarezi bez razmaka | `budget,budgeting,expense,spending,money,savings,streak,roast,envelope,goal,bills,tracker` (88) |
@@ -76,7 +76,6 @@ Snimaju se na telefonu u **demo režimu** (popunjeni izmišljeni podaci, ništa 
 | Prodavnica | Veličina | Koliko |
 |---|---|---|
 | App Store, iPhone 6.9" | 1320×2868 ili 1290×2796 (iPhone 15/16 Pro Max, uspravno) | 3–10 (Apple sam smanji za manje ekrane) |
-| App Store, iPad 13" | 2064×2752 | samo ako ostane `supportsTablet: true` |
 | Google Play, telefon | najmanje 1080 px po kraćoj strani, odnos do 9:16 (npr. 1080×1920 ili 1080×2400) | 2–8 (za isticanje u prodavnici bar 4) |
 | Google Play, feature graphic | 1024×500 | 1 (obavezno) |
 
