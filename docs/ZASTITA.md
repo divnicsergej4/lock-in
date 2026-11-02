@@ -248,7 +248,10 @@ Lokalni podsetnici (troškovi, „Don’t waste money“) ne traže ništa od ov
 2. **iOS**: treba Apple Developer nalog. Pri prvom `npx eas-cli@latest build --profile development --platform ios`
    EAS pita za push: odgovori da napravi **Apple Push Notifications service key** (EAS ga čuva, ti ga ne lepiš nigde).
 3. **Android**: Firebase konzola > nov projekat > Android aplikacija `com.lockintracker.app` > preuzmi
-   `google-services.json` i stavi ga u `mobile/` (u `app.json` dodati `android.googleServicesFile`, javi mi);
+   `google-services.json` i stavi ga u `mobile/` (nije u gitu; `mobile/app.config.js` ga dodaje). Za EAS build ga
+   otpremi kao fajl promenljivu (u folderu `mobile`): `npx eas-cli@latest env:create --name GOOGLE_SERVICES_JSON
+   --type file --value ./google-services.json --visibility sensitive --environment development --environment preview
+   --environment production` (urađeno 2. nov. 2026, Firebase projekat `lock-in-513222`, dodat na Google Cloud „Lock In“);
    Firebase > Project settings > Service accounts > **Generate new private key**, pa taj JSON otpremi u
    expo.dev > projekat > Credentials > Android > **FCM V1 service account key**. Taj JSON je tajna: ne commit-uj ga
    i ne šalji nikome.
