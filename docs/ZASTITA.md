@@ -252,9 +252,12 @@ Lokalni podsetnici (troškovi, „Don’t waste money“) ne traže ništa od ov
    otpremi kao fajl promenljivu (u folderu `mobile`): `npx eas-cli@latest env:create --name GOOGLE_SERVICES_JSON
    --type file --value ./google-services.json --visibility sensitive --environment development --environment preview
    --environment production` (urađeno 2. nov. 2026, Firebase projekat `lock-in-513222`, dodat na Google Cloud „Lock In“);
+   na EAS-u su i javne vrednosti `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`,
+   `EXPO_PUBLIC_TURNSTILE_SITE_KEY` (plaintext; tajne tu nikad ne idu);
    Firebase > Project settings > Service accounts > **Generate new private key**, pa taj JSON otpremi u
-   expo.dev > projekat > Credentials > Android > **FCM V1 service account key**. Taj JSON je tajna: ne commit-uj ga
-   i ne šalji nikome.
+   expo.dev > projekat > Credentials > Android > **FCM V1 service account key** (na sajtu Credentials više ne mora da
+   postoji: `npx eas-cli@latest credentials -p android` > Google Service Account > FCM V1 > Set up; urađeno 2. nov.).
+   Taj JSON je tajna: ne commit-uj ga, ne šalji nikome i obriši ga posle otpremanja.
 4. Supabase > SQL Editor: migracija `0005_goal_push.sql` (3.1, korak 4).
 5. Supabase > **Edge Functions > Secrets**: `PUSH_CRON_AUTH` = `Bearer ` + nov dugačak nasumičan tekst (bar 40 znakova,
    ne isti kao za RevenueCat). Ako u expo.dev uključiš „Enhanced push security“, dodaj i `EXPO_ACCESS_TOKEN`

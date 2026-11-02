@@ -341,7 +341,8 @@ Urađeno:
     (profili `development` i `preview`, samo arm64 i Gradle jedan po jedan jer je EAS inače ostajao bez memorije),
     `package.json` → `reanimated.staticFeatureFlags.ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS: true`. EAS projekat
     `@lockeddevs/lock-in`. Brzinu meriti samo na `preview` APK-u (`npx eas-cli build --profile preview --platform
-    android`); `development` je debug i spor. Preview APK nema ključeve iz `.env.local` (prijava tu ne radi);
+    android`); `development` je debug i spor. Javne vrednosti iz `.env.local` (Supabase URL, publishable ključ, Turnstile site key) su od 2. nov. 2026 i na EAS-u
+    kao promenljive (development, preview, production), pa prijava radi i u APK-u; RevenueCat ključeva još nema;
   - stanje (Andrija, 28. okt.): sve van holo-a glatko; holo mnogo bolji, ali ne savršen kao na iPhone-u. Ostavljeno
     za kasnije: pre objave izmeriti sa „Profile HWUI rendering“ (opcije za programere) šta tačno kasni na holo-u.
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
