@@ -21,7 +21,7 @@ Ime u obe prodavnice ima najviše **30 znakova**, pa „Lock In - Finance Tracke
 |---|---|---|
 | Ime (oba) | 30 | `Lock In: Finance Tracker` (24) |
 | Apple podnaslov | 30 | `Budgeting that roasts you` (25) |
-| Google kratak opis | 80 | `Track spending, keep your streak, save with friends. Gets roasted when you slip.` (79) |
+| Google kratak opis | 80 | `Track spending, keep your streak, save with friends. Gets roasted when you slip.` (80) |
 | Apple ključne reči | 100, zarezi bez razmaka | `budget,budgeting,expense,spending,money,savings,streak,roast,envelope,goal,bills,tracker` (88) |
 | Kategorija | | Finance (Apple i Google) |
 
