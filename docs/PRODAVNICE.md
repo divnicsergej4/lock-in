@@ -8,7 +8,7 @@ Privacy Policy.
 
 | Šta | Zašto |
 |---|---|
-| **Ikonica** | `mobile/assets/icon.png` i Android ikonice su još **podrazumevane Expo ikonice** (plavo „A“). Treba Andrijin dizajn: 1024×1024 PNG bez providnosti i bez zaobljenih uglova (Apple ih sam zaobli), plus Android adaptive (prednji sloj 432×432 u sredini 1024×1024, pozadina, jednobojna verzija). Isti fajl ide i kao ikonica 512×512 na Google Play. |
+| ~~Ikonica~~ | Urađeno 2. nov.: Andrijin dizajn „Lock In$“ (`docs/dizajn/ikonica/ikonica-izvor.jpg`, 1024×1024). Iz njega: `icon.png` (bez providnosti), Android prednji sloj (samo tekst, smanjen da stane u krug), pozadina `#060c08`, jednobojna verzija i splash (samo tekst). Za Google Play ikonicu 512×512 smanji `icon.png`. Vidi se tek u novom build-u (Expo Go pokazuje svoju). |
 | **iPad: da ili ne** | `app.json` ima `ios.supportsTablet: true`. Tada Apple traži i slike ekrana za iPad 13" i proverava aplikaciju na iPad-u. Predlog: `false` (aplikacija je pravljena za telefon); javi pa menjam. |
 | **Slike ekrana** | Prave slike sa telefona u demo režimu (Settings > Help > Demo), vidi 4. |
 | **Stranica za brisanje naloga** | Google Play traži javnu adresu gde piše kako se briše nalog. Predlog: `https://lockintracker.app/delete-account/` (pravim je kad kažeš). |
