@@ -442,6 +442,10 @@ Sledeće, ovim redom:
    Sign in with Apple i Google ne traže CAPTCHA.
 3. Pretplata: ekran za plaćanje, zaključavanje i webhook su gotovi (30. okt.); ostaje povezivanje kad Andrija otvori
    Apple Developer i Google Play naloge (proizvodi, RevenueCat ponuda, ključevi, `docs/ZASTITA.md` 3.6) i proba u Sandbox-u.
+   RevenueCat Test Store (probna prodavnica bez naloga) je razmotren 3. nov. 2026 i odložen (Andrija): radi samo u
+   debug build-u (u release SDK namerno sruši aplikaciju), a nije sigurno da podržava besplatnu nedelju i webhook.
+   Sve se proverava kad Andrija otvori naloge. Google Play: novi lični nalog traži zatvoreno testiranje sa 12 testera
+   14 dana pre produkcije, pa nalog otvoriti na vreme.
 4. Prenos ekrana iz prototipa jedan po jedan (Home, Spending sa holo prstenom, Savings sa fiokom, More, uvod sa likom,
    obilazak, demo).
 Odluka (Andrija, 30. okt. 2026): pravni pregled Privacy Policy i Terms se ne radi sad i računa se kao završen za
