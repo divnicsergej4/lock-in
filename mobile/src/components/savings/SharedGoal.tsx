@@ -146,7 +146,7 @@ function GoalCard({ v }: { v: GoalView }) {
     <Pressable
       accessibilityRole="button"
       onPress={() => router.push({ pathname: '/goal/[id]', params: { id: v.goal.id } })}
-      style={({ pressed }) => [st.card, { borderColor: g.goldLine, backgroundColor: 'rgba(5,11,8,0.35)' }, pressed && { opacity: 0.85 }]}
+      style={({ pressed }) => [st.card, { borderColor: g.goldLine, backgroundColor: g.goalCard }, pressed && { opacity: 0.85 }]}
     >
       <View style={st.cardTop}>
         <LockRing size={58} small segs={segments(v.members, v.goal.target)} unlocked={v.unlocked} />

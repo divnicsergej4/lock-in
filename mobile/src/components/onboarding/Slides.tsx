@@ -131,7 +131,8 @@ const LEVELS = ['Gentle', 'Normal', 'No mercy'];
 const MSGS = [
   'logged, just watch your goal 🙂',
   'going out is expensive, and tomorrow your head hurts too 🥀🥀',
-  'going out is expensive, and tomorrow your head hurts too 🥀🥀 Your goal is watching and it’s disappointed.',
+  // Andrija: a real No mercy line (docs/FORE.md, Other) with its No mercy ending, as the app writes it
+  'brooo you DON\'T need that shi🥀🥀🥀 Not even your mom would approve.',
 ];
 
 function LevelLabel({ text, color }: { text: string; color: string }) {

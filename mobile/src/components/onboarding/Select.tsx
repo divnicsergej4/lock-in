@@ -105,8 +105,9 @@ const st = StyleSheet.create({
     borderRadius: 12,
   },
   text: { flex: 1, fontFamily: brico[400], fontSize: 16, color: '#0d1f15' },
-  scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)' },
-  sheet: { maxHeight: '60%', backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingTop: 14, paddingHorizontal: 12 },
+  scrim: { flex: 1 }, // no dimming (Andrija): only a tap outside the list closes it
+  // without the dimming, a soft shadow keeps the list apart from a page of the same colour
+  sheet: { maxHeight: '60%', backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingTop: 14, paddingHorizontal: 12, boxShadow: '0 -4px 18px rgba(0,0,0,0.16)' },
   title: { fontFamily: brico[700], fontSize: 16, color: '#5d7466', textAlign: 'center', marginBottom: 8 },
   opt: { height: 48, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 12 },
   optOn: { backgroundColor: '#f3f7f4' },

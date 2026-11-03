@@ -17,6 +17,7 @@ const dark = {
   goldSoft: '#d9c27d', // the goal name under a sheet title, "of 2,000 €"
   goldBg: 'linear-gradient(160deg, #2a2209, #0d1812 70%)',
   goldLine: '#5a4a16',
+  goalCard: 'rgba(5,11,8,0.35)', // a goal in the Shared goals list
   goldChip: 'rgba(245,200,75,0.14)',
   onGold: '#1a1000',
   track: '#16291f',
@@ -42,6 +43,7 @@ const light: Look = {
   goldSoft: '#8a6a12',
   goldBg: 'linear-gradient(160deg, #fff4d1, #ffffff 70%)',
   goldLine: '#efd88f',
+  goalCard: 'rgba(255,255,255,0.8)',
   goldChip: 'rgba(245,200,75,0.22)',
   onGold: '#1a1000',
   track: '#e8efe9',
