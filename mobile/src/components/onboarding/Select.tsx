@@ -23,6 +23,7 @@ export interface SelectLook {
   sheet: string;
   font: string;
 }
+const LONG = 6; // more options than this may not fit the sheet
 const LIGHT: SelectLook = { bg: '#f3f7f4', border: '#dbe7df', ink: '#0d1f15', mute: '#5d7466', sheet: '#fff', font: brico[400] };
 
 export function Select({
@@ -68,7 +69,9 @@ export function Select({
           <FlatList
             data={options}
             keyExtractor={(o) => o.value || '-'}
-            initialScrollIndex={Math.max(0, options.indexOf(cur))}
+            // only a long list (currencies) opens at the chosen row; a short one fits whole, and on Android an
+            // initial index there left the rows above the chosen one undrawn and out of reach
+            initialScrollIndex={options.length > LONG ? Math.max(0, options.indexOf(cur)) : undefined}
             getItemLayout={(_, i) => ({ length: 48, offset: 48 * i, index: i })}
             renderItem={({ item }) => (
               <Pressable
