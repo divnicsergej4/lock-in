@@ -4,6 +4,12 @@
     "slug": "lock-in",
     "scheme": "lockin",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ac399270-b65c-4be9-859d-94de014f9507"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",

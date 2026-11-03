@@ -345,6 +345,13 @@ Urađeno:
     `@lockeddevs/lock-in`. Brzinu meriti samo na `preview` APK-u (`npx eas-cli build --profile preview --platform
     android`); `development` je debug i spor. Javne vrednosti iz `.env.local` (Supabase URL, publishable ključ, Turnstile site key) su od 2. nov. 2026 i na EAS-u
     kao promenljive (development, preview, production), pa prijava radi i u APK-u; RevenueCat ključeva još nema;
+  - ažuriranja preko interneta (Andrija: „Da, ubaci“, 3. nov. 2026): `expo-updates`, `runtimeVersion` = verzija
+    aplikacije (`appVersion`, sada 1.0.0), kanali u `eas.json` (`development`, `preview`, `production`). Promena samo u
+    JS kodu stiže bez novog APK-a: iz `mobile/` `npx eas-cli update --channel preview --platform android --message "..."`.
+    Na telefonu: aplikaciju skroz zatvoriti i otvoriti (skine ažuriranje), pa još jednom zatvoriti i otvoriti (pokrene ga).
+    Novi APK ipak treba kad se doda ili promeni nativni paket, plugin u `app.json` ili bilo šta nativno; tada se poveća
+    `version` u `app.json`, da staro ažuriranje nikad ne stigne na APK sa drugačijim nativnim delom. Na kanal
+    `production` se ne šalje ništa bez Andrijine dozvole;
   - stanje (Andrija, 28. okt.): sve van holo-a glatko; holo mnogo bolji, ali ne savršen kao na iPhone-u. Ostavljeno
     za kasnije: pre objave izmeriti sa „Profile HWUI rendering“ (opcije za programere) šta tačno kasni na holo-u.
     3. nov. 2026 (preview APK sa push-om): holo i dalje secka pri prelasku sa jednog panela na drugi. Andrija ne želi
