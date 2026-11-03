@@ -347,6 +347,8 @@ Urađeno:
     kao promenljive (development, preview, production), pa prijava radi i u APK-u; RevenueCat ključeva još nema;
   - stanje (Andrija, 28. okt.): sve van holo-a glatko; holo mnogo bolji, ali ne savršen kao na iPhone-u. Ostavljeno
     za kasnije: pre objave izmeriti sa „Profile HWUI rendering“ (opcije za programere) šta tačno kasni na holo-u.
+    3. nov. 2026 (preview APK sa push-om): holo i dalje secka pri prelasku sa jednog panela na drugi. Andrija ne želi
+    sad da se bavi time; ne predlagati ponovo dok on ne pokrene temu.
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
 - Prijatelji i zajednički cilj u aplikaciji, vezani za pravi Supabase (29. okt. 2026, Andrijin dizajn iz dela 6):
   Savings (bez naloga, bez ciljeva sa „Lock in together.“, lista ciljeva sa malim prstenom), ekran cilja
