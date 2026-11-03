@@ -364,6 +364,17 @@ Urađeno:
     (`activate`), statični `zIndex` se ne menja. Na svim platformama `L` je `useMemo` (inače se pri svakom renderu
     ponovo pokreću animirani stilovi panela); inače iOS i web isti kao pre. Prekidači obrisani (`holoLab.ts`,
     `EXPO_PUBLIC_HOLO_LAB`).
+    APK sa tom popravkom (3. nov. uveče, Andrijine slike ekrana): bočni paneli se crtaju PREKO prednjeg. Greška: pozitivan
+    `elevation` u React Native 0.88 ne menja redosled (`ReactViewGroup.drawChild` posle takvog deteta zatvara Android-ovo
+    preuređivanje, pa se deca crtaju redom kojim su u stablu); to je bilo pretpostavljeno, a ne provereno u kodu.
+    Ispravljeno: prednji panel `elevation` 0, ostali −1. Negativan ostaje u preuređivanju roditelja, pa Android crta
+    bočne prve, a prednji preko njih, i dalje bez commit-a i bez premeštanja view-ova. Dodir ne prati `elevation`
+    (React Native traži dodirnuti view po redosledu u stablu), pa na Android-u bočni paneli ne primaju dodir
+    (`pointerEvents` none), a tap na bočni panel preuzimaju dve providne trake levo i desno od prednjeg panela
+    (`zIndex` 30, nikad se ne menja). Provereno: kod React Native-a i Reanimated-a (elevation ide direktno u view, bez
+    ograničenja na negativne vrednosti), u pregledaču sa privremeno uključenom Android granom (trake tačno uz ivice
+    prednjeg panela, okreću prsten levo/desno, tap na prednji panel ga ne okreće); običan web isti kao pre. Sam
+    redosled crtanja na Android-u ovde ne može da se vidi (nema emulatora: virtualizacija je isključena u BIOS-u).
     Nije provereno na telefonu.
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
 - Prijatelji i zajednički cilj u aplikaciji, vezani za pravi Supabase (29. okt. 2026, Andrijin dizajn iz dela 6):

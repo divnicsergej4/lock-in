@@ -33,7 +33,7 @@ import { HoloPanel } from './HoloPanel';
 import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
 
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
-// iOS orders the panels by real depth (see poseMatrix); Android and the web follow zIndex
+// iOS orders the panels by real depth (see poseMatrix), Android by elevation (RingPanel), the web by zIndex
 const IOS = Platform.OS === 'ios';
 const ANDROID = Platform.OS === 'android';
 
@@ -73,12 +73,15 @@ function RingPanel({
 }) {
   const style = useAnimatedStyle(() => {
     const q = hPose(i, p.value, sp.value, L);
-    // Android: the panel turning to the front goes on top in the same frame, on the UI thread. Through
-    // elevation, not zIndex: Reanimated writes opacity, transform and elevation straight to the view, but a
-    // zIndex in the same style sent every frame of the panels through a React Native commit, and the frame
-    // where the front panel changed jumped a few pixels (seen frame by frame in Andrija's video, 3 Nov 2026).
-    // The outer view has no background, so the elevation casts no shadow; it only orders the panels.
-    if (ANDROID) return { opacity: q.opacity, elevation: i === hm(Math.round(p.value)) ? 1 : 0, transform: poseTransform(q) };
+    // Android: the panel turning to the front goes on top in the same frame, on the UI thread. Not through
+    // zIndex: Reanimated writes opacity, transform and elevation straight to the view, but a zIndex in the
+    // same style sent every frame of the panels through a React Native commit, and the frame where the front
+    // panel changed jumped a few pixels (seen frame by frame in Andrija's video, 3 Nov 2026). A positive
+    // elevation does not order anything: React Native draws siblings in child order and closes Android's
+    // reordering right after a child with elevation > 0 (ReactViewGroup.drawChild). A negative one stays
+    // inside the parent's reordering, which draws the side panels (−1) first and the front one (0) over them.
+    // No shadow either way (negative, and the outer view has no background).
+    if (ANDROID) return { opacity: q.opacity, elevation: i === hm(Math.round(p.value)) ? 0 : -1, transform: poseTransform(q) };
     if (!IOS) return { opacity: q.opacity, transform: poseTransform(q) };
     return { opacity: q.opacity, transform: [{ matrix: poseMatrix(q, i === hm(Math.round(p.value))) }] };
   });
@@ -90,16 +93,23 @@ function RingPanel({
     return { transform: [{ translateY: -5 * k }] };
   });
   // needsOffscreenAlphaCompositing: on Android a fading panel is drawn as one picture; otherwise each of
-  // its layers is made see-through on its own and the panels show through each other (iOS always does this)
+  // its layers is made see-through on its own and the panels show through each other (iOS always does this).
+  // Android: touches do not follow the elevation (React Native looks for the touched view in child order, and
+  // a side panel may come after the front one), so a side panel takes no touches; HoloRing's side strips turn
+  // the ring instead.
   return (
-    <Animated.View needsOffscreenAlphaCompositing={ANDROID} style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}>
+    <Animated.View
+      pointerEvents={ANDROID && onPressSide ? 'none' : 'auto'}
+      needsOffscreenAlphaCompositing={ANDROID}
+      style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}
+    >
       <Animated.View style={float}>
         <HoloPanel w={L.pw} h={h} dim={dim} activation={activation}>
           {children}
         </HoloPanel>
       </Animated.View>
       {/* a side panel: a tap turns the ring to it */}
-      {onPressSide && <Pressable accessibilityRole="button" style={StyleSheet.absoluteFill} onPress={onPressSide} />}
+      {onPressSide && !ANDROID && <Pressable accessibilityRole="button" style={StyleSheet.absoluteFill} onPress={onPressSide} />}
     </Animated.View>
   );
 }
@@ -353,7 +363,7 @@ export const HoloRing = memo(function HoloRing({
                 p={p}
                 sp={sp}
                 floatT={floatT}
-                depth={front && !ANDROID ? 60 : 20} // Android orders the panels by elevation (RingPanel)
+                depth={front && !ANDROID ? 60 : 20} // Android: always 20, the panels are ordered by elevation (RingPanel)
                 h={ph}
                 activation={act[i]}
                 onPressSide={front ? null : () => tapTo(i)}
@@ -362,6 +372,18 @@ export const HoloRing = memo(function HoloRing({
               </RingPanel>
             );
           })}
+          {/* Android: the parts of the side panels showing left and right of the front one; a tap turns the
+              ring to that side (the side panels themselves take no touches, see RingPanel). Above the panels
+              by a zIndex that never changes, so the views are never reordered. */}
+          {ANDROID &&
+            ([-1, 1] as const).map((d) => (
+              <Pressable
+                key={d}
+                accessibilityRole="button"
+                onPress={() => go(Math.round(t.value) + d)}
+                style={[st.side, { top: HPT, height: ph ?? 472 }, d < 0 ? { left: 0, right: '50%', marginRight: L.pw / 2 } : { right: 0, left: '50%', marginLeft: L.pw / 2 }]}
+              />
+            ))}
         </View>
       </GestureDetector>
       <View style={st.dots}>
@@ -393,6 +415,7 @@ function Dot({ on, color, glow, onPress }: { on: boolean; color: string; glow: s
 const st = StyleSheet.create({
   vzs: { position: 'absolute', top: HPT, left: '50%' },
   base: { position: 'absolute', left: '50%', bottom: 8, height: 46 },
+  side: { position: 'absolute', zIndex: 30 },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: 8, paddingTop: 2, paddingBottom: 4 },
   dot: { height: 8, borderRadius: 4 },
 });
