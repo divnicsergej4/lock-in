@@ -352,11 +352,19 @@ Urađeno:
     prekidačima koji posebno gase (1) `needsOffscreenAlphaCompositing` na panelima, (2) promenu `zIndex` sa UI niti,
     (3) JS posao pri prelasku (`setCur`/`activate`, scan i bljesak); Andrija jednom proba i kaže koji prekidač daje
     glatko, pa se popravlja samo to. Ništa drugo ne dirati na holo-u. Prekidači su ugrađeni 3. nov.
-    (`components/spending/holoLab.ts`, ispod prstena, samo Android i samo uz `EXPO_PUBLIC_HOLO_LAB=1` iz `eas.json`
-    preview); **posle testa obrisati `holoLab.ts`, njegove delove u `HoloRing.tsx` i tu promenljivu iz `eas.json`.**
     Isti APK: izbori u Settings na Android-u (kratka lista se ne skroluje na izabrani red), bez zatamnjenja iza liste
     izbora (Andrija), kartica cilja u svetloj temi bela umesto sive, No mercy primer na uvodu je prava fora
-    („brooo you DON'T need that shi🥀🥀🥀 Not even your mom would approve.“).
+    („brooo you DON'T need that shi🥀🥀🥀 Not even your mom would approve.“). Andrija: sve to radi.
+    Rezultat probe (3. nov., Andrijin snimak ekrana, pregledan kadar po kadar): nijedan prekidač sam ne pomaže. Na svakom
+    prelasku sredine oba panela u jednom kadru skoče 3–5 px dok prst skoro stoji. Dva uzroka u isto vreme, pa gašenje
+    jednog nije bilo dovoljno: (a) `zIndex` u animiranom stilu je slao svaki frejm panela kroz commit React Native-a
+    (Reanimated direktno upisuje samo opacity, transform, elevation…), (b) `setCur` pri prelasku je pravio React render
+    čiji commit kasni frejm i prepisuje položaj panela. Popravka (samo Android): redosled panela preko `elevation`
+    (spoljni View nema pozadinu, pa nema senke), `cur` (tačkice, dodir na bočni panel) se menja tek kad prsten stane
+    (`activate`), statični `zIndex` se ne menja. Na svim platformama `L` je `useMemo` (inače se pri svakom renderu
+    ponovo pokreću animirani stilovi panela); inače iOS i web isti kao pre. Prekidači obrisani (`holoLab.ts`,
+    `EXPO_PUBLIC_HOLO_LAB`).
+    Nije provereno na telefonu.
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
 - Prijatelji i zajednički cilj u aplikaciji, vezani za pravi Supabase (29. okt. 2026, Andrijin dizajn iz dela 6):
   Savings (bez naloga, bez ciljeva sa „Lock in together.“, lista ciljeva sa malim prstenom), ekran cilja

@@ -5,7 +5,7 @@
 
 import { useIsFocused } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -29,7 +29,6 @@ import { holo, useTheme } from '@/theme';
 import { tourBus, useTourTarget } from '@/tour/registry';
 
 import { HoloClock } from './holoClock';
-import { HOLO_LAB, LAB_DEFAULT, LAB_ITEMS, type LabFlags } from './holoLab';
 import { HoloPanel } from './HoloPanel';
 import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
 
@@ -59,7 +58,6 @@ function RingPanel({
   h,
   activation,
   onPressSide,
-  lab,
   children,
 }: {
   i: number;
@@ -71,16 +69,16 @@ function RingPanel({
   h: number | undefined;
   activation: number;
   onPressSide: (() => void) | null;
-  lab: LabFlags;
   children: ReactNode;
 }) {
-  const zUI = lab.zIndexUI;
   const style = useAnimatedStyle(() => {
     const q = hPose(i, p.value, sp.value, L);
-    // Android: the panel turning to the front goes on top in the same frame, on the UI thread (the
-    // zIndex from React comes only after JavaScript has caught up)
-    if (ANDROID && !zUI) return { opacity: q.opacity, transform: poseTransform(q) };
-    if (ANDROID) return { opacity: q.opacity, zIndex: i === hm(Math.round(p.value)) ? 60 : 20, transform: poseTransform(q) };
+    // Android: the panel turning to the front goes on top in the same frame, on the UI thread. Through
+    // elevation, not zIndex: Reanimated writes opacity, transform and elevation straight to the view, but a
+    // zIndex in the same style sent every frame of the panels through a React Native commit, and the frame
+    // where the front panel changed jumped a few pixels (seen frame by frame in Andrija's video, 3 Nov 2026).
+    // The outer view has no background, so the elevation casts no shadow; it only orders the panels.
+    if (ANDROID) return { opacity: q.opacity, elevation: i === hm(Math.round(p.value)) ? 1 : 0, transform: poseTransform(q) };
     if (!IOS) return { opacity: q.opacity, transform: poseTransform(q) };
     return { opacity: q.opacity, transform: [{ matrix: poseMatrix(q, i === hm(Math.round(p.value))) }] };
   });
@@ -94,7 +92,7 @@ function RingPanel({
   // needsOffscreenAlphaCompositing: on Android a fading panel is drawn as one picture; otherwise each of
   // its layers is made see-through on its own and the panels show through each other (iOS always does this)
   return (
-    <Animated.View needsOffscreenAlphaCompositing={ANDROID && lab.offscreen} style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}>
+    <Animated.View needsOffscreenAlphaCompositing={ANDROID} style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}>
       <Animated.View style={float}>
         <HoloPanel w={L.pw} h={h} dim={dim} activation={activation}>
           {children}
@@ -139,7 +137,8 @@ export const HoloRing = memo(function HoloRing({
   scrolling: SharedValue<boolean>;
 }) {
   const { width: W, height: screenH } = useWindowDimensions();
-  const L = holoLayout(W);
+  // the same object on every render: a new one would restart each panel's animated style when the ring lands
+  const L = useMemo(() => holoLayout(W), [W]);
   const { name } = useTheme();
   const k = holo[name];
   const reduce = useReducedMotion();
@@ -174,13 +173,6 @@ export const HoloRing = memo(function HoloRing({
     },
   );
 
-  // TEMPORARY Android stutter test (holoLab.ts); in every other build all three stay on
-  const [lab, setLab] = useState<LabFlags>(LAB_DEFAULT);
-  const labJS = useSharedValue(true);
-  useEffect(() => {
-    labJS.value = lab.switchJS;
-  }, [lab.switchJS, labJS]);
-
   // ---- JS state: which panel is in front (stacking, taps) and the arrival animations ----
   const [cur, setCur] = useState(0);
   const [act, setAct] = useState<number[]>([0, 0, 0]);
@@ -189,13 +181,16 @@ export const HoloRing = memo(function HoloRing({
   const activate = useCallback((i: number) => {
     activeRef.current = i;
     tourBus.holoAct = i; // the tour waits for the line (1) and the calendar (2)
+    setCur(i);
     setAct((a) => a.map((n, j) => (j === i ? n + 1 : n)));
   }, []);
 
+  // Android: the dots and taps follow only once the ring has landed (activate). A React render while the finger
+  // turns the ring was the second jump at the switch: its commit rewrote the panels' positions a frame late.
   useAnimatedReaction(
     () => hm(Math.round(p.value)),
     (c, prev) => {
-      if (c !== prev && labJS.value) runOnJS(setCur)(c);
+      if (c !== prev && !ANDROID) runOnJS(setCur)(c);
     },
   );
 
@@ -243,7 +238,7 @@ export const HoloRing = memo(function HoloRing({
       // the panel's content lights up only once it has (almost) landed
       if (!landed.value && Math.abs(pp - to) < 0.03) {
         landed.value = true;
-        if (hm(to) !== activeRef.current && labJS.value) runOnJS(activate)(hm(to));
+        if (hm(to) !== activeRef.current) runOnJS(activate)(hm(to));
       }
       if (settled(pp, vv, to) || springT.value >= SPRING_MAX_S) {
         pp = hm(to);
@@ -254,7 +249,7 @@ export const HoloRing = memo(function HoloRing({
         stepCarry.value = 0;
         if (!landed.value) {
           landed.value = true;
-          if (labJS.value) runOnJS(activate)(hm(to));
+          runOnJS(activate)(hm(to));
         }
         break;
       }
@@ -333,8 +328,7 @@ export const HoloRing = memo(function HoloRing({
     <HoloClock.Provider value={liveT}>
     <Animated.View ref={box}>
       <GestureDetector gesture={pan}>
-        {/* the lab key remounts the panels, so a switched-off zIndex or offscreen picture does not linger */}
-        <View key={HOLO_LAB ? `${lab.offscreen}${lab.zIndexUI}` : undefined} ref={stage} style={{ height: (ph ?? 472) + HPT + HPB, overflow: 'hidden' }}>
+        <View ref={stage} style={{ height: (ph ?? 472) + HPT + HPB, overflow: 'hidden' }}>
           <View pointerEvents="none" style={[st.base, { width: bw, marginLeft: -bw / 2 }]}>
             <Svg width={bw} height={46}>
               <Defs>
@@ -359,11 +353,10 @@ export const HoloRing = memo(function HoloRing({
                 p={p}
                 sp={sp}
                 floatT={floatT}
-                depth={front ? 60 : 20}
+                depth={front && !ANDROID ? 60 : 20} // Android orders the panels by elevation (RingPanel)
                 h={ph}
                 activation={act[i]}
                 onPressSide={front ? null : () => tapTo(i)}
-                lab={lab}
               >
                 <PanelContent render={render} activation={act[i]} grow={grow[i]} onNatural={onNatural[i]} />
               </RingPanel>
@@ -376,23 +369,6 @@ export const HoloRing = memo(function HoloRing({
           <Dot key={j} on={j === cur} color={k.dot} glow={k.dotOnGlow} onPress={() => dotTo(j)} />
         ))}
       </View>
-      {HOLO_LAB && (
-        <View style={st.lab}>
-          {LAB_ITEMS.map(({ key, label }) => (
-            <Pressable
-              key={key}
-              accessibilityRole="switch"
-              accessibilityState={{ checked: lab[key] }}
-              onPress={() => setLab((l) => ({ ...l, [key]: !l[key] }))}
-              style={[st.labBtn, { borderColor: lab[key] ? '#22e07a' : '#ff7b7b' }]}
-            >
-              <Text style={[st.labT, { color: lab[key] ? '#22e07a' : '#ff7b7b' }]}>
-                {label}: {lab[key] ? 'UKLJ' : 'ISKLJ'}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      )}
     </Animated.View>
     </HoloClock.Provider>
   );
@@ -419,7 +395,4 @@ const st = StyleSheet.create({
   base: { position: 'absolute', left: '50%', bottom: 8, height: 46 },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: 8, paddingTop: 2, paddingBottom: 4 },
   dot: { height: 8, borderRadius: 4 },
-  lab: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 6, paddingTop: 8, paddingBottom: 4 },
-  labBtn: { borderWidth: 1.5, borderRadius: 10, paddingVertical: 6, paddingHorizontal: 8 },
-  labT: { fontSize: 12, fontWeight: '700' },
 });
