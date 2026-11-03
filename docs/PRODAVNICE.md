@@ -8,7 +8,7 @@ Privacy Policy.
 
 | Šta | Zašto |
 |---|---|
-| ~~Ikonica~~ | Urađeno 2. nov.: Andrijin dizajn „Lock In$“ (`docs/dizajn/ikonica/ikonica-izvor.jpg`, 1024×1024). Iz njega: `icon.png` (bez providnosti), Android prednji sloj (samo tekst, smanjen da stane u krug), pozadina `#060c08`, jednobojna verzija i splash (samo tekst). Za Google Play ikonicu 512×512 smanji `icon.png`. Vidi se tek u novom build-u (Expo Go pokazuje svoju). |
+| ~~Ikonica~~ | Urađeno 2. nov.: Andrijin dizajn „Lock In$“ (`docs/dizajn/ikonica/ikonica-izvor.jpg`, 1024×1024). Iz njega: `icon.png` (bez providnosti), Android prednji sloj (samo tekst, smanjen da stane u krug), pozadina `#060c08`, jednobojna verzija i splash (samo tekst). Za Google Play ikonicu 512×512 smanji `icon.png`. Vidi se tek u novom build-u (Expo Go pokazuje svoju). Andrija proverio ikonicu i splash na Android-u (3. nov.). |
 | ~~iPad~~ | Andrija (2. nov.): samo telefon, `ios.supportsTablet: false`. Slike za iPad ne trebaju. |
 | **Slike ekrana** | Prave slike sa telefona u demo režimu (Settings > Help > Demo), vidi 4. |
 | ~~Stranica za brisanje naloga~~ | Urađeno 2. nov.: `https://lockintracker.app/delete-account/` (`web/delete-account/`): u aplikaciji, bez aplikacije mejlom na support (rok 30 dana), šta se briše, a šta ne. Ta adresa ide u Google Play > Data safety > „Delete account URL“. |
