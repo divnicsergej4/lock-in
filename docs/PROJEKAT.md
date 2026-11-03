@@ -48,6 +48,8 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   javni (anon) ključ; sva zaštita je u pravilima baze. Andrija sam pokreće SQL u Supabase dashboard-u.
 - Prototip šalje anonimno brojanje korišćenja (samo da li je i kog dana korišćen) u Supabase tabelu `events`,
   i to samo sa javnog linka. Iznosi, opisi i kategorije nikad ne napuštaju telefon.
+  Taj stari projekat (`lock-in-tracker`, `awcuxsziarprpabywzgx`) je Supabase pauzirao 3. nov. 2026 (7 dana bez upisa);
+  Andrija: više ne treba, ostaje pauziran. Prototip i dalje radi, brojanje tiho ne uspeva. Aplikacija ga ne koristi.
 
 ## 4. Poslovni model (dogovoreno)
 
