@@ -471,10 +471,9 @@ Urađeno:
 Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cilj i ekran za plaćanje su urađeni):
 1. **Google Play nalog** ($25; Andrija otvara što pre, jer novi lični nalog traži zatvoreno testiranje sa 12 testera
    14 dana zaredom pre produkcije).
-2. Bez naloga (Claude): feature graphic 1024×500, ikonica 512×512 (iz `mobile/assets/icon.png`), konačan tekst za
-   prodavnicu (nacrt u `docs/PRODAVNICE.md`), predlog za **pristup recenzenata** (prijava je samo kodom na mejl, pa
-   recenzent ne može u zajednički cilj bez posebnog rešenja; Andrija odlučuje), pregled No mercy fora zbog ocene
-   sadržaja. Stranica za brisanje naloga već postoji (`web/delete-account/`).
+2. ~~Bez naloga: feature graphic, ikonica 512, tekst za prodavnicu~~ (urađeno 4. nov., `docs/PRODAVNICE.md` delovi 2–4
+   i 9; recenzenti ulaze preko Google prijave, uputstvo u delu 9). Android je završen (Andrija, 4. nov.: Samsung sam
+   prešao na proste prozore, Honor pun holo, „jako je klin sve“).
 3. Posle naloga: production build (AAB) → Internal testing; proizvodi u Play Console (mesečna i godišnja sa 7 dana
    probe, doživotna; **cene konačno** dogovara Andrija sa kolegom); RevenueCat (`docs/ZASTITA.md` 3.6: entitlement
    `access`, ponuda `default`, webhook, javni ključ `goog_` u EAS); probna kupovina; formulari (Data safety, Content

@@ -21,7 +21,7 @@ Ime u obe prodavnice ima najviše **30 znakova**, pa „Lock In - Finance Tracke
 |---|---|---|
 | Ime (oba) | 30 | **`Lock In: Finance Tracker`** (24), Andrija potvrdio 2. nov. |
 | Apple podnaslov | 30 | `Budgeting that roasts you` (25) |
-| Google kratak opis | 80 | `Track spending, keep your streak, save with friends. Gets roasted when you slip.` (80) |
+| Google kratak opis | 80 | `Track spending, keep your streak, save with friends. Get roasted when you slip.` (79) |
 | Apple ključne reči | 100, zarezi bez razmaka | `budget,budgeting,expense,spending,money,savings,streak,roast,envelope,goal,bills,tracker` (88) |
 | Kategorija | | Finance (Apple i Google) |
 
@@ -29,42 +29,53 @@ Ime aplikacije na telefonu ispod ikonice ostaje `Lock In` (`app.json` → `name`
 
 ## 3. Dug opis (oba, do 4000 znakova)
 
+Konačna verzija za Google Play (4. nov. 2026, 1.936 znakova). Za App Store isti tekst, samo „Cancel anytime in
+Google Play.“ → „Cancel anytime in your App Store settings.“ Bez psovki u tekstu prodavnice (fore se vide na
+slikama, a uzrast pokriva upitnik iz dela 5). Svaka tvrdnja je proverena prema aplikaciji.
+
 ```
-Lock In is the spending tracker that tells you the truth.
+Lock In is the expense tracker that calls you out when you spend like cash grows on trees.
 
-Log what you spend in a few taps. Lock In keeps your balance, your streak and your goals in one place, and it
-roasts you when you blow money you don't have. Pick how hard: Gentle, Normal or No mercy.
+Log a purchase in a few taps and get an honest reply. You pick how hard it hits: Gentle, Normal or No mercy. Keep a daily streak, set money aside in envelopes and save for goals with your friends. No bank login, no spreadsheets.
 
-TRACK
-• Log spending and income in seconds, with categories and a note
-• See what's really available after your envelopes
+ROASTS THAT KEEP YOU HONEST
+• Every expense gets a reply, from a gentle reminder to no mercy at all
+• A warning when one purchase eats a big part of everything you have
+• Alerts when you get close to or go over a category limit
+
+TRACK EVERY DOLLAR
+• Log spending and income in seconds, with a category and a note
+• See what's really available after the money in your envelopes
 • "Can I afford it?" before you buy
-• Limits per category, recurring entries and subscriptions you track
+• Category limits, recurring bills and subscriptions in one place
+• A second currency if you need one
+• Reminders so you never forget to log
 
-KEEP THE STREAK
-• Every day you log counts. Miss one and the flame goes out
-• Flame levels from Orange to Legendary at 365 days
+KEEP THE FLAME ALIVE
+• Log every day and your streak grows. Skip a day and the flame goes out
+• Flame levels from Orange all the way to Legendary at 365 days
 • A new challenge every week
 
-SEE WHERE IT GOES
-• Top categories, the last 30 days and a calendar of your month
+SEE WHERE YOUR MONEY GOES
+• Your top categories this month, the last 30 days and a calendar of your spending
 • "We noticed": patterns in how you spend
-• A monthly report with a grade from A to F
+• A monthly report card, graded A to F
 
-SAVE
-• Envelopes and savings goals with a due date and how much to put in per day, week or month
-• Shared goals with friends: everyone puts in, everyone sees the progress, nudge whoever is slacking
+SAVE, ALONE OR TOGETHER
+• Envelopes and savings goals with a deadline and how much to put in per day, week or month
+• Shared goals with friends: everyone chips in, everyone sees the progress, and you can nudge whoever is slacking
 
 PRIVATE BY DESIGN
-• No bank login. No spreadsheets
-• Your amounts, descriptions and categories stay on your phone
-• An account is only needed for shared goals with friends
-• No ads, no tracking, we don't sell your data
+• No bank connection
+• Your amounts, notes and categories stay on your phone
+• An account is only needed for shared goals
+• No ads. We don't sell your data
 
-7-day free trial, then a subscription or a one-time purchase.
+Try everything free for 7 days, then choose a monthly or yearly subscription or a one-time lifetime purchase. Cancel anytime in Google Play.
 
 Privacy Policy: https://lockintracker.app/privacy/
 Terms of Use: https://lockintracker.app/terms/
+Support: support@lockintracker.app
 ```
 
 Apple uz pretplatu traži i link na Terms (EULA) u opisu ili u polju za EULA; zato su oba linka na kraju.
@@ -90,8 +101,12 @@ dugmića; razmera ≤ 2:1). Široke su 907 px, jer su stigle smanjene kroz čat:
 prodavnici traži bar 1080 px. Ako Andrija pošalje originale kao fajlove, iseći isto
 (`jimp-compact` iz `mobile/node_modules`; cela širina, visina od–do na slikama 907×2000: home 218–1590, roast
 250–1600, charts 218–1738, transactions 218–1730, envelope 218–1738, shared-goals 218–1700, goal 105–1715,
-who-put-in 190–1490; za veće originale pomnožiti srazmerno). Feature graphic 1024×500 i slike za
-iPhone (App Store) još ne postoje.
+who-put-in 190–1490; za veće originale pomnožiti srazmerno). Slike za iPhone (App Store) još ne postoje.
+
+**Urađeno i ovo (4. nov.):** ikonica za Google Play `icon-512.png` (512×512, bez providnosti, iz `mobile/assets/icon.png`)
+i feature graphic `feature-graphic.png` (1024×500, bez providnosti): logo, „The money tracker that calls you out.“ i
+primer troška sa forom („food is a need, but that price was a choice bro...“, iz `docs/FORE.md`, bez emodžija).
+Pravi se iz `feature-graphic.html` (pravi fontovi iz aplikacije) komandom zapisanom na vrhu tog fajla.
 
 ## 5. Uzrast
 
@@ -146,3 +161,36 @@ Lična potrošnja („Financial info“ sa telefona) se ne prijavljuje jer ne na
   (Settings > Help > Demo).
 - Export compliance (Apple): aplikacija koristi samo standardno šifrovanje (HTTPS, AES za sesiju na telefonu) →
   „uses exempt encryption“; u `app.json` se dodaje `ios.config.usesNonExemptEncryption: false`.
+
+## 9. Google Play nalog i stranica u prodavnici (4. nov. 2026)
+
+**Nalog** (play.google.com/console, $25 jednom, lična karta ili pasoš):
+- **Lični nalog:** brže se otvara, ali novi lični nalog pre objave mora da ima zatvoreno testiranje sa najmanje 12
+  testera, 14 dana zaredom (testeri moraju da instaliraju aplikaciju preko Play-a i da je stvarno koriste).
+- **Nalog organizacije:** samo ako postoji registrovana firma; traži D-U-N-S broj (besplatan, dobija se za nekoliko
+  dana do par nedelja). Nema pravila o 12 testera.
+- **Adresa je javna:** nalog koji prodaje pretplate je „merchant“ i Google na stranici aplikacije prikazuje ime i
+  punu adresu (kod ličnog naloga to je kućna adresa). Ko to ne želi: nalog organizacije sa poslovnom adresom.
+- Ime programera (vidi se ispod imena aplikacije) bira se pri otvaranju naloga.
+
+**Stranica u prodavnici (Main store listing):**
+
+| Polje | Šta ide |
+|---|---|
+| App name | `Lock In: Finance Tracker` |
+| Short description | iz dela 2 |
+| Full description | iz dela 3 |
+| App icon | `docs/prodavnica/google-play/icon-512.png` |
+| Feature graphic | `docs/prodavnica/google-play/feature-graphic.png` |
+| Phone screenshots | `1-home` … `8-who-put-in` iz `docs/prodavnica/google-play/`, tim redom |
+| App category | Finance; tagovi: Budgeting, Expense tracker, Personal finance (bira se sa Google-ove liste) |
+| Contact details | email `support@lockintracker.app`, website `https://lockintracker.app` |
+| Privacy policy | `https://lockintracker.app/privacy/` |
+
+**Obrasci (App content):** Privacy policy (gore); Ads: **No**; App access: deo funkcija traži prijavu (zajednički
+cilj) → uputstvo za recenzente: „Shared goals need an account: sign in with any Google account (Settings > Account,
+or Savings > Shared goals). Everything else works without an account. The app starts with a 7-day free trial;
+Settings > Help > Demo shows every screen filled with sample data.“ (za ovo Google OAuth mora biti „In
+production“, `docs/ZASTITA.md` deo 6); Content rating: deo 5; Target audience: 18+; Data safety: deo 7 (Delete
+account URL `https://lockintracker.app/delete-account/`); Financial features: aplikacija samo prati troškove i
+štednju, ne nudi kredite, plaćanja ni ulaganja; Government apps: No; News: No; Health: No.
