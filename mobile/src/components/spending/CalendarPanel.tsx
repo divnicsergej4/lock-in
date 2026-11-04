@@ -110,8 +110,9 @@ export function CalendarPanel({ activation, grow, onNatural, month, onMonth }: P
       <PanelHead title="Daily spending" />
       <View style={st.calh}>
         <Ghost title="‹" onPress={() => turn(-1)} style={st.nav} demoOk />
-        {/* one line: on a phone with larger text it shrinks a little instead of wrapping */}
-        <Text style={[st.title, { color: c.ink }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+        {/* one line: it does not grow with the phone's text size. Not adjustsFontSizeToFit: on Android that fits the
+            text again on every draw, and the old Samsung froze for seconds with it (4 Nov 2026) */}
+        <Text style={[st.title, { color: c.ink }]} numberOfLines={1} maxFontSizeMultiplier={1}>
           {cal.title}
         </Text>
         <Ghost title="›" onPress={() => turn(1)} style={st.nav} demoOk />
