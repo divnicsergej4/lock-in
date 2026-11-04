@@ -470,7 +470,8 @@ Urađeno:
 
 Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cilj i ekran za plaćanje su urađeni):
 1. **Google Play nalog** ($25; Andrija otvara što pre, jer novi lični nalog traži zatvoreno testiranje sa 12 testera
-   14 dana zaredom pre produkcije).
+   14 dana zaredom pre produkcije). Odluka (Andrija, 4. nov. 2026): **lični nalog** (javna kućna adresa zbog
+   pretplata i 12 testera / 14 dana prihvaćeni).
 2. ~~Bez naloga: feature graphic, ikonica 512, tekst za prodavnicu~~ (urađeno 4. nov., `docs/PRODAVNICE.md` delovi 2–4
    i 9; recenzenti ulaze preko Google prijave, uputstvo u delu 9). Android je završen (Andrija, 4. nov.: Samsung sam
    prešao na proste prozore, Honor pun holo, „jako je klin sve“).
