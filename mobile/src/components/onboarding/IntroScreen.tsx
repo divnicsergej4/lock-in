@@ -3,7 +3,7 @@
 // computed values from the prototype.
 
 import { Canvas, Group, Path as SkPath } from '@shopify/react-native-skia';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View, type TextLayoutEvent } from 'react-native';
 
 type TextLayoutLine = TextLayoutEvent['nativeEvent']['lines'][number];
@@ -59,6 +59,13 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
   const topPad = 26 + insets.top;
   const room = rootH - topPad - tagH - insets.bottom;
   const measured = !!(rootH && tagH && bodyH);
+  // whatever happens to the measuring, the screen is never kept hidden for longer than this
+  const [late, setLate] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setLate(true), 700);
+    return () => clearTimeout(t);
+  }, []);
+  const shown = measured || late;
   const k = measured ? Math.min(1, Math.max(0.55, room / (40 + bodyH + 26 + 0.8 * characterHeight(chrW0)))) : 1;
   const chrW = chrW0 * k;
 
@@ -68,7 +75,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
       <View style={[st.oval, { width: W * 1.5, height: W * 1.5, left: -W * 0.25, top: -H * 0.26 + (H * 0.62 - W * 1.5) / 2, transform: [{ scaleY: (H * 0.62) / (W * 1.5) }] }]} />
 
       {/* the content is shown once measured, so it never shows itself the wrong size for a frame */}
-      <View style={[st.itop, { paddingTop: topPad, opacity: measured ? 1 : 0 }]}>
+      <View style={[st.itop, { paddingTop: topPad, opacity: shown ? 1 : 0 }]}>
         <Enter kind="pop" delay={0}>
           <View onLayout={(e) => setTagH(e.nativeEvent.layout.height)}>
             <Text style={st.tag}>
@@ -83,7 +90,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         </Enter>
       </View>
 
-      <Enter kind="up" delay={80} style={{ opacity: measured ? 1 : 0 }}>
+      <Enter kind="up" delay={80} style={{ opacity: shown ? 1 : 0 }}>
         <View style={[st.ibot, { paddingTop: 40 * k, paddingBottom: 26 * k + insets.bottom }]}>
           <SheetTop width={W} />
           <View style={st.sheetBody} />

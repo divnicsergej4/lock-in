@@ -283,6 +283,12 @@ export function Slides({ onDone }: { onDone: () => void }) {
       if (o && o.m === m && h <= o.h + 0.5) return a;
       return a.map((x, j) => (j === k ? { m, h: o && o.m === m ? Math.max(o.h, h) : h } : x));
     });
+  // and whatever happens to the measuring, a slide is never kept hidden for longer than this
+  const [late, setLate] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setLate(true), 700);
+    return () => clearTimeout(t);
+  }, []);
   const ref = useRef<React.ComponentRef<typeof ScrollView>>(null);
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const k = Math.max(0, Math.min(2, Math.round(e.nativeEvent.contentOffset.x / Math.max(1, W))));
@@ -312,9 +318,13 @@ export function Slides({ onDone }: { onDone: () => void }) {
           const room = carH && texts[k] ? carH - 8 - texts[k] : 0;
           const minH = room > 0 ? Math.min(340, room) : 340;
           const v = pics[k];
-          const scale = room > 0 && v && v.m === minH && v.h > room ? Math.max(0.5, room / v.h) : 1;
+          // a height above the minimum is the content's own, whatever minimum it was measured with: when the content
+          // is taller than both, a new minimum changes nothing and no new measurement comes (the first slide stayed
+          // hidden on a phone with larger text, 4 Nov 2026)
+          const fresh = !!v && (v.m === minH || v.h > minH);
+          const scale = room > 0 && v && fresh && v.h > room ? Math.max(0.5, room / v.h) : 1;
           // shown once measured, so the slide never shows itself the wrong size for a frame
-          const ready = room > 0 && !!v && v.m === minH;
+          const ready = (room > 0 && fresh) || late;
           return (
             <View key={eb} style={[s.sl, { width: W, height: carH || undefined, opacity: ready ? 1 : 0 }]}>
               <View style={scale < 1 && v ? { height: v.h * scale, justifyContent: 'center' } : null}>
