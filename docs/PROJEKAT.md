@@ -389,7 +389,9 @@ Urađeno:
     ažuriranja na kanalu preview: merač FPS-a i 6 prekidača ispod prstena (`components/spending/holoLab.ts`, samo
     Android): lebdenje, treptanje, senke, pozadina panela, grafikoni, bočni paneli. Andrija čita FPS sa svakim, pa se
     popravlja samo uzrok. Rezultat: senke (sjaj i senka oko panela) obaraju FPS sa 50–60 na 35–40; Andrija: „izbaci ih
-    ni ne trebaju nam“. Izbačene na svim platformama (ostala je samo unutrašnja senka u pozadini panela). **Posle toga obrisati `holoLab.ts` i njegove delove u `HoloRing.tsx` i `HoloPanel.tsx`.**
+    ni ne trebaju nam“. Izbačene na svim platformama (ostala je samo unutrašnja senka u pozadini panela). Posle toga, uz to da
+    se prsten tokom skrola čuva kao jedna slika: Honor (Andrijin test telefon) ~60 FPS, „na oko se ne primeti“,
+    ostaje tako; star Samsung ~11 FPS na holo-u (Andrija: star telefon, prihvaćeno). Merač i prekidači obrisani.
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
   - treći Android telefon (4. nov. 2026, Andrijine slike, 720×1600): uvodni ekran i slajdovi odsečeni. Uzrok nije manji
     ekran (~411 dp, isto kao Redmi) nego veća slova u podešavanjima telefona (~1,3×). Popravljeno: (1) slova u

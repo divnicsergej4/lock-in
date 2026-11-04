@@ -9,8 +9,6 @@ import Svg, { Defs, G, Line, LinearGradient, Mask, Rect, Stop } from 'react-nati
 
 import { holo, useTheme } from '@/theme';
 
-import { HOLO_LAB, useHoloLab } from './holoLab';
-
 // Grid and Corners are memo: they never change while the ring turns, and the grid is some 40 SVG lines
 
 /** Fading 24 px grid (.vzp::before: lines every 24 px, faded out towards the bottom). */
@@ -97,7 +95,6 @@ export function HoloPanel({
   const { name } = useTheme();
   const k = holo[name];
   const inner = h ? h - 2 : 0;
-  const lab = useHoloLab();
 
   // scan line: translateY(−90 → −60 → H+10), opacity 0 → 1, 700 ms cubic-bezier(.42,0,.22,1);
   // content flash: opacity .35 → 1 → .72 → 1 over 420 ms
@@ -141,19 +138,15 @@ export function HoloPanel({
       {ANDROID ? (
         // Without the bitmap, Android drew the gradient and the masked grid again on every frame the ring floated or
         // turned
-        !(HOLO_LAB && !lab.chrome) && (
-          <View pointerEvents="none" renderToHardwareTextureAndroid style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: sh.inset }]}>
-            {look}
-          </View>
-        )
+        <View pointerEvents="none" renderToHardwareTextureAndroid style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: sh.inset }]}>
+          {look}
+        </View>
       ) : (
         <View pointerEvents="none" shouldRasterizeIOS style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: sh.inset }]}>
           {look}
         </View>
       )}
-      <Animated.View style={[st.vzi, flashStyle]}>
-        {HOLO_LAB && !lab.content ? <View style={{ flexGrow: 1, opacity: 0 }}>{children}</View> : children}
-      </Animated.View>
+      <Animated.View style={[st.vzi, flashStyle]}>{children}</Animated.View>
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 21, overflow: 'hidden' }, scanBox]}>
         <Animated.View style={[st.scan, { backgroundImage: k.scan }, scanStyle]} />
       </Animated.View>

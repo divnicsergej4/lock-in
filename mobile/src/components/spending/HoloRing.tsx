@@ -5,7 +5,7 @@
 
 import { useIsFocused } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -29,7 +29,6 @@ import { holo, useTheme } from '@/theme';
 import { tourBus, useTourTarget } from '@/tour/registry';
 
 import { HoloClock } from './holoClock';
-import { HOLO_LAB, LAB_ITEMS, labSV, toggleLab, useHoloLab } from './holoLab';
 import { HoloPanel } from './HoloPanel';
 import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
 
@@ -72,7 +71,6 @@ function RingPanel({
   onPressSide: (() => void) | null;
   children: ReactNode;
 }) {
-  const lab = useHoloLab();
   const style = useAnimatedStyle(() => {
     const q = hPose(i, p.value, sp.value, L);
     // Android: the panel turning to the front goes on top in the same frame, on the UI thread. Not through
@@ -103,7 +101,7 @@ function RingPanel({
     <Animated.View
       pointerEvents={ANDROID && onPressSide ? 'none' : 'auto'}
       needsOffscreenAlphaCompositing={ANDROID}
-      style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style, HOLO_LAB && !lab.sides && onPressSide ? { display: 'none' } : null]}
+      style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}
     >
       <Animated.View style={float}>
         <HoloPanel w={L.pw} h={h} dim={dim} activation={activation}>
@@ -244,9 +242,9 @@ export const HoloRing = memo(function HoloRing({
     const dt = (f.timeSincePreviousFrame ?? 16.7) / 1000;
     // the clocks only move while the ring is live; a ring at rest then changes nothing per frame
     const live = !scrolling.value && visible.value && focusedSV.value;
-    if (live && labSV.value.blink) liveT.value += dt * 1000;
+    if (live) liveT.value += dt * 1000;
     if (!springOn.value) {
-      if (live && !moving.value && labSV.value.float) floatT.value += dt * 1000;
+      if (live && !moving.value) floatT.value += dt * 1000;
       return;
     }
     stepCarry.value += dt;
@@ -403,43 +401,10 @@ export const HoloRing = memo(function HoloRing({
           <Dot key={j} on={j === cur} color={k.dot} glow={k.dotOnGlow} onPress={() => dotTo(j)} />
         ))}
       </View>
-      {HOLO_LAB && <LabBar />}
     </Animated.View>
     </HoloClock.Provider>
   );
 });
-
-/** TEMPORARY (holoLab.ts): frames per second and the slowest frame of the last second, and the switches. */
-function LabBar() {
-  const lab = useHoloLab();
-  const [m, setM] = useState('');
-  const n = useSharedValue(0);
-  const t0 = useSharedValue(0);
-  const worst = useSharedValue(0);
-  useFrameCallback((f) => {
-    n.value += 1;
-    worst.value = Math.max(worst.value, f.timeSincePreviousFrame ?? 0);
-    const span = f.timestamp - t0.value;
-    if (span >= 1000) {
-      runOnJS(setM)(`FPS ${Math.round((n.value * 1000) / span)}   najsporiji frejm ${Math.round(worst.value)} ms`);
-      n.value = 0;
-      worst.value = 0;
-      t0.value = f.timestamp;
-    }
-  });
-  return (
-    <View style={st.lab}>
-      <Text style={st.labM}>{m}</Text>
-      <View style={st.labRow}>
-        {LAB_ITEMS.map((it) => (
-          <Pressable key={it.key} onPress={() => toggleLab(it.key)} style={[st.labB, !lab[it.key] && st.labOff]}>
-            <Text style={st.labT}>{it.label + (lab[it.key] ? '' : ' (ugaseno)')}</Text>
-          </Pressable>
-        ))}
-      </View>
-    </View>
-  );
-}
 
 function Dot({ on, color, glow, onPress }: { on: boolean; color: string; glow: string; onPress: () => void }) {
   const { c } = useTheme();
@@ -463,10 +428,4 @@ const st = StyleSheet.create({
   side: { position: 'absolute', zIndex: 30 },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: 8, paddingTop: 2, paddingBottom: 4 },
   dot: { height: 8, borderRadius: 4 },
-  lab: { paddingHorizontal: 16, paddingTop: 8, gap: 6 },
-  labM: { color: '#ffab3d', fontSize: 14, fontWeight: '700', textAlign: 'center' },
-  labRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' },
-  labB: { paddingHorizontal: 10, paddingVertical: 7, borderRadius: 8, backgroundColor: '#1d3a2a' },
-  labOff: { backgroundColor: '#5a1f1f' },
-  labT: { color: '#fff', fontSize: 12 },
 });
