@@ -110,7 +110,10 @@ export function CalendarPanel({ activation, grow, onNatural, month, onMonth }: P
       <PanelHead title="Daily spending" />
       <View style={st.calh}>
         <Ghost title="‹" onPress={() => turn(-1)} style={st.nav} demoOk />
-        <Text style={[st.title, { color: c.ink }]}>{cal.title}</Text>
+        {/* one line: on a phone with larger text it shrinks a little instead of wrapping */}
+        <Text style={[st.title, { color: c.ink }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+          {cal.title}
+        </Text>
         <Ghost title="›" onPress={() => turn(1)} style={st.nav} demoOk />
       </View>
       <View style={st.grid}>

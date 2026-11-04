@@ -37,6 +37,12 @@ const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
 const IOS = Platform.OS === 'ios';
 const ANDROID = Platform.OS === 'android';
 
+// Andrija's old Samsung drew the ring at about 11 frames a second (4 Nov 2026)
+let slowPhone = false;
+function markSlowPhone() {
+  slowPhone = true;
+}
+
 /** What a panel's content is given. */
 export interface PanelProps {
   /** changes each time the panel becomes the front one: replay the arrival animations */
@@ -167,6 +173,11 @@ export const HoloRing = memo(function HoloRing({
   const p0 = useSharedValue(0);
   const ringOffset = useSharedValue(0);
   const stepCarry = useSharedValue(0);
+  // slow phone (see the frame callback); remembered while the app runs
+  const slow = useSharedValue(slowPhone);
+  const probeWait = useSharedValue(0);
+  const probeN = useSharedValue(slowPhone ? -1 : 0);
+  const probeSum = useSharedValue(0);
 
   // ---- is anything worth animating? on screen, tab open, page not scrolling ----
   const liveT = useSharedValue(0); // the clock of the endless animations (see holoClock)
@@ -242,9 +253,25 @@ export const HoloRing = memo(function HoloRing({
     const dt = (f.timeSincePreviousFrame ?? 16.7) / 1000;
     // the clocks only move while the ring is live; a ring at rest then changes nothing per frame
     const live = !scrolling.value && visible.value && focusedSV.value;
-    if (live) liveT.value += dt * 1000;
+    // a slow phone: after the first second of the ring standing on screen, 90 frames are timed; at under 40 frames a
+    // second the endless animations (the panels floating, the blinking tags) stop for good, everything else stays
+    if (live && !slow.value && probeN.value >= 0 && !springOn.value && !moving.value) {
+      probeWait.value += dt;
+      if (probeWait.value > 1) {
+        probeN.value += 1;
+        probeSum.value += dt;
+        if (probeN.value >= 90) {
+          if (probeSum.value / probeN.value > 1 / 40) {
+            slow.value = true;
+            runOnJS(markSlowPhone)();
+          }
+          probeN.value = -1; // measured once
+        }
+      }
+    }
+    if (live && !slow.value) liveT.value += dt * 1000;
     if (!springOn.value) {
-      if (live && !moving.value) floatT.value += dt * 1000;
+      if (live && !moving.value && !slow.value) floatT.value += dt * 1000;
       return;
     }
     stepCarry.value += dt;
