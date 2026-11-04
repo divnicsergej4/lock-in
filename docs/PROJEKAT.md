@@ -450,31 +450,37 @@ Urađeno:
   11 („Welcome back.“) i sistemske poruke se na web-u ne vide. Nije provereno na telefonu ni sa pravom prodavnicom.
   Andrija podešava kad otvori naloge: `docs/ZASTITA.md` 3.5 (`sync-store-access`) i 3.6 koraci 6–7.
 
-Sledeće, ovim redom:
-1. **Kostur React Native (Expo) aplikacije** na grani `aplikacija` (npr. folder `mobile/`): 4 taba, tema iz prototipa,
-   fontovi (Bricolage Grotesque, Inter), lokalno čuvanje podataka, prenos logike iz prototipa sa testovima.
-2. Supabase projekat: Andrija primeni migraciju u SQL Editor-u. Prijava (kod na mejl + Google + **Sign in with Apple**)
-   je napravljena u aplikaciji; ostaje podešavanje iz `docs/ZASTITA.md` (3.2: Email, šabloni, SMTP, Rate Limits,
-   URL-ovi, Google, Apple; spend cap) i provera na telefonu. **CAPTCHA (Cloudflare Turnstile, nevidljiv) ugraditi u
-   `mobile/src/auth/captcha.ts`** (traži se samo kad se šalje kod na mejl), pa je tek onda uključiti u Supabase-u.
-   Sign in with Apple i Google ne traže CAPTCHA.
-3. Pretplata: ekran za plaćanje, zaključavanje i webhook su gotovi (30. okt.); ostaje povezivanje kad Andrija otvori
-   Apple Developer i Google Play naloge (proizvodi, RevenueCat ponuda, ključevi, `docs/ZASTITA.md` 3.6) i proba u Sandbox-u.
-   RevenueCat Test Store (probna prodavnica bez naloga) je razmotren 3. nov. 2026 i odložen (Andrija): radi samo u
-   debug build-u (u release SDK namerno sruši aplikaciju), a nije sigurno da podržava besplatnu nedelju i webhook.
-   Sve se proverava kad Andrija otvori naloge. Google Play: novi lični nalog traži zatvoreno testiranje sa 12 testera
-   14 dana pre produkcije, pa nalog otvoriti na vreme.
-4. Prenos ekrana iz prototipa jedan po jedan (Home, Spending sa holo prstenom, Savings sa fiokom, More, uvod sa likom,
-   obilazak, demo).
+- Spori telefoni i sitnice (4. nov. 2026, Andrija: „uradi oba“): holo sam meri brzinu (posle prve sekunde mirovanja
+  na ekranu, 90 frejmova); ispod 40 FPS lebdenje panela i treptanje tačkica stanu do kraja rada aplikacije, sve
+  ostalo ostaje (`HoloRing.tsx`, `slowPhone`). Na brzim telefonima se ništa ne menja. Naslov kalendara („November 2026
+  (0 EUR)“) uvek u jednom redu, smanji se do 70% (`CalendarPanel.tsx`). Nijedno nije provereno na telefonu.
+
+Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cilj i ekran za plaćanje su urađeni):
+1. **Google Play nalog** ($25; Andrija otvara što pre, jer novi lični nalog traži zatvoreno testiranje sa 12 testera
+   14 dana zaredom pre produkcije).
+2. Bez naloga (Claude): feature graphic 1024×500, ikonica 512×512 (iz `mobile/assets/icon.png`), konačan tekst za
+   prodavnicu (nacrt u `docs/PRODAVNICE.md`), predlog za **pristup recenzenata** (prijava je samo kodom na mejl, pa
+   recenzent ne može u zajednički cilj bez posebnog rešenja; Andrija odlučuje), pregled No mercy fora zbog ocene
+   sadržaja. Stranica za brisanje naloga već postoji (`web/delete-account/`).
+3. Posle naloga: production build (AAB) → Internal testing; proizvodi u Play Console (mesečna i godišnja sa 7 dana
+   probe, doživotna; **cene konačno** dogovara Andrija sa kolegom); RevenueCat (`docs/ZASTITA.md` 3.6: entitlement
+   `access`, ponuda `default`, webhook, javni ključ `goog_` u EAS); probna kupovina; formulari (Data safety, Content
+   rating, Target audience, Ads, Financial features, App access); zatvoreno testiranje 14 dana; zahtev za produkciju.
+   RevenueCat Test Store je razmotren i odložen (radi samo u debug build-u; nije sigurno za besplatnu nedelju i webhook).
+4. App Store (Apple Developer $99 godišnje): iOS build preko EAS-a (Mac ne treba), Sign in with Apple, proizvodi u App
+   Store Connect, TestFlight na Andrijinom iPhone-u (prvi pravi build na iPhone-u: holo, 120 Hz, push, kupovina),
+   slike za iPhone 6.9", App Privacy, pregled. Apple Small Business Program (15% umesto 30% provizije) prijaviti ručno.
+5. Pre slanja u obe prodavnice: `docs/ZASTITA.md` deo 6 (Expo Go adrese iz Supabase-a, probni nalozi i `manual_test`
+   pretplate, Google OAuth „In production“, pravi ključevi, bez „TEST PRICES“).
+6. Provere na telefonima koje fale: zajednički cilj na dva telefona sa pravim nalozima (`0006`, nova `send-goal-push`),
+   vođeni obilazak 1–38 na telefonu, ekran za plaćanje sa pravom prodavnicom.
+Okvirno (4. nov.): ~75% posla do objave; kod ~95%, ostatak su nalozi, podešavanja po dashboard-ima i čekanje
+prodavnica. Troškovi do objave: Google $25 jednom + Apple $99 godišnje (domen već plaćen); Supabase, RevenueCat
+(besplatno do $2.500 mesečnog prihoda, pa 1% od celog iznosa tog meseca), Expo, Resend, Cloudflare, Firebase su
+besplatni dok aplikacija ne poraste.
 Odluka (Andrija, 30. okt. 2026): pravni pregled Privacy Policy i Terms se ne radi sad i računa se kao završen za
 potrebe objave; tekst se ažurira kasnije po potrebi. Spisak pitanja za pravnika ostaje u `docs/ZA-PRAVNIKA.md`.
 Privacy Policy je dopunjena nudge-ovima, rokom cilja i obaveštenjima za pinove. Supabase je na Free planu (bez
 doplata, spend cap nije potreban dok se ne pređe na Pro).
-
-5. ~~Zajednički cilj vezan za backend~~ (urađeno 29. okt., vidi gore); ostaje provera na dva telefona.
-6. ~~Tekst o privatnosti~~ (urađeno 29. okt.).
-
-Za objavu u prodavnicama trebaće: Apple Developer nalog ($99 godišnje), Google Play nalog ($25 jednom), a za iOS build
-Mac sa Xcode-om ili Expo EAS Build.
 
 Poznata sitnica u prototipu: neki stari probni testovi (bili su van repoa) očekuju srpski tekst; aplikacija radi ispravno.

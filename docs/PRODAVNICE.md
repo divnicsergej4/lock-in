@@ -83,6 +83,16 @@ Predlog redosleda (prva tri se vide bez otvaranja): 1 Home sa plamenom i porukom
 3 zajednički cilj sa katancem, 4 koverte u fioci, 5 izveštaj meseca, 6 ekran sa likom („Then lock the fuck in.“).
 Natpisi preko slika (ako ih bude) su posebna odluka; bez njih je dozvoljeno.
 
+**Google Play, urađeno (4. nov. 2026):** 8 slika u `docs/prodavnica/google-play/`, Andrija ih je odobrio: 1-home,
+2-roast (slajd „Roasts“ sa No mercy forom, slikan na telefonu), 3-charts, 4-transactions, 5-envelope,
+6-shared-goals, 7-goal, 8-who-put-in. Isečene sa Andrijinog Redmi-ja (bez statusne trake, DEMO trake i Android
+dugmića; razmera ≤ 2:1). Široke su 907 px, jer su stigle smanjene kroz čat: Google ih prima, ali za isticanje u
+prodavnici traži bar 1080 px. Ako Andrija pošalje originale kao fajlove, iseći isto
+(`jimp-compact` iz `mobile/node_modules`; cela širina, visina od–do na slikama 907×2000: home 218–1590, roast
+250–1600, charts 218–1738, transactions 218–1730, envelope 218–1738, shared-goals 218–1700, goal 105–1715,
+who-put-in 190–1490; za veće originale pomnožiti srazmerno). Feature graphic 1024×500 i slike za
+iPhone (App Store) još ne postoje.
+
 ## 5. Uzrast
 
 Na uvodu svako vidi „Then lock the fuck in.“, a „No mercy“ poruke imaju jače reči. Zato:

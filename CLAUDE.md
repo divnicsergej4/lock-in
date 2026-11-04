@@ -1,6 +1,7 @@
 # Lock In — pravila rada
 
-Na početku svake sesije pročitaj `docs/PROJEKAT.md` (sve odluke i stanje) i `docs/FORE.md` (tačan tekst svih fora).
+Na početku svake sesije pročitaj `docs/PROJEKAT.md` (sve odluke i stanje), `docs/FORE.md` (tačan tekst svih fora) i
+`docs/NASTAVAK.md` (gde smo stali i kako se tehnički radi).
 @docs/PROJEKAT.md
 
 ## Pravila koja važe uvek
