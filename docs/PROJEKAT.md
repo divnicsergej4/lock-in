@@ -384,7 +384,11 @@ Urađeno:
     ograničenja na negativne vrednosti), u pregledaču sa privremeno uključenom Android granom (trake tačno uz ivice
     prednjeg panela, okreću prsten levo/desno, tap na prednji panel ga ne okreće); običan web isti kao pre. Sam
     redosled crtanja na Android-u ovde ne može da se vidi (nema emulatora: virtualizacija je isključena u BIOS-u).
-    Andrija (4. nov. 2026, preview APK sa tom popravkom): „holo radi perfektno“. Holo na Android-u je završen; ne dirati.
+    Andrija (4. nov. 2026, preview APK sa tom popravkom): „holo radi perfektno“. Prelaz je završen; ne dirati.
+    Isti dan: dok je holo na ekranu, FPS cele aplikacije znatno padne (ranije isto i na iPhone-u). Privremeno, preko
+    ažuriranja na kanalu preview: merač FPS-a i 6 prekidača ispod prstena (`components/spending/holoLab.ts`, samo
+    Android): lebdenje, treptanje, senke, pozadina panela, grafikoni, bočni paneli. Andrija čita FPS sa svakim, pa se
+    popravlja samo uzrok. **Posle toga obrisati `holoLab.ts` i njegove delove u `HoloRing.tsx` i `HoloPanel.tsx`.**
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
 - Prijatelji i zajednički cilj u aplikaciji, vezani za pravi Supabase (29. okt. 2026, Andrijin dizajn iz dela 6):
   Savings (bez naloga, bez ciljeva sa „Lock in together.“, lista ciljeva sa malim prstenom), ekran cilja
