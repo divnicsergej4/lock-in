@@ -234,7 +234,8 @@ const st = StyleSheet.create({
   lk: { fontFamily: brico[800], color: '#12b85f' },
   stage: { flex: 1, minHeight: 200, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center' },
   ibot: { paddingTop: 40, paddingHorizontal: 24 },
-  sheetBody: { position: 'absolute', top: 46, left: 0, right: 0, bottom: 0, backgroundColor: '#0c1611' },
+  // 1 px under the arch: where they met exactly, the light background showed through as a line on Android
+  sheetBody: { position: 'absolute', top: 45, left: 0, right: 0, bottom: 0, backgroundColor: '#0c1611' },
   appi: {
     position: 'absolute',
     top: -36,
