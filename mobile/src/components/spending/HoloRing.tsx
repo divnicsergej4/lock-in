@@ -184,6 +184,16 @@ export const HoloRing = memo(function HoloRing({
       visible.value = !!m && m.pageY + m.height > 0 && m.pageY < screenH;
     },
   );
+  // Android: while the page scrolls, the ring (standing still then) is kept as one picture, so each frame of the
+  // scroll only moves that picture instead of drawing the three panels, their charts and the calendar again. With
+  // everything on, the ring kept the scroll at about 52 FPS with 33 ms frames (Andrija's phone, 4 Nov 2026).
+  const [frozen, setFrozen] = useState(false);
+  useAnimatedReaction(
+    () => scrolling.value,
+    (s, prev) => {
+      if (ANDROID && s !== prev) runOnJS(setFrozen)(s);
+    },
+  );
 
   // ---- JS state: which panel is in front (stacking, taps) and the arrival animations ----
   const [cur, setCur] = useState(0);
@@ -340,7 +350,7 @@ export const HoloRing = memo(function HoloRing({
     <HoloClock.Provider value={liveT}>
     <Animated.View ref={box}>
       <GestureDetector gesture={pan}>
-        <View ref={stage} style={{ height: (ph ?? 472) + HPT + HPB, overflow: 'hidden' }}>
+        <View ref={stage} renderToHardwareTextureAndroid={frozen} style={{ height: (ph ?? 472) + HPT + HPB, overflow: 'hidden' }}>
           <View pointerEvents="none" style={[st.base, { width: bw, marginLeft: -bw / 2 }]}>
             <Svg width={bw} height={46}>
               <Defs>
