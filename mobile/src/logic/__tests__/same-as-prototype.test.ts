@@ -27,7 +27,7 @@ import { planText } from '../plan';
 import { completeSetup } from '../setup';
 import { addRecurring, DONT_USE_IT, processRecurring, subscriptions } from '../recurring';
 import { monthReport, REPORT_EMPTY } from '../report';
-import { pickRoast } from '../roasts';
+import { NO_MERCY_TAIL, pickRoast } from '../roasts';
 import { categoryStreak, streakCard, streakInfo, tierUp } from '../streak';
 import { initialState, type AppState } from '../types';
 import { prototype, shown, TO_PROTO, trT, type Proto } from './prototype';
@@ -320,7 +320,10 @@ describe('logging an expense (roast text included, word for word)', () => {
       expect(a.error).toBe(trT(p.el('err').textContent));
       return;
     }
-    expect(a.toast).toBe(trT(p.toasts[0]));
+    // Known difference (Andrija, 4 Nov 2026): No mercy adds its closing line only sometimes and only to normal
+    // lines; the prototype added it to every message. Compared without it.
+    const noTail = (t: string) => (s.roast === 2 ? NO_MERCY_TAIL.reduce((x, tail) => x.replace(' ' + tail, ''), t) : t);
+    expect(noTail(a.toast)).toBe(noTail(trT(p.toasts[0])));
     expect(normExp(a.state.exp)).toEqual(normExp(p.S.exp));
     expect(normEnv(a.state.env)).toEqual(normEnv(p.S.env));
   });

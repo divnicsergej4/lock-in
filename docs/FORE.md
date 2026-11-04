@@ -85,7 +85,8 @@ One line is picked at random. Lines marked **[No mercy]** only show at the "No m
   - okay, see you at savings 💚
   - ok, but remember what you're saving for 🙂
 - **Normal:** the lines above, without the [No mercy] ones.
-- **No mercy:** normal lines + [No mercy] lines (~70%), and one of these is added at the end:
+- **No mercy:** normal lines + [No mercy] lines (~70%). Sometimes (about 1 in 3) one of these is added at the end of a
+  normal line; never after a [No mercy] line or a special situation (Andrija, 4 Nov 2026):
   - Not even your mom would approve.
   - Future you hates you.
 

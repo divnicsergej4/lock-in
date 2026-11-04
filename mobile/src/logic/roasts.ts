@@ -26,8 +26,12 @@ export const ROASTS_ANY_CATEGORY = ["{c}? again? that's a permanent budget line 
 /** Gentle: instead of the roast. */
 export const GENTLE = ["logged, just watch your goal 🙂", "okay, see you at savings 💚", "ok, but remember what you're saving for 🙂"];
 
-/** No mercy: added at the end. */
+/**
+ * No mercy: sometimes added at the end of a normal category line, never after a [No mercy] line or a special
+ * situation (Andrija, 4 Nov 2026; the prototype added it to every message).
+ */
 export const NO_MERCY_TAIL = ["Not even your mom would approve.", "Future you hates you."];
+export const NO_MERCY_TAIL_SHARE = 1 / 3;
 
 export const MSG_IN_THE_RED = 'bro, you\'re in the red. stop. 🥀🥀🥀';
 export const MSG_OVER_30 = "that's over 30% of everything you have, are you really sure????";
@@ -48,14 +52,19 @@ export function ageDecade(age: number | undefined): number {
 
 /** One roast line for a category (prototype pickM). */
 export function pickRoast(cat: string, s: Pick<AppState, 'roast' | 'age'>, rand: () => number = Math.random): string {
+  return pickRoastLine(cat, s, rand).text;
+}
+
+/** pickRoast, and whether the line is a [No mercy] one. */
+function pickRoastLine(cat: string, s: Pick<AppState, 'roast' | 'age'>, rand: () => number): { text: string; hard: boolean } {
   const noMercy = s.roast === 2;
   const dec = ageDecade(s.age);
   const all = (ROASTS[cat] || []).filter((x) => x.indexOf('{age}') < 0 || dec);
   const hard = all.filter((x) => x[0] === '!');
   const normal = all.filter((x) => x[0] !== '!');
   const src = noMercy && hard.length && (rand() < 0.7 || !normal.length) ? hard : normal;
-  if (!src.length) return pick(ROASTS_ANY_CATEGORY, rand).replace('{c}', cat);
-  return pick(src, rand).replace(/^!/, '').replace('{age}', String(dec));
+  if (!src.length) return { text: pick(ROASTS_ANY_CATEGORY, rand).replace('{c}', cat), hard: false };
+  return { text: pick(src, rand).replace(/^!/, '').replace('{age}', String(dec)), hard: src === hard };
 }
 
 /**
@@ -68,19 +77,28 @@ export function expenseMessage(s: AppState, e: Expense, now: number, rand: () =>
   const everything = s.start + (s.added || 0);
   const big = e.amt > everything * BIG_EXPENSE_SHARE;
   let m: string;
+  let normalLine = false; // a normal category line, the only kind No mercy may add its closing line to
   if (bal < 0) m = MSG_IN_THE_RED;
   else if (big) m = MSG_OVER_30;
-  else m = pickRoast(e.cat, s, rand);
-  if (bal >= 0 && !big && todayCount(s, now) === 3) m = MSG_THIRD_TODAY;
+  else {
+    const r = pickRoastLine(e.cat, s, rand);
+    m = r.text;
+    normalLine = !r.hard;
+  }
+  if (bal >= 0 && !big && todayCount(s, now) === 3) {
+    m = MSG_THIRD_TODAY;
+    normalLine = false;
+  }
   const mi = monthlyIncome(s);
   if (mi > 0 && bal >= 0) {
     const rr = monthSpent(s, now) / mi;
+    if (rr >= 0.8) normalLine = false;
     if (rr >= 1) m = MSG_WHOLE_INCOME;
     else if (rr >= 0.8) m = MSG_OVER_80;
   }
   const level = s.roast == null ? 1 : s.roast;
   if (bal >= 0 && level === 0) m = pick(GENTLE, rand);
-  else if (bal >= 0 && level === 2) m += ' ' + pick(NO_MERCY_TAIL, rand);
+  else if (level === 2 && normalLine && rand() < NO_MERCY_TAIL_SHARE) m += ' ' + pick(NO_MERCY_TAIL, rand);
   const limit = (s.lim || {})[e.cat];
   if (limit) {
     const spent = monthByCategory(s, 0, now).byCat[e.cat] || 0;

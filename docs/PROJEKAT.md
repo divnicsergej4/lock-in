@@ -153,7 +153,9 @@ tema (tamna/svetla), jačina poruka, podsetnik, obilazak, demo, pretplata, priva
 **Fore i kritike:** kompletan spisak je u `docs/FORE.md`. Pravila:
 - prag za poruku o velikom trošku je **30%** svega što korisnik ima;
 - **No mercy:** jake fore (sa „shi“, „be drunk“, „smh“, „bruh“ i ona sa godinama) izlaze samo u tom modu, oko 70%
-  vremena, a ostatak su obične; na kraj poruke se dodaje „Not even your mom would approve.“ ili „Future you hates you.“;
+  vremena, a ostatak su obične; „Not even your mom would approve.“ ili „Future you hates you.“ se dodaje samo
+  ponekad (oko 1 od 3) na kraj obične fore, nikad posle jake fore ni posebne poruke (Andrija, 4. nov. 2026;
+  prototip ga je dodavao uvek);
 - **Normal:** obične fore, bez jakih;
 - **Gentle:** umesto prozivke blaga poruka (osim kad je stanje u minusu);
 - fora sa godinama: broj je godine zaokružene na desetice (24 → 20+, 34 → 30+); mlađi od 20 i bez godina je nikad ne dobijaju.

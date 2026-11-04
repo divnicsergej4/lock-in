@@ -133,9 +133,17 @@ describe('expenseMessage', () => {
     expect(msg(state({ roast: 0, start: 5, exp: [exp(10, 'Clothes', NOW)] }))).toBe(MSG_IN_THE_RED);
   });
 
-  test('No mercy adds a closing line', () => {
-    const m = msg(state({ roast: 2, exp: [exp(10, 'Groceries', NOW)] }));
-    expect(m).toBe(ROASTS.Groceries[0] + ' ' + NO_MERCY_TAIL[0]);
+  test('No mercy sometimes adds a closing line to a normal line', () => {
+    // rolls: the line, the 1-in-3 roll for the closing line, which closing line
+    expect(msg(state({ roast: 2, exp: [exp(10, 'Groceries', NOW)] }), seq(0, 0.3, 0.6))).toBe(ROASTS.Groceries[0] + ' ' + NO_MERCY_TAIL[1]);
+    expect(msg(state({ roast: 2, exp: [exp(10, 'Groceries', NOW)] }), seq(0, 0.4))).toBe(ROASTS.Groceries[0]);
+  });
+
+  test('No mercy never adds a closing line to a [No mercy] line or a special situation', () => {
+    expect(msg(state({ roast: 2, exp: [exp(10, 'Other', NOW)] }))).toBe("brooo you DON'T need that shi🥀🥀🥀");
+    expect(msg(state({ roast: 2, start: 1000, exp: [exp(301, 'Food', NOW)] }))).toBe(MSG_OVER_30);
+    expect(msg(state({ roast: 2, exp: [exp(5, 'Coffee', NOW), exp(5, 'Coffee', NOW), exp(5, 'Coffee', NOW)] }))).toBe(MSG_THIRD_TODAY);
+    expect(msg(state({ roast: 2, start: 5000, income: 1000, exp: [exp(800, 'Food', NOW)] }))).toBe(MSG_OVER_80);
   });
 
   test('category limit warning wins over everything', () => {
