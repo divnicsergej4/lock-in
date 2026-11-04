@@ -453,7 +453,10 @@ Urađeno:
 - Spori telefoni i sitnice (4. nov. 2026, Andrija: „uradi oba“): holo sam meri brzinu (posle prve sekunde mirovanja
   na ekranu, 90 frejmova); ispod 40 FPS lebdenje panela i treptanje tačkica stanu do kraja rada aplikacije, sve
   ostalo ostaje (`HoloRing.tsx`, `slowPhone`). Na brzim telefonima se ništa ne menja. Naslov kalendara („November 2026
-  (0 EUR)“) uvek u jednom redu, smanji se do 70% (`CalendarPanel.tsx`). Nijedno nije provereno na telefonu.
+  (0 EUR)“) uvek u jednom redu (`CalendarPanel.tsx`). Posle toga je stari Samsung „na par sekundi“ zamrzavao celu
+  aplikaciju; najverovatniji uzrok je bio `adjustsFontSizeToFit` na tom naslovu (na Android-u se tekst ponovo
+  uklapa pri svakom crtanju), pa je zamenjen sa `maxFontSizeMultiplier={1}` (naslov ne raste sa slovima telefona).
+  Uzrok nije izmeren; ako zamrzavanje ostane, dodati privremeni merač zastoja (UI frejm i JS kašnjenje).
 
 Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cilj i ekran za plaćanje su urađeni):
 1. **Google Play nalog** ($25; Andrija otvara što pre, jer novi lični nalog traži zatvoreno testiranje sa 12 testera
