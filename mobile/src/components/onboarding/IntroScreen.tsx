@@ -4,7 +4,7 @@
 
 import { Canvas, Group, Path as SkPath } from '@shopify/react-native-skia';
 import { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View, type TextLayoutEvent } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View, type TextLayoutEvent } from 'react-native';
 
 type TextLayoutLine = TextLayoutEvent['nativeEvent']['lines'][number];
 import { useDerivedValue, useFrameCallback, useReducedMotion, useSharedValue, type SharedValue } from 'react-native-reanimated';
@@ -86,7 +86,8 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
             <Text style={st.sm}>Setup takes 10 seconds</Text>
           </Enter>
           <Enter kind="apop" delay={520} style={st.appi}>
-            <Text style={st.appiT}>🔒</Text>
+            <Image source={require('../../../assets/icon.png')} style={st.appiImg} accessibilityLabel="Lock In" />
+            {/* the app's icon (Andrija, 4 Nov 2026; the prototype had 🔒 on green) */}
           </Enter>
         </View>
       </Enter>
@@ -243,11 +244,9 @@ const st = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 20,
-    backgroundColor: '#22e07a',
-    alignItems: 'center',
-    justifyContent: 'center',
+    overflow: 'hidden',
   },
-  appiT: { fontSize: 32, lineHeight: 46.4 },
+  appiImg: { width: 70, height: 70 },
   ihBox: { marginTop: 14, marginBottom: 18 },
   ih: { fontFamily: brico[800], fontSize: 23.2, lineHeight: 27.84, letterSpacing: -0.464, color: '#fff' },
   scr: { alignSelf: 'flex-start', paddingHorizontal: 4 },
