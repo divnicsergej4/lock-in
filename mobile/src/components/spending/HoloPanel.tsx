@@ -136,19 +136,18 @@ export function HoloPanel({
     <View style={[st.vzp, { width: w, height: h }]}>
       {/* the panel's still look (gradient, border, grid, corner marks and its three shadows) is drawn once
           and kept as a bitmap; otherwise iOS redraws the masked shadows on every frame of a scroll */}
+      {/* no glow or drop shadow outside the panel (Andrija, 4 Nov 2026): on Android they took the whole app from
+          50–60 down to 35–40 FPS while the ring was on screen (measured with switches on the phone) */}
       {ANDROID ? (
-        // Android's bitmap ends at the view's edge, so the glow and the drop shadow (outside the panel) sit on
-        // their own view and only what is inside the panel is kept as a bitmap. Without the bitmap, Android
-        // drew the gradient, the masked grid and the shadows again on every frame the ring floated or turned.
-        <View pointerEvents="none" style={[st.chrome, { borderWidth: 0, boxShadow: HOLO_LAB && !lab.shadow ? undefined : sh.outer }]}>
-          {!(HOLO_LAB && !lab.chrome) && (
-            <View renderToHardwareTextureAndroid style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: sh.inset }]}>
-              {look}
-            </View>
-          )}
-        </View>
+        // Without the bitmap, Android drew the gradient and the masked grid again on every frame the ring floated or
+        // turned
+        !(HOLO_LAB && !lab.chrome) && (
+          <View pointerEvents="none" renderToHardwareTextureAndroid style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: sh.inset }]}>
+            {look}
+          </View>
+        )
       ) : (
-        <View pointerEvents="none" shouldRasterizeIOS style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: k.panelShadow }]}>
+        <View pointerEvents="none" shouldRasterizeIOS style={[st.chrome, { backgroundImage: k.panelBg, borderColor: k.panelBorder, boxShadow: sh.inset }]}>
           {look}
         </View>
       )}

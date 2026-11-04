@@ -23,8 +23,6 @@ export interface LabFlags {
   float: boolean;
   /** the blinking tag dots and the turning empty donut (every frame) */
   blink: boolean;
-  /** the glow and drop shadow outside each panel */
-  shadow: boolean;
   /** each panel's gradient, grid and inner shadow (kept as a bitmap) */
   chrome: boolean;
   /** the charts and the calendar inside the panels */
@@ -36,13 +34,12 @@ export interface LabFlags {
 export const LAB_ITEMS: { key: keyof LabFlags; label: string }[] = [
   { key: 'float', label: '1 Lebdenje' },
   { key: 'blink', label: '2 Treptanje' },
-  { key: 'shadow', label: '3 Senke' },
-  { key: 'chrome', label: '4 Pozadina panela' },
-  { key: 'content', label: '5 Grafikoni' },
-  { key: 'sides', label: '6 Bocni paneli' },
+  { key: 'chrome', label: '3 Pozadina panela' },
+  { key: 'content', label: '4 Grafikoni' },
+  { key: 'sides', label: '5 Bocni paneli' },
 ];
 
-let flags: LabFlags = { float: true, blink: true, shadow: true, chrome: true, content: true, sides: true };
+let flags: LabFlags = { float: true, blink: true, chrome: true, content: true, sides: true };
 const subs = new Set<() => void>();
 
 /** The same flags for worklets (UI thread). */
