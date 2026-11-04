@@ -42,7 +42,8 @@ const ANDROID = Platform.OS === 'android';
 // A phone that cannot draw the ring gets plain windows instead (HoloLite.tsx): Andrija's old Samsung drew it at about
 // 11 frames a second and then stopped responding ("app isn't responding", 4 Nov 2026). Decided by timing the ring's
 // first frames (see the frame callback) and remembered on the phone, so later the plain windows come right away.
-const LITE_KEY = 'lockin.holoLite';
+// a new name with the stricter test: the decision saved under the old one ('lockin.holoLite') is not trusted
+const LITE_KEY = 'lockin.holoLite2';
 let lite = false;
 const liteSubs = new Set<() => void>();
 AsyncStorage.getItem(LITE_KEY)
@@ -203,7 +204,7 @@ function FullRing({ panels, rows, scrolling }: RingProps) {
   // timing the first frames (see the frame callback)
   const probeWait = useSharedValue(0);
   const probeN = useSharedValue(0);
-  const probeSum = useSharedValue(0);
+  const probeSlow = useSharedValue(0);
 
   // ---- is anything worth animating? on screen, tab open, page not scrolling ----
   const liveT = useSharedValue(0); // the clock of the endless animations (see holoClock)
@@ -279,15 +280,18 @@ function FullRing({ panels, rows, scrolling }: RingProps) {
     const dt = (f.timeSincePreviousFrame ?? 16.7) / 1000;
     // the clocks only move while the ring is live; a ring at rest then changes nothing per frame
     const live = !scrolling.value && visible.value && focusedSV.value;
-    // a phone too slow for the ring: 0.4 s after the ring comes on screen, 24 frames are timed; at under 35 frames a
-    // second the ring gives way to plain windows (goLite). Normal phones (60 or 120 frames) are far from that.
+    // a phone that really cannot draw the ring: 1.5 s after the ring comes on screen, 40 frames are timed, and only
+    // when at least 30 of them took over 50 ms (under 20 frames a second) the ring gives way to plain windows
+    // (goLite). A short burst of slow frames, like the whole app redrawing when the demo is switched on, is not
+    // enough: an average of 24 frames was, and it put Andrija's iPhone 15 Pro Max on plain windows (4 Nov 2026).
+    // The old Samsung drew every frame in about 90 ms.
     if (live && probeN.value >= 0) {
       probeWait.value += dt;
-      if (probeWait.value > 0.4) {
+      if (probeWait.value > 1.5) {
         probeN.value += 1;
-        probeSum.value += dt;
-        if (probeN.value >= 24) {
-          if (probeSum.value / probeN.value > 1 / 35) runOnJS(goLite)();
+        if (dt > 0.05) probeSlow.value += 1;
+        if (probeN.value >= 40) {
+          if (probeSlow.value >= 30) runOnJS(goLite)();
           probeN.value = -1; // measured once
         }
       }

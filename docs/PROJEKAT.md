@@ -462,8 +462,12 @@ Urađeno:
   prozori koji se menjaju, ali samo ako telefon baguje; na normalnim telefonima lep holo“. Urađeno:
   `components/spending/HoloLite.tsx` (tri obična prozora u horizontalnom skrolu sa stranicama, tačkice, bez 3D-a,
   animacija, slika u memoriji i bilo čega što radi u svakom frejmu; sadržaj panela bez animacija dolaska; prozori iste
-  visine). `HoloRing` meri prvih 24 frejma posle 0,4 s na ekranu; ispod 35 FPS prelazi na prozore i pamti to u
-  AsyncStorage (`lockin.holoLite`), pa posle odmah ide sa prozorima. Ranija logika „spor telefon gasi lebdenje“ je
+  visine). `HoloRing` meri frejmove posle ulaska na ekran i prelazi na prozore, pamti to u AsyncStorage, pa posle
+  odmah ide sa prozorima. Andrija (4. nov.): Samsung prešao sam, Honor pun holo. Ali iPhone 15 Pro Max (Expo Go) je
+  prešao na prozore kad je uključen demo (cela aplikacija se tad ponovo crta, pa je prosek 24 frejma bio spor);
+  Andrija: „mora baš u ekstremnim situacijama kad je telefon baš neka kršina“. Sada: 1,5 s posle ulaska, 40 frejmova,
+  prozori samo ako je bar 30 od njih sporije od 50 ms (ispod 20 FPS; Samsung ~90 ms svaki); nov ključ
+  `lockin.holoLite2`, pa stare odluke (i iPhone-ova) ne važe. Ranija logika „spor telefon gasi lebdenje“ je
   zamenjena ovim. Provereno u pregledaču sa privremeno uključenim prozorima (izgled, prelazak); jednaka visina
   prozora i Samsung nisu provereni (pregledač je bio sakriven). Ako ANR ostane i sa prozorima, uzrok nije holo i treba
   izveštaj o grešci (Opcije za programere > Prijava greške) da se vidi gde glavna nit stoji.
