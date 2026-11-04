@@ -391,6 +391,15 @@ Urađeno:
     popravlja samo uzrok. Rezultat: senke (sjaj i senka oko panela) obaraju FPS sa 50–60 na 35–40; Andrija: „izbaci ih
     ni ne trebaju nam“. Izbačene na svim platformama (ostala je samo unutrašnja senka u pozadini panela). **Posle toga obrisati `holoLab.ts` i njegove delove u `HoloRing.tsx` i `HoloPanel.tsx`.**
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
+  - treći Android telefon (4. nov. 2026, Andrijine slike, 720×1600): uvodni ekran i slajdovi odsečeni. Uzrok nije manji
+    ekran (~411 dp, isto kao Redmi) nego veća slova u podešavanjima telefona (~1,3×). Popravljeno: (1) slova u
+    aplikaciji rastu sa podešavanjem telefona najviše 1,15× (`MAX_FONT_SCALE`, `src/textScale/`; `metro.config.js`
+    daje te Text i TextInput samom react-native-u, pa važi za sve, i za biblioteke i Animated.Text; web nije
+    pogođen); 1,15 je moj izbor (Andrija može da promeni: 1 = slova uvek kao u dizajnu); (2) uvodni ekran: kad lik i
+    tamni deo ne staju ispod naslova, oba se srazmerno smanje (k, najmanje 0,55; petina lika sme iza naslova, kao na
+    Redmi-ju, gde je k = 1); (3) slajdovi: tekst uvek staje, slika dobija ostatak (340 kao u prototipu, manje kad
+    nema mesta) i smanji se cela kad ni to nije dovoljno. Oba se prikažu tek kad su izmereni. Provereno u pregledaču
+    na 412×866 (isto kao pre) i 360×640 (sve staje); na tom telefonu nije provereno.
 - Prijatelji i zajednički cilj u aplikaciji, vezani za pravi Supabase (29. okt. 2026, Andrijin dizajn iz dela 6):
   Savings (bez naloga, bez ciljeva sa „Lock in together.“, lista ciljeva sa malim prstenom), ekran cilja
   (`mobile/src/app/goal/[id].tsx`: katanac u prstenu, pinovi, „Put money in“, tempo, squad streak, „Who put in what“

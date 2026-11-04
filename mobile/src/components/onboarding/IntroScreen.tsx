@@ -47,46 +47,66 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
   // the underline is drawn by a "pen" 3.8 s into each scene: .75s cubic-bezier(.6,0,.3,1)
   const pen = useDerivedValue(() => (reduce ? 1 : bezier([0.6, 0, 0.3, 1], Math.min(1, Math.max(0, (clock.value - 3800) / 750)))));
 
-  const chrW = Math.min(290, W * 0.76);
+  const chrW0 = Math.min(290, W * 0.76);
+
+  // Fit to the phone: the tagline keeps its size, and when the character and the dark sheet do not fit under it,
+  // both are drawn smaller by the same factor k (short phones, or the phone's text set larger: Andrija's test on a
+  // third Android phone, 4 Nov 2026). Up to a fifth of the character may stand behind the tagline, as on
+  // Andrija's Redmi, where k stays 1.
+  const [rootH, setRootH] = useState(0);
+  const [tagH, setTagH] = useState(0);
+  const [bodyH, setBodyH] = useState(0);
+  const topPad = 26 + insets.top;
+  const room = rootH - topPad - tagH - insets.bottom;
+  const measured = !!(rootH && tagH && bodyH);
+  const k = measured ? Math.min(1, Math.max(0.55, room / (40 + bodyH + 26 + 0.8 * characterHeight(chrW0)))) : 1;
+  const chrW = chrW0 * k;
 
   return (
-    <View style={[st.root, { backgroundColor: '#eefcf4' }]}>
+    <View style={[st.root, { backgroundColor: '#eefcf4' }]} onLayout={(e) => setRootH(e.nativeEvent.layout.height)}>
       {/* soft white oval behind the top half: width 150%, height 62%, left -25%, top -26% */}
       <View style={[st.oval, { width: W * 1.5, height: W * 1.5, left: -W * 0.25, top: -H * 0.26 + (H * 0.62 - W * 1.5) / 2, transform: [{ scaleY: (H * 0.62) / (W * 1.5) }] }]} />
 
-      <View style={[st.itop, { paddingTop: 26 + insets.top }]}>
+      {/* the content is shown once measured, so it never shows itself the wrong size for a frame */}
+      <View style={[st.itop, { paddingTop: topPad, opacity: measured ? 1 : 0 }]}>
         <Enter kind="pop" delay={0}>
-          <Text style={st.tag}>
-            The only finance tracker that forces you to <Text style={st.lk}>Lock-in</Text> 🔒
-          </Text>
+          <View onLayout={(e) => setTagH(e.nativeEvent.layout.height)}>
+            <Text style={st.tag}>
+              The only finance tracker that forces you to <Text style={st.lk}>Lock-in</Text> 🔒
+            </Text>
+          </View>
         </Enter>
         <Enter kind="pop" delay={140} style={st.stage}>
-          <View style={{ width: chrW, height: characterHeight(chrW), marginBottom: -6 }}>
+          <View style={{ width: chrW, height: characterHeight(chrW), marginBottom: -6 * k }}>
             <Character width={chrW} clock={clock} opacity={sceneOpacity} />
           </View>
         </Enter>
       </View>
 
-      <Enter kind="up" delay={80}>
-        <View style={[st.ibot, { paddingBottom: 26 + insets.bottom }]}>
+      <Enter kind="up" delay={80} style={{ opacity: measured ? 1 : 0 }}>
+        <View style={[st.ibot, { paddingTop: 40 * k, paddingBottom: 26 * k + insets.bottom }]}>
           <SheetTop width={W} />
           <View style={st.sheetBody} />
-          <Enter kind="pop" delay={320}>
-            <Headline pen={pen} />
-          </Enter>
-          <Enter kind="pop" delay={410} style={st.rcw}>
-            <Receipt />
-          </Enter>
-          <Enter kind="pop" delay={500}>
-            <Pressable accessibilityRole="button" onPress={onStart} style={({ pressed }) => [st.go, pressed && { opacity: 0.85 }]}>
-              <Text style={st.goT}>Get started</Text>
-            </Pressable>
-          </Enter>
-          <Enter kind="pop" delay={590}>
-            <Text style={st.sm}>Setup takes 10 seconds</Text>
-          </Enter>
-          <Enter kind="apop" delay={520} style={st.appi}>
-            <Image source={require('../../../assets/icon.png')} style={st.appiImg} accessibilityLabel="Lock In" />
+          <View style={k < 1 && bodyH ? { height: bodyH * k } : null}>
+            <View onLayout={(e) => setBodyH(e.nativeEvent.layout.height)} style={k < 1 ? { transform: [{ scale: k }], transformOrigin: '50% 0%' } : null}>
+              <Enter kind="pop" delay={320}>
+                <Headline pen={pen} />
+              </Enter>
+              <Enter kind="pop" delay={410} style={st.rcw}>
+                <Receipt />
+              </Enter>
+              <Enter kind="pop" delay={500}>
+                <Pressable accessibilityRole="button" onPress={onStart} style={({ pressed }) => [st.go, pressed && { opacity: 0.85 }]}>
+                  <Text style={st.goT}>Get started</Text>
+                </Pressable>
+              </Enter>
+              <Enter kind="pop" delay={590}>
+                <Text style={st.sm}>Setup takes 10 seconds</Text>
+              </Enter>
+            </View>
+          </View>
+          <Enter kind="apop" delay={520} style={[st.appi, { top: -36 * k, width: 70 * k, height: 70 * k, borderRadius: 20 * k }]}>
+            <Image source={require('../../../assets/icon.png')} style={{ width: 70 * k, height: 70 * k }} accessibilityLabel="Lock In" />
             {/* the app's icon (Andrija, 4 Nov 2026; the prototype had 🔒 on green) */}
           </Enter>
         </View>
@@ -233,20 +253,11 @@ const st = StyleSheet.create({
   itop: { flex: 1, paddingHorizontal: 20 },
   tag: { fontFamily: brico[700], fontSize: 16, lineHeight: 23.2, letterSpacing: 0.32, color: '#0d1f15', textAlign: 'center' },
   lk: { fontFamily: brico[800], color: '#12b85f' },
-  stage: { flex: 1, minHeight: 200, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center' },
-  ibot: { paddingTop: 40, paddingHorizontal: 24 },
+  stage: { flex: 1, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center' },
+  ibot: { paddingHorizontal: 24 },
   // 1 px under the arch: where they met exactly, the light background showed through as a line on Android
   sheetBody: { position: 'absolute', top: 45, left: 0, right: 0, bottom: 0, backgroundColor: '#0c1611' },
-  appi: {
-    position: 'absolute',
-    top: -36,
-    left: 24,
-    width: 70,
-    height: 70,
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  appiImg: { width: 70, height: 70 },
+  appi: { position: 'absolute', left: 24, overflow: 'hidden' }, // top -36, 70 × 70, radius 20 (× k)
   ihBox: { marginTop: 14, marginBottom: 18 },
   ih: { fontFamily: brico[800], fontSize: 23.2, lineHeight: 27.84, letterSpacing: -0.464, color: '#fff' },
   scr: { alignSelf: 'flex-start', paddingHorizontal: 4 },

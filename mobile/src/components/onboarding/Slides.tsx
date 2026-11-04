@@ -70,10 +70,13 @@ function Glow({ color }: { color: string }) {
   );
 }
 
+/** `minH`: the picture's height in the prototype (340), less when the screen has no room for it. */
+type VisProps = { on: boolean; minH: number };
+
 // ---------------- slide 1: Spending ----------------
 const BAL = [967, 961, 897, 812];
 
-function SpendingSlide({ on }: { on: boolean }) {
+function SpendingSlide({ on, minH }: VisProps) {
   const [n, setN] = useState(BAL[3]);
   const [barW, setBarW] = useState(0);
   const pct = useSharedValue(0.6);
@@ -98,7 +101,7 @@ function SpendingSlide({ on }: { on: boolean }) {
     ['Nights out', '#5aa9f0', 'Night out', 'Friday with the crew', '−$85'],
   ];
   return (
-    <View style={s.vis}>
+    <View style={[s.vis, { minHeight: minH }]}>
       <Glow color="rgba(34,224,122,0.30)" />
       <Animated.View style={[s.hcard, s.h1c, float]}>
         <View style={s.h1t}>
@@ -144,7 +147,7 @@ function LevelLabel({ text, color }: { text: string; color: string }) {
   return <Animated.Text style={[s.rlvT, anim]}>{text}</Animated.Text>;
 }
 
-function RoastsSlide({ on }: { on: boolean }) {
+function RoastsSlide({ on, minH }: VisProps) {
   const [lv, setLv] = useState(1);
   const [msg, setMsg] = useState(MSGS[1]);
   const [segW, setSegW] = useState(0);
@@ -177,7 +180,7 @@ function RoastsSlide({ on }: { on: boolean }) {
   const knob = useAnimatedStyle(() => ({ width: segW, transform: [{ translateX: x.value * segW }] }));
   const msgAnim = useAnimatedStyle(() => ({ opacity: fade.value, transform: [{ translateY: 4 * (1 - fade.value) }] }));
   return (
-    <View style={s.vis}>
+    <View style={[s.vis, { minHeight: minH }]}>
       <Glow color="rgba(155,77,255,0.22)" />
       <Pin on={on} d={0} style={[s.hcard, s.rex]}>
         <CategoryIcon cat="Nights out" color="#5aa9f0" style={{ marginRight: 4 }} />
@@ -224,9 +227,9 @@ function Day({ on, i, label, today }: { on: boolean; i: number; label: string; t
   );
 }
 
-function StreakSlide({ on }: { on: boolean }) {
+function StreakSlide({ on, minH }: VisProps) {
   return (
-    <View style={s.vis}>
+    <View style={[s.vis, { minHeight: minH }]}>
       <Glow color="rgba(255,176,40,0.30)" />
       <Pin on={on} d={0} style={[s.hcard, s.fdemo]}>
         <Flame tier="gd" />
@@ -269,6 +272,17 @@ export function Slides({ onDone }: { onDone: () => void }) {
   const insets = useSafeAreaInsets();
   const [i, setI] = useState(0);
   const [carH, setCarH] = useState(0);
+  // each slide's words and picture as laid out; the picture keeps its tallest height for the same room, so the
+  // roast message changing length does not make it grow and shrink
+  const [texts, setTexts] = useState([0, 0, 0]);
+  const [pics, setPics] = useState<({ m: number; h: number } | null)[]>([null, null, null]);
+  const onText = (k: number, h: number) => setTexts((a) => (Math.abs(a[k] - h) < 0.5 ? a : a.map((x, j) => (j === k ? h : x))));
+  const onPic = (k: number, m: number, h: number) =>
+    setPics((a) => {
+      const o = a[k];
+      if (o && o.m === m && h <= o.h + 0.5) return a;
+      return a.map((x, j) => (j === k ? { m, h: o && o.m === m ? Math.max(o.h, h) : h } : x));
+    });
   const ref = useRef<React.ComponentRef<typeof ScrollView>>(null);
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const k = Math.max(0, Math.min(2, Math.round(e.nativeEvent.contentOffset.x / Math.max(1, W))));
@@ -292,14 +306,30 @@ export function Slides({ onDone }: { onDone: () => void }) {
         style={{ flex: 1 }}
         onLayout={(e) => setCarH(e.nativeEvent.layout.height)}
       >
-        {SLIDES.map(({ eb, sh, sp, Vis }, k) => (
-          <View key={eb} style={[s.sl, { width: W, height: carH || undefined }]}>
-            <Vis on={i === k} />
-            <Text style={s.eb}>{eb}</Text>
-            <Text style={s.sh}>{sh}</Text>
-            <Text style={s.sp}>{sp}</Text>
-          </View>
-        ))}
+        {SLIDES.map(({ eb, sh, sp, Vis }, k) => {
+          // the words always fit; the picture gets the room that is left (340 in the prototype), and when even its
+          // content is taller than that room it is drawn smaller as a whole (short phones, larger text)
+          const room = carH && texts[k] ? carH - 8 - texts[k] : 0;
+          const minH = room > 0 ? Math.min(340, room) : 340;
+          const v = pics[k];
+          const scale = room > 0 && v && v.m === minH && v.h > room ? Math.max(0.5, room / v.h) : 1;
+          // shown once measured, so the slide never shows itself the wrong size for a frame
+          const ready = room > 0 && !!v && v.m === minH;
+          return (
+            <View key={eb} style={[s.sl, { width: W, height: carH || undefined, opacity: ready ? 1 : 0 }]}>
+              <View style={scale < 1 && v ? { height: v.h * scale, justifyContent: 'center' } : null}>
+                <View onLayout={(e) => onPic(k, minH, e.nativeEvent.layout.height)} style={scale < 1 ? { transform: [{ scale }] } : null}>
+                  <Vis on={i === k} minH={minH} />
+                </View>
+              </View>
+              <View onLayout={(e) => onText(k, e.nativeEvent.layout.height)}>
+                <Text style={s.eb}>{eb}</Text>
+                <Text style={s.sh}>{sh}</Text>
+                <Text style={s.sp}>{sp}</Text>
+              </View>
+            </View>
+          );
+        })}
       </ScrollView>
       <View style={s.cdots}>
         {[0, 1, 2].map((k) => (
@@ -323,7 +353,7 @@ const s = StyleSheet.create({
   skip: { paddingVertical: 8, paddingHorizontal: 2, borderRadius: 12 },
   skipT: { fontFamily: brico[600], fontSize: 16, lineHeight: 23.2, color: '#5d7466' },
   sl: { paddingTop: 8, paddingHorizontal: 24, justifyContent: 'center' },
-  vis: { minHeight: 340, justifyContent: 'center', gap: 12 },
+  vis: { justifyContent: 'center', gap: 12 },
   eb: { marginTop: 30, fontFamily: brico[800], fontSize: 11.84, lineHeight: 17.168, letterSpacing: 1.6576, textTransform: 'uppercase', color: '#12a457' },
   sh: { marginTop: 8, marginBottom: 10, fontFamily: brico[800], fontSize: 29.6, lineHeight: 33.152, letterSpacing: -0.74, color: INK },
   sp: { fontFamily: brico[400], fontSize: 16.32, lineHeight: 24.48, color: '#5d7466' },
