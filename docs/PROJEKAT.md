@@ -457,6 +457,16 @@ Urađeno:
   aplikaciju; najverovatniji uzrok je bio `adjustsFontSizeToFit` na tom naslovu (na Android-u se tekst ponovo
   uklapa pri svakom crtanju), pa je zamenjen sa `maxFontSizeMultiplier={1}` (naslov ne raste sa slovima telefona).
   Uzrok nije izmeren; ako zamrzavanje ostane, dodati privremeni merač zastoja (UI frejm i JS kašnjenje).
+  Nije pomoglo: stari Samsung je dobio „Lock In ne reaguje“ (ANR, glavna nit blokirana > 5 s) na Spending-u. Andrija
+  je izabrao plan B umesto izveštaja o grešci: „bez lebdenja i bilo kakvih sranja, nek izgledaju kao najobičniji
+  prozori koji se menjaju, ali samo ako telefon baguje; na normalnim telefonima lep holo“. Urađeno:
+  `components/spending/HoloLite.tsx` (tri obična prozora u horizontalnom skrolu sa stranicama, tačkice, bez 3D-a,
+  animacija, slika u memoriji i bilo čega što radi u svakom frejmu; sadržaj panela bez animacija dolaska; prozori iste
+  visine). `HoloRing` meri prvih 24 frejma posle 0,4 s na ekranu; ispod 35 FPS prelazi na prozore i pamti to u
+  AsyncStorage (`lockin.holoLite`), pa posle odmah ide sa prozorima. Ranija logika „spor telefon gasi lebdenje“ je
+  zamenjena ovim. Provereno u pregledaču sa privremeno uključenim prozorima (izgled, prelazak); jednaka visina
+  prozora i Samsung nisu provereni (pregledač je bio sakriven). Ako ANR ostane i sa prozorima, uzrok nije holo i treba
+  izveštaj o grešci (Opcije za programere > Prijava greške) da se vidi gde glavna nit stoji.
 
 Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cilj i ekran za plaćanje su urađeni):
 1. **Google Play nalog** ($25; Andrija otvara što pre, jer novi lični nalog traži zatvoreno testiranje sa 12 testera

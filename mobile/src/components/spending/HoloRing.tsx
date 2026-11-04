@@ -4,7 +4,8 @@
 // refresh rate (120 Hz on ProMotion) and never waits for JavaScript.
 
 import { useIsFocused } from 'expo-router';
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -29,6 +30,7 @@ import { holo, useTheme } from '@/theme';
 import { tourBus, useTourTarget } from '@/tour/registry';
 
 import { HoloClock } from './holoClock';
+import { HoloLite } from './HoloLite';
 import { HoloPanel } from './HoloPanel';
 import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
 
@@ -37,10 +39,32 @@ const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
 const IOS = Platform.OS === 'ios';
 const ANDROID = Platform.OS === 'android';
 
-// Andrija's old Samsung drew the ring at about 11 frames a second (4 Nov 2026)
-let slowPhone = false;
-function markSlowPhone() {
-  slowPhone = true;
+// A phone that cannot draw the ring gets plain windows instead (HoloLite.tsx): Andrija's old Samsung drew it at about
+// 11 frames a second and then stopped responding ("app isn't responding", 4 Nov 2026). Decided by timing the ring's
+// first frames (see the frame callback) and remembered on the phone, so later the plain windows come right away.
+const LITE_KEY = 'lockin.holoLite';
+let lite = false;
+const liteSubs = new Set<() => void>();
+AsyncStorage.getItem(LITE_KEY)
+  .then((v) => v === '1' && setLite())
+  .catch(() => {});
+function setLite() {
+  if (lite) return;
+  lite = true;
+  liteSubs.forEach((f) => f());
+}
+function goLite() {
+  setLite();
+  AsyncStorage.setItem(LITE_KEY, '1').catch(() => {});
+}
+function useLite() {
+  return useSyncExternalStore(
+    (f) => {
+      liteSubs.add(f);
+      return () => liteSubs.delete(f);
+    },
+    () => lite,
+  );
 }
 
 /** What a panel's content is given. */
@@ -139,19 +163,22 @@ const PanelContent = memo(function PanelContent({
   return <>{render({ activation, grow, onNatural })}</>;
 });
 
+type RingProps = {
+  panels: ((p: PanelProps) => ReactNode)[];
+  rows: number;
+  scrolling: SharedValue<boolean>;
+};
+
+/** The ring, or plain windows on a phone that cannot draw it (see goLite). */
+export const HoloRing = memo(function HoloRing(props: RingProps) {
+  return useLite() ? <HoloLite panels={props.panels} /> : <FullRing {...props} />;
+});
+
 /**
  * `scrolling`: true while the page is being dragged or is gliding (set on the UI thread by the page's
  * scroll handler). The ring's endless animations stand still then, and while the ring is off screen.
  */
-export const HoloRing = memo(function HoloRing({
-  panels,
-  rows,
-  scrolling,
-}: {
-  panels: ((p: PanelProps) => ReactNode)[];
-  rows: number;
-  scrolling: SharedValue<boolean>;
-}) {
+function FullRing({ panels, rows, scrolling }: RingProps) {
   const { width: W, height: screenH } = useWindowDimensions();
   // the same object on every render: a new one would restart each panel's animated style when the ring lands
   const L = useMemo(() => holoLayout(W), [W]);
@@ -173,10 +200,9 @@ export const HoloRing = memo(function HoloRing({
   const p0 = useSharedValue(0);
   const ringOffset = useSharedValue(0);
   const stepCarry = useSharedValue(0);
-  // slow phone (see the frame callback); remembered while the app runs
-  const slow = useSharedValue(slowPhone);
+  // timing the first frames (see the frame callback)
   const probeWait = useSharedValue(0);
-  const probeN = useSharedValue(slowPhone ? -1 : 0);
+  const probeN = useSharedValue(0);
   const probeSum = useSharedValue(0);
 
   // ---- is anything worth animating? on screen, tab open, page not scrolling ----
@@ -253,25 +279,22 @@ export const HoloRing = memo(function HoloRing({
     const dt = (f.timeSincePreviousFrame ?? 16.7) / 1000;
     // the clocks only move while the ring is live; a ring at rest then changes nothing per frame
     const live = !scrolling.value && visible.value && focusedSV.value;
-    // a slow phone: after the first second of the ring standing on screen, 90 frames are timed; at under 40 frames a
-    // second the endless animations (the panels floating, the blinking tags) stop for good, everything else stays
-    if (live && !slow.value && probeN.value >= 0 && !springOn.value && !moving.value) {
+    // a phone too slow for the ring: 0.4 s after the ring comes on screen, 24 frames are timed; at under 35 frames a
+    // second the ring gives way to plain windows (goLite). Normal phones (60 or 120 frames) are far from that.
+    if (live && probeN.value >= 0) {
       probeWait.value += dt;
-      if (probeWait.value > 1) {
+      if (probeWait.value > 0.4) {
         probeN.value += 1;
         probeSum.value += dt;
-        if (probeN.value >= 90) {
-          if (probeSum.value / probeN.value > 1 / 40) {
-            slow.value = true;
-            runOnJS(markSlowPhone)();
-          }
+        if (probeN.value >= 24) {
+          if (probeSum.value / probeN.value > 1 / 35) runOnJS(goLite)();
           probeN.value = -1; // measured once
         }
       }
     }
-    if (live && !slow.value) liveT.value += dt * 1000;
+    if (live) liveT.value += dt * 1000;
     if (!springOn.value) {
-      if (live && !moving.value && !slow.value) floatT.value += dt * 1000;
+      if (live && !moving.value) floatT.value += dt * 1000;
       return;
     }
     stepCarry.value += dt;
@@ -431,7 +454,7 @@ export const HoloRing = memo(function HoloRing({
     </Animated.View>
     </HoloClock.Provider>
   );
-});
+}
 
 function Dot({ on, color, glow, onPress }: { on: boolean; color: string; glow: string; onPress: () => void }) {
   const { c } = useTheme();
