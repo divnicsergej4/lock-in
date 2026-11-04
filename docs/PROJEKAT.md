@@ -382,7 +382,7 @@ Urađeno:
     ograničenja na negativne vrednosti), u pregledaču sa privremeno uključenom Android granom (trake tačno uz ivice
     prednjeg panela, okreću prsten levo/desno, tap na prednji panel ga ne okreće); običan web isti kao pre. Sam
     redosled crtanja na Android-u ovde ne može da se vidi (nema emulatora: virtualizacija je isključena u BIOS-u).
-    Nije provereno na telefonu.
+    Andrija (4. nov. 2026, preview APK sa tom popravkom): „holo radi perfektno“. Holo na Android-u je završen; ne dirati.
     U dev režimu na Android-u ostaju bezopasna upozorenja `[Worklets] Tried to modify key current` (holo).
 - Prijatelji i zajednički cilj u aplikaciji, vezani za pravi Supabase (29. okt. 2026, Andrijin dizajn iz dela 6):
   Savings (bez naloga, bez ciljeva sa „Lock in together.“, lista ciljeva sa malim prstenom), ekran cilja
