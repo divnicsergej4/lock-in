@@ -71,7 +71,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   za animacije, @shopify/react-native-skia za holo prsten i lika na uvodu, lokalno čuvanje podataka na telefonu.
 - **Lična potrošnja ostaje samo na telefonu.** Na serveru je samo ono što mora: nalozi, prijatelji, zajednički ciljevi, pretplata.
 - **Backend: Supabase.** Migracije su u `backend/supabase/migrations/` (`0001` nalozi, prijatelji, zajednički cilj;
-  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa; `0005` obaveštenja iz cilja; `0006` rok cilja, nudge, push za pinove), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
+  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa; `0005` obaveštenja iz cilja; `0006` rok cilja, nudge, push za pinove; `0007` pin, otključan cilj i nudge bez čekanja od 10 min), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
   (`npm test` u folderu `backend`, radi i na Windows-u bez Postgres-a). Detalji u `backend/README.md`,
   zaštita i podešavanja po dashboard-ima u `docs/ZASTITA.md`.
 - **Prototip je specifikacija.** `index.html` na grani `razvoj` je tačan izgled i ponašanje svakog ekrana. Pri prenosu u
@@ -288,7 +288,9 @@ Urađeno:
      „Streak reminder“, odvojen od „Don’t waste money“, da bi neko mogao da ostavi samo njega. Tekstovi idu u svakoj jačini poruka
      dok Andrija ne označi jake;
   3. zajednički cilj (push sa servera, `0005` + `send-goal-push` + pg_cron): ostali članovi dobijaju uplatu, ulazak i
-     izlazak, onaj ko je to uradio ne; najviše jedno obaveštenje po osobi po cilju na 10 minuta (spajaju se);
+     izlazak, onaj ko je to uradio ne; najviše jedno obaveštenje po osobi po cilju na 10 minuta (spajaju se), osim pina, otključanog cilja i
+     nudge-a, koji idu odmah (`0007`, Andrija 5. nov. 2026, posle probe na dva telefona: pin je kasnio do 10 min;
+     `0007` postavljena na pravi projekat i proverena isti dan);
      prekidač „Shared goal alerts“ u Settings > Account.
   Dozvola se traži tek na uključivanje prekidača (ne pri pokretanju). Odluke koje nisu bile rečene: nudge je
   podrazumevano isključen dok ga korisnik ne uključi (dozvola se ne sme tražiti ranije); „I didn’t spend anything

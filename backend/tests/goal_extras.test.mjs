@@ -138,5 +138,35 @@ const ev = JSON.parse(msgs || '[]');
 ok(ev.length === 2 && ev[0].kind === 'paid' && ev[0].pct === null && ev[1].kind === 'pin' && ev[1].pct === 25,
   'claim_goal_pushes passes "Marko paid" and "the 25% pin" to the function', msgs);
 
+console.log('pins, unlocked and nudges do not wait 10 minutes (0007)');
+const claim = async (who) => JSON.parse((await asUser(null, `select coalesce(json_agg(events), '[]')::text from public.claim_goal_pushes() where recipient = '${who}'`, 'service_role'))[1] || '[]');
+await clear();
+await psql(`delete from public.contributions where goal_id = '${G}'`);
+await pay(MARKO, 100); // 5%
+let got = await claim(ANA);
+ok(got.length === 1 && got[0][0].kind === 'paid', 'Ana gets "Marko paid"', JSON.stringify(got));
+await pay(MARKO, 100); // 10%
+got = await claim(ANA);
+ok(got.length === 0, 'a second payment a minute later still waits (no spam)', JSON.stringify(got));
+await pay(MARKO, 400); // 30%: the 25% pin
+got = await claim(ANA);
+ok(got.length === 1 && got[0].map((x) => x.kind).join(',') === 'paid,paid,pin',
+  'the 25% pin goes right away, with the payment that was waiting', JSON.stringify(got));
+await pay(MARKO, 100); // 35%
+got = await claim(ANA);
+ok(got.length === 0, 'after the pin, plain payments wait again', JSON.stringify(got));
+await clear();
+[s, , e] = await asUser(MARKO, `select public.nudge('${G}', '${ANA}')`);
+await pay(EVA, 10);
+await claim(ANA); // whatever was waiting
+await asUser(EVA, `select public.nudge('${G}', '${ANA}')`);
+got = await claim(ANA);
+ok(s && got.length === 1 && got[0].some((x) => x.kind === 'nudged'), 'a nudge goes right away, even a minute after another notification', JSON.stringify(got) + (e || ''));
+await clear();
+await psql(`insert into app.push_events (goal_id, recipient, kind, actor, actor_name, sent_at) values ('${G}', '${ANA}', 'paid', '${MARKO}', 'Marko', now())`);
+await pay(EVA, 1500); // to 100%
+got = await claim(ANA);
+ok(got.length === 1 && got[0].some((x) => x.kind === 'unlocked'), 'an unlocked goal goes right away', JSON.stringify(got));
+
 console.log('fails', fails());
 process.exit(fails() ? 1 : 0);

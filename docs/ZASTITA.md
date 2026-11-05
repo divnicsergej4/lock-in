@@ -507,7 +507,8 @@ ovaj, u 20 h na dan bez upisa stignu oba.
   prijatelja, ne dobijaju ga ni onaj ko je dodao ni onaj koji je dodat;
 - član kome je istekla proba/pretplata dobija **samo** „X left …“ (odluka jer nije rečeno: ostalo ne može ni da
   menja; Andrija može da promeni u `app.queue_goal_push`);
-- **protiv spama**: najviše **jedno obaveštenje po osobi po cilju na 10 minuta**; sve između se spoji u jedno
+- **protiv spama**: najviše **jedno obaveštenje po osobi po cilju na 10 minuta** (pin, otključan cilj i nudge
+  ne čekaju, `0007`; ponesu sa sobom i ono što je čekalo); sve između se spoji u jedno
   („Marko added €120 to Summer trip (3 payments)“, „Summer trip: Marko added €120, Ana joined, Eva left“). Uplate i
   dodavanje u cilj su i dalje ograničeni iz `0002` (60 / 30 na sat po korisniku);
 - **tokeni**: tabela `push_tokens`, svako vidi i briše samo svoje (RLS; `user_id` se ne čita), upis samo preko
