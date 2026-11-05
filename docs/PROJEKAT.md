@@ -492,8 +492,8 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
 5. Pre slanja u obe prodavnice: `docs/ZASTITA.md` deo 6 (Expo Go adrese iz Supabase-a, probni nalozi i `manual_test`
    pretplate, Google OAuth „In production“, pravi ključevi, bez „TEST PRICES“).
 6. Provere na telefonima koje fale: zajednički cilj na dva telefona sa pravim nalozima (`0006`, nova `send-goal-push`),
-   ekran za plaćanje sa pravom prodavnicom, podsetnik (pravo obaveštenje) na iPhone-u. Na iPhone-u (Expo Go, 5. nov.)
-   provereno: vođeni obilazak 1–38, svetla tema, ekran za plaćanje sa probnim cenama. Zajednički cilj proveren
+   ekran za plaćanje sa pravom prodavnicom. Na iPhone-u (Expo Go, 5. nov.) provereno: vođeni obilazak 1–38, svetla
+   tema, ekran za plaćanje sa probnim cenama, podsetnik za troškove (pravo obaveštenje stiglo). Zajednički cilj proveren
    na dva telefona sa pravim nalozima (iPhone u Expo Go + Honor preview APK, 5. nov.): poziv, cilj, uplate, push
    za pin na Honoru (posle `0007` stiže odmah). Nudge dugme se vidi samo pored člana bez uplate te nedelje. Slike za App Store (1290×2796,
    bez DEMO i statusne trake) su u `docs/prodavnica/app-store/`.
