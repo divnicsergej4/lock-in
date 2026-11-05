@@ -290,7 +290,7 @@ Urađeno:
   3. zajednički cilj (push sa servera, `0005` + `send-goal-push` + pg_cron): ostali članovi dobijaju uplatu, ulazak i
      izlazak, onaj ko je to uradio ne; najviše jedno obaveštenje po osobi po cilju na 10 minuta (spajaju se), osim pina, otključanog cilja i
      nudge-a, koji idu odmah (`0007`, Andrija 5. nov. 2026, posle probe na dva telefona: pin je kasnio do 10 min;
-     `0007` postavljena na pravi projekat i proverena isti dan);
+     `0007` postavljena na pravi projekat i proverena isti dan; Andrija posle probe: „sad je dobro sve“);
      prekidač „Shared goal alerts“ u Settings > Account.
   Dozvola se traži tek na uključivanje prekidača (ne pri pokretanju). Odluke koje nisu bile rečene: nudge je
   podrazumevano isključen dok ga korisnik ne uključi (dozvola se ne sme tražiti ranije); „I didn’t spend anything
@@ -493,7 +493,9 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
    pretplate, Google OAuth „In production“, pravi ključevi, bez „TEST PRICES“).
 6. Provere na telefonima koje fale: zajednički cilj na dva telefona sa pravim nalozima (`0006`, nova `send-goal-push`),
    ekran za plaćanje sa pravom prodavnicom, podsetnik (pravo obaveštenje) na iPhone-u. Na iPhone-u (Expo Go, 5. nov.)
-   provereno: vođeni obilazak 1–38, svetla tema, ekran za plaćanje sa probnim cenama. Slike za App Store (1290×2796,
+   provereno: vođeni obilazak 1–38, svetla tema, ekran za plaćanje sa probnim cenama. Zajednički cilj proveren
+   na dva telefona sa pravim nalozima (iPhone u Expo Go + Honor preview APK, 5. nov.): poziv, cilj, uplate, push
+   za pin na Honoru (posle `0007` stiže odmah). Nudge dugme se vidi samo pored člana bez uplate te nedelje. Slike za App Store (1290×2796,
    bez DEMO i statusne trake) su u `docs/prodavnica/app-store/`.
 Okvirno (4. nov.): ~75% posla do objave; kod ~95%, ostatak su nalozi, podešavanja po dashboard-ima i čekanje
 prodavnica. Troškovi do objave: Google $25 jednom + Apple $99 godišnje (domen već plaćen); Supabase, RevenueCat
