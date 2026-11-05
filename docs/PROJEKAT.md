@@ -240,7 +240,7 @@ Urađeno:
   kao u prototipu). Korak u kom se kuca završava se tek kad korisnik 2 s ne pritisne nijedan taster (ne čim upiše
   prvu cifru ili dva slova). Posle te pauze tastatura pređe na sledeće prazno polje koraka (tekst ili broj, npr.
   iznos → opis, „Guitar“ → cena), a kad prođe korak u kom se kuca, skloni se.
-  Provereno u pregledaču od 1. do 38. koraka; na pravom telefonu nije provereno. Iz teksta koraka 37 izbačeno je „language“,
+  Provereno u pregledaču od 1. do 38. koraka i na iPhone-u u Expo Go (Andrija, 5. nov. 2026: „radi“). Iz teksta koraka 37 izbačeno je „language“,
   jer izbora jezika nema (jedina namerna razlika od prototipa).
 - Prijava u aplikaciji (`mobile/src/auth/`, ekran `mobile/src/app/sign-in.tsx`, detalji u `docs/ZASTITA.md` deo 4).
   Dogovoreno (Andrija): **prijava bez lozinke**, nigde nema polja za lozinku: kod od 6 cifara na mejl (ne magic link),
@@ -490,7 +490,9 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
 5. Pre slanja u obe prodavnice: `docs/ZASTITA.md` deo 6 (Expo Go adrese iz Supabase-a, probni nalozi i `manual_test`
    pretplate, Google OAuth „In production“, pravi ključevi, bez „TEST PRICES“).
 6. Provere na telefonima koje fale: zajednički cilj na dva telefona sa pravim nalozima (`0006`, nova `send-goal-push`),
-   vođeni obilazak 1–38 na telefonu, ekran za plaćanje sa pravom prodavnicom.
+   ekran za plaćanje sa pravom prodavnicom, podsetnik (pravo obaveštenje) na iPhone-u. Na iPhone-u (Expo Go, 5. nov.)
+   provereno: vođeni obilazak 1–38, svetla tema, ekran za plaćanje sa probnim cenama. Slike za App Store (1290×2796,
+   bez DEMO i statusne trake) su u `docs/prodavnica/app-store/`.
 Okvirno (4. nov.): ~75% posla do objave; kod ~95%, ostatak su nalozi, podešavanja po dashboard-ima i čekanje
 prodavnica. Troškovi do objave: Google $25 jednom + Apple $99 godišnje (domen već plaćen); Supabase, RevenueCat
 (besplatno do $2.500 mesečnog prihoda, pa 1% od celog iznosa tog meseca), Expo, Resend, Cloudflare, Firebase su
