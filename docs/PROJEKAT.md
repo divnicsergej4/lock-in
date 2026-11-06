@@ -59,7 +59,8 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   ali ništa ne može da se upiše. Uključuje se iz Settings > Help > Demo i sa ekrana za plaćanje.
 - Pretplata ide preko App Store-a i Google Play-a. Predlog (nije još potvrđen): RevenueCat za oba.
 - Cene na ekranu za plaćanje su za sada probne: $6.99 mesečno, $45 godišnje, $69 doživotno (doživotna se
-  izbacuje, Andrija 6. nov. 2026). Konačne cene
+  izbacuje, Andrija 6. nov. 2026). **Mesečna: $4.99, u Evropi €4.99** (Andrija, 6. nov. 2026). Godišnja još nije
+  odlučena (moj predlog: $29.99 / €29.99). Konačne cene
   Andrija dogovara sa kolegom. U aplikaciji cene nisu u kodu: čitaju se iz RevenueCat ponude (menjaju se u
   App Store Connect / Google Play Console); probne cene postoje samo za razvoj bez ključeva (`auth/testStore.ts`).
 - AI funkcija (odgovaranje od skupe ili glupe kupovine i jeftinija alternativa) se **ne pravi u prvoj verziji**:
