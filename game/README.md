@@ -20,3 +20,9 @@
 - `npm run export:web` – pravi web verziju u folderu `dist/`
 - `npm run build:link` – pravi jedan HTML fajl sa celom igrom (`dist/army-rush-3d.html`) za probu preko linka
 - `npm run check:levels` – proverava da je svaki nivo moguće preći
+
+## Grafika
+
+- Vojnici su sastavljeni od delova (telo, glava, šlem, ranac, puška, noge, ruke), sa senkom ispod.
+- Brojevi su 3D slova fontom **Lilita One** (SIL Open Font License), pretvoreni skriptom `scripts/make-font.mjs` u `src/game/fonts/lilita.json`.
+- Nebo, more, put i trava se crtaju kodom (`src/game/Environment.js`, `src/game/textures.js`), bez slika.

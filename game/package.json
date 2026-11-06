@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "@expo-google-fonts/lilita-one": "^0.4.1",
     "@expo/metro-runtime": "~58.0.17",
     "expo": "~58.0.23",
+    "expo-font": "~58.0.11",
     "expo-gl": "~58.0.4",
     "expo-status-bar": "~58.0.4",
     "react": "19.3.0",
@@ -22,5 +24,8 @@
     "check:levels": "node scripts/check-levels.mjs",
     "build:link": "expo export --platform web && node scripts/build-single-html.mjs"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "opentype.js": "^2.0.0"
+  }
 }
