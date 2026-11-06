@@ -140,7 +140,7 @@ export function buildLevel(level, parent, horde) {
   const coinItems = [];
   for (const it of level.items) {
     if (it.kind === 'cubeRow') {
-      it.cubes.forEach((c) => cubes.push(new UpgradeCube(group, c.kind, c.x, it.z, level.cubeHp)));
+      it.cubes.forEach((c) => cubes.push(new UpgradeCube(group, c.kind, c.x, it.z, level.cubeHp * (it.hpScale || 1))));
     } else if (it.kind === 'wave') {
       const lane = it.right ? 1 : -1;
       for (const g of it.groups) {

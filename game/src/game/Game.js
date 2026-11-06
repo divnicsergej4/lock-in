@@ -493,7 +493,8 @@ export class Game {
       if (front <= c.z + 0.9 && front >= c.z - 1.5 && Math.abs(p.x - c.x) < 0.85) {
         c.alive = false;
         c.group.visible = false;
-        const loss = Math.min(p.count, Math.max(1, Math.ceil(c.hp / (5 * this.level.cubeHp))));
+        // Udar košta vojnike (zavisi od toga koliko je kocki ostalo), ali najviše četvrtinu vojske
+        const loss = Math.min(p.count, Math.max(2, Math.min(Math.ceil(c.hp / (4 * this.level.cubeHp)), Math.ceil(p.count * 0.25))));
         this.log(`udar u kocku -${loss}`);
         p.kill(loss);
         this.effects.cubeBreak(c.x, 0.9, c.z, 0x888888, 0);
@@ -595,9 +596,9 @@ export class Game {
     this.minionT -= dt;
     if (this.minionT <= 0) {
       this.minionT = this.level.boss.minionEvery;
-      const n = 2 + Math.floor(this.levelNumber / 3);
+      const n = 3 + Math.floor(this.levelNumber / 2);
       for (let i = 0; i < n; i++) {
-        const type = Math.random() < 0.25 ? 'runner' : 'walker';
+        const type = Math.random() < 0.08 + this.levelNumber * 0.01 ? 'brute' : Math.random() < 0.35 ? 'runner' : 'walker';
         const zb = this.horde.spawn(type, boss.x + rnd(-4, 4), boss.z + rnd(-1, 1.5), { state: 'chase' });
         if (zb) this.effects.dust(zb.x, zb.z, 2);
       }

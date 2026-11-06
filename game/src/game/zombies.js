@@ -8,11 +8,11 @@ import { LANE_X, DIVIDER_HALF } from './config.js';
 // hp = život, speed = brzina, dmg = koliko vojnika ubije (ili u sekundi za one koji se "zakače"),
 // attach = ostaje i napada dok ne umre, coin = nagrada, scale = veličina, bar = širina trake života
 export const ZTYPES = {
-  walker: { hp: 3, speed: 2.6, dmg: 1, attach: false, coin: 1, scale: 1.18, bar: 0.75, cap: 90 },
-  runner: { hp: 2, speed: 5.6, dmg: 1, attach: false, coin: 1, scale: 1.08, bar: 0.65, cap: 50 },
-  brute: { hp: 18, speed: 1.9, dmg: 3, attach: true, coin: 5, scale: 1.8, bar: 1.2, cap: 16 },
-  mutant: { hp: 90, speed: 1.5, dmg: 6, attach: true, coin: 20, scale: 2.6, bar: 1.9, cap: 4 },
-  boss: { hp: 400, speed: 1.0, dmg: 9, attach: true, coin: 100, scale: 4.0, bar: 0, cap: 1 },
+  walker: { hp: 4, speed: 2.9, dmg: 1, attach: false, coin: 1, scale: 1.18, bar: 0.75, cap: 90 },
+  runner: { hp: 3, speed: 6.2, dmg: 2, attach: false, coin: 1, scale: 1.08, bar: 0.65, cap: 50 },
+  brute: { hp: 26, speed: 2.1, dmg: 4, attach: true, coin: 5, scale: 1.8, bar: 1.2, cap: 16 },
+  mutant: { hp: 120, speed: 1.7, dmg: 8, attach: true, coin: 20, scale: 2.6, bar: 1.9, cap: 4 },
+  boss: { hp: 400, speed: 1.3, dmg: 13, attach: true, coin: 100, scale: 4.0, bar: 0, cap: 1 },
 };
 
 const PALETTE = {
@@ -275,7 +275,7 @@ export class Horde {
     }
     const sameLane = Math.sign(zb.x) === Math.sign(army.x) || army.lane === 0;
     let tx = zb.x;
-    if (sameLane || dz < 10) {
+    if (sameLane || dz < 15) {
       tx = army.x + (zb.phase - 3.14) * 0.35;
     } else {
       tx = Math.sign(zb.x) * LANE_X + (zb.phase - 3.14) * 0.3;
@@ -283,7 +283,7 @@ export class Horde {
     const climbing = Math.abs(zb.x) < DIVIDER_HALF + 0.3 && army.lane !== 0;
     const sp = zb.speed * (climbing ? 0.45 : 1) * (1 - zb.knock * 0.8);
     zb.z += sp * dt - zb.knock * dt * 3;
-    zb.x += Math.max(-1, Math.min(1, tx - zb.x)) * dt * (dz < 10 ? 3.2 : 1.2);
+    zb.x += Math.max(-1, Math.min(1, tx - zb.x)) * dt * (dz < 15 ? 3.6 : 1.2);
   }
 
   pose(zb, t) {

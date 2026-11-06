@@ -6,14 +6,14 @@ import { textGeometry } from './text3d.js';
 
 // Vrste kocki. tier = koliko je nagrada vredna (bolje = lepša kocka)
 export const CUBE_TYPES = {
-  sold5: { value: '+5', caption: 'VOJNIKA', color: 0x47a8ff, hp: 6, tier: 0, apply: { soldiers: 5 }, toast: '+5 VOJNIKA' },
-  sold10: { value: '+10', caption: 'VOJNIKA', color: 0x2f86ff, hp: 10, tier: 0, apply: { soldiers: 10 }, toast: '+10 VOJNIKA' },
-  sold20: { value: '+20', caption: 'VOJNIKA', color: 0x2a5ef0, hp: 18, tier: 1, apply: { soldiers: 20 }, toast: '+20 VOJNIKA' },
-  dmg10: { value: '+10%', caption: 'ŠTETA', color: 0xff6f3c, hp: 12, tier: 0, apply: { dmg: 0.1 }, toast: 'ŠTETA +10%' },
-  rate15: { value: '+15%', caption: 'PALJBA', color: 0xffa51f, hp: 12, tier: 0, apply: { rate: 0.15 }, toast: 'BRZINA PALJBE +15%' },
-  speed20: { value: '+20%', caption: 'BRZINA', color: 0x2fcf7a, hp: 14, tier: 1, apply: { speed: 0.2 }, toast: 'BRZINA NAPADA +20%' },
-  double: { value: '×2', caption: 'DUPLA ŠTETA', color: 0xa64dff, hp: 20, tier: 2, apply: { double: 8 }, toast: 'DUPLA ŠTETA 8 s!' },
-  weapon: { value: 'NOVO', caption: 'ORUŽJE', color: 0xffc21f, hp: 24, tier: 2, apply: { weapon: 1 }, toast: 'NOVO ORUŽJE!' },
+  sold5: { value: '+5', caption: 'VOJNIKA', color: 0x47a8ff, hp: 9, tier: 0, apply: { soldiers: 5 }, toast: '+5 VOJNIKA' },
+  sold10: { value: '+10', caption: 'VOJNIKA', color: 0x2f86ff, hp: 16, tier: 0, apply: { soldiers: 10 }, toast: '+10 VOJNIKA' },
+  sold20: { value: '+20', caption: 'VOJNIKA', color: 0x2a5ef0, hp: 28, tier: 1, apply: { soldiers: 20 }, toast: '+20 VOJNIKA' },
+  dmg10: { value: '+10%', caption: 'ŠTETA', color: 0xff6f3c, hp: 18, tier: 0, apply: { dmg: 0.1 }, toast: 'ŠTETA +10%' },
+  rate15: { value: '+15%', caption: 'PALJBA', color: 0xffa51f, hp: 18, tier: 0, apply: { rate: 0.15 }, toast: 'BRZINA PALJBE +15%' },
+  speed20: { value: '+20%', caption: 'BRZINA', color: 0x2fcf7a, hp: 22, tier: 1, apply: { speed: 0.2 }, toast: 'BRZINA NAPADA +20%' },
+  double: { value: '×2', caption: 'DUPLA ŠTETA', color: 0xa64dff, hp: 30, tier: 2, apply: { double: 8 }, toast: 'DUPLA ŠTETA 8 s!' },
+  weapon: { value: 'NOVO', caption: 'ORUŽJE', color: 0xffc21f, hp: 38, tier: 2, apply: { weapon: 1 }, toast: 'NOVO ORUŽJE!' },
 };
 
 const SIZE = 1.8;
