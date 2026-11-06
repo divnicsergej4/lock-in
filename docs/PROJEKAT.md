@@ -58,7 +58,8 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
 - **Demo prikaz** postoji odvojeno od probe: aplikacija se popuni izmišljenim podacima da se vidi kako sve izgleda,
   ali ništa ne može da se upiše. Uključuje se iz Settings > Help > Demo i sa ekrana za plaćanje.
 - Pretplata ide preko App Store-a i Google Play-a. Predlog (nije još potvrđen): RevenueCat za oba.
-- Cene na ekranu za plaćanje su za sada probne: $6.99 mesečno, $45 godišnje, $69 doživotno. Konačne cene
+- Cene na ekranu za plaćanje su za sada probne: $6.99 mesečno, $45 godišnje, $69 doživotno (doživotna se
+  izbacuje, Andrija 6. nov. 2026). Konačne cene
   Andrija dogovara sa kolegom. U aplikaciji cene nisu u kodu: čitaju se iz RevenueCat ponude (menjaju se u
   App Store Connect / Google Play Console); probne cene postoje samo za razvoj bez ključeva (`auth/testStore.ts`).
 - AI funkcija (odgovaranje od skupe ili glupe kupovine i jeftinija alternativa) se **ne pravi u prvoj verziji**:
@@ -490,11 +491,17 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
    koraka). Odluke od 6. nov.: u Play Console-u aplikacija je **„Free“** (to je cena preuzimanja; pretplata sa probom
    je kupovina u aplikaciji, „Paid“ bi tražio plaćanje pre instalacije i ne može se kasnije promeniti); Play App
    Signing sa Google ključem (EAS ključ je upload key); versionCode vodi EAS (`appVersionSource: remote`,
-   `autoIncrement`); production AAB samo za `armeabi-v7a` i `arm64-v8a` (moj izbor, bez x86); u Data safety dodat
+   `autoIncrement`); production AAB samo za `arm64-v8a` kao preview (sa `armeabi-v7a` build je pao bez memorije na
+   EAS-u; stari 32-bitni telefoni ne dobijaju aplikaciju, moj izbor); u Data safety dodat
    i push token (Device or other IDs); svi testeri i u License testing (bez prave naplate). Prvi production AAB
-   (versionCode 2, bez RevenueCat ključa, jer RevenueCat traži da proizvodi već postoje na Play-u) služi za Internal
+   (versionCode 4, gotov 6. nov., link u `docs/GOOGLE-PLAY.md` 3; 2 i 3 pali bez memorije, popravljeno redosledom
+   `gradleCommand` u `eas.json`; bez RevenueCat ključa, jer RevenueCat traži da proizvodi već postoje na Play-u) služi za Internal
    testing i da Play dozvoli pravljenje proizvoda; posle RevenueCat-a ide drugi build sa `goog_` ključem.
    Na Honor-u se pre instalacije sa Play-a izveze rezervna kopija i deinstalira preview APK (drugi potpis).
+   **Doživotna kupovina se izbacuje** (Andrija, 6. nov. 2026): samo mesečna i godišnja pretplata sa 7 dana probe.
+   U prodavnici se ne pravi, a RevenueCat ponuda nema paket Lifetime; ekran za plaćanje tad sam pokazuje dva plana.
+   Probni planovi za razvoj bez ključeva (`auth/testStore.ts`) i dalje imaju doživotni (samo u Expo Go-u). Play
+   Console nalog se otvara na `lockeddevsapps@gmail.com` (lični tip, Andrijino ime).
 4. App Store (Apple Developer $99 godišnje): iOS build preko EAS-a (Mac ne treba), Sign in with Apple, proizvodi u App
    Store Connect, TestFlight na Andrijinom iPhone-u (prvi pravi build na iPhone-u: holo, 120 Hz, push, kupovina),
    slike za iPhone 6.9", App Privacy, pregled. Apple Small Business Program (15% umesto 30% provizije) prijaviti ručno.
