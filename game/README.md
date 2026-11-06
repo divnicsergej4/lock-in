@@ -18,4 +18,5 @@
 - `npm install` – instalira potrebne pakete
 - `npm start` – pokreće igru za Expo Go (telefon)
 - `npm run export:web` – pravi web verziju u folderu `dist/`
+- `npm run build:link` – pravi jedan HTML fajl sa celom igrom (`dist/army-rush-3d.html`) za probu preko linka
 - `npm run check:levels` – proverava da je svaki nivo moguće preći
