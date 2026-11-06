@@ -486,6 +486,15 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
    `access`, ponuda `default`, webhook, javni ključ `goog_` u EAS); probna kupovina; formulari (Data safety, Content
    rating, Target audience, Ads, Financial features, App access); zatvoreno testiranje 14 dana; zahtev za produkciju.
    RevenueCat Test Store je razmotren i odložen (radi samo u debug build-u; nije sigurno za besplatnu nedelju i webhook).
+   **Vodič korak po korak: `docs/GOOGLE-PLAY.md`** (6. nov. 2026, Andrija plaća i otvara nalog; tamo je i stanje svakog
+   koraka). Odluke od 6. nov.: u Play Console-u aplikacija je **„Free“** (to je cena preuzimanja; pretplata sa probom
+   je kupovina u aplikaciji, „Paid“ bi tražio plaćanje pre instalacije i ne može se kasnije promeniti); Play App
+   Signing sa Google ključem (EAS ključ je upload key); versionCode vodi EAS (`appVersionSource: remote`,
+   `autoIncrement`); production AAB samo za `armeabi-v7a` i `arm64-v8a` (moj izbor, bez x86); u Data safety dodat
+   i push token (Device or other IDs); svi testeri i u License testing (bez prave naplate). Prvi production AAB
+   (versionCode 2, bez RevenueCat ključa, jer RevenueCat traži da proizvodi već postoje na Play-u) služi za Internal
+   testing i da Play dozvoli pravljenje proizvoda; posle RevenueCat-a ide drugi build sa `goog_` ključem.
+   Na Honor-u se pre instalacije sa Play-a izveze rezervna kopija i deinstalira preview APK (drugi potpis).
 4. App Store (Apple Developer $99 godišnje): iOS build preko EAS-a (Mac ne treba), Sign in with Apple, proizvodi u App
    Store Connect, TestFlight na Andrijinom iPhone-u (prvi pravi build na iPhone-u: holo, 120 Hz, push, kupovina),
    slike za iPhone 6.9", App Privacy, pregled. Apple Small Business Program (15% umesto 30% provizije) prijaviti ručno.
