@@ -70,7 +70,7 @@ export function createEnvironment(scene) {
         vec3 col = mix(deep, shallow, 0.5 + 0.25 * w);
         // Svetle linije talasa
         float lines = sin(p.y * 0.9 + sin(p.x * 0.25 + time) * 2.0 + time * 1.4);
-        col = mix(col, foam, smoothstep(0.93, 1.0, lines) * 0.55);
+        col = mix(col, foam, smoothstep(0.96, 1.0, lines) * 0.22);
         // Pena uz obalu ostrva
         float shore = 1.0 - smoothstep(12.0, 14.5, abs(p.x));
         col = mix(col, foam, shore * (0.55 + 0.25 * sin(time * 2.0 + p.y * 0.5)));

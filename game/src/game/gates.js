@@ -32,8 +32,8 @@ export function applyOp(count, op) {
   }
 }
 
-// Tekst na kapiji. Koristimo znakove koje naš "pikselni" font zna da nacrta.
+// Tekst na kapiji (font Lilita One ima znakove × i ÷).
 export function opLabel(op) {
-  const sign = { add: '+', sub: '-', mul: 'x', div: '/' }[op.type];
+  const sign = { add: '+', sub: '-', mul: '×', div: '÷' }[op.type];
   return sign + op.value;
 }
