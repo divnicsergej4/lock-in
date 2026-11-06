@@ -335,3 +335,164 @@ export function fortress() {
   });
   return build(parts, { aoHeight: 2.5, aoStrength: 0.35 });
 }
+
+// ---------------- PREDMETI ZA RAZLIČITA OKRUŽENJA ----------------
+
+// Uništen automobil
+export const carWreck = () =>
+  cached('car', () =>
+    build(
+      [
+        part(box(1.5, 0.5, 3), 0x8a3a32, { pos: [0, 0.45, 0] }),
+        part(box(1.3, 0.45, 1.5), 0x6e2e28, { pos: [0, 0.9, 0.15], rot: [0, 0, 0.05] }),
+        part(box(1.25, 0.35, 0.05), 0x2a3440, { pos: [0, 0.92, -0.62], rot: [0.5, 0, 0] }),
+        part(cyl(0.3, 0.3, 0.2, 10), 0x1e1e1e, { pos: [-0.75, 0.25, -0.95], rot: [0, 0, Math.PI / 2] }),
+        part(cyl(0.3, 0.3, 0.2, 10), 0x1e1e1e, { pos: [0.75, 0.25, -0.95], rot: [0, 0, Math.PI / 2] }),
+        part(cyl(0.3, 0.3, 0.2, 10), 0x1e1e1e, { pos: [-0.75, 0.2, 0.95], rot: [0.3, 0, Math.PI / 2] }),
+        part(box(0.3, 0.12, 0.05), 0xfff1b0, { pos: [-0.5, 0.55, -1.52] }),
+        part(box(0.3, 0.12, 0.05), 0x555555, { pos: [0.5, 0.55, -1.52] }),
+      ],
+      { aoHeight: 0.8, aoStrength: 0.45 },
+    ),
+  );
+
+// Porušena zgrada sa prozorima
+export const ruinBuilding = () =>
+  cached('ruin', () => {
+    const wall = 0x9a8f86;
+    const parts = [
+      part(box(3.4, 4.2, 2.6), wall, { pos: [0, 2.1, 0] }),
+      part(box(1.6, 1.4, 2.6), wall, { pos: [-0.9, 4.9, 0] }),
+      part(box(3.5, 0.15, 2.7), 0x7d736b, { pos: [0, 2.2, 0] }),
+    ];
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < 3; c++) {
+        const lit = (r + c) % 3 === 0;
+        parts.push(part(box(0.55, 0.65, 0.05), lit ? 0xffcf7a : 0x2b2f38, { pos: [-1.05 + c * 1.05, 1.2 + r * 1.8, 1.31] }));
+      }
+    }
+    parts.push(part(box(0.8, 1.2, 0.05), 0x3b2a20, { pos: [0, 0.6, 1.32] }));
+    return build(parts, { aoHeight: 2, aoStrength: 0.35 });
+  });
+
+// Ulična svetiljka
+export const streetLamp = () =>
+  cached('lamp', () =>
+    build([
+      part(cyl(0.06, 0.08, 3.4, 6), 0x3a3f46, { pos: [0, 1.7, 0] }),
+      part(box(0.7, 0.07, 0.1), 0x3a3f46, { pos: [0.3, 3.35, 0] }),
+      part(box(0.3, 0.12, 0.2), 0xfff0b0, { pos: [0.6, 3.27, 0] }),
+    ]),
+  );
+
+// Kaktus
+export const cactus = () =>
+  cached('cactus', () =>
+    build(
+      [
+        part(cyl(0.18, 0.2, 1.8, 8), 0x4f9a46, { pos: [0, 0.9, 0] }),
+        part(cyl(0.12, 0.12, 0.6, 8), 0x4f9a46, { pos: [0.3, 0.9, 0], rot: [0, 0, Math.PI / 2] }),
+        part(cyl(0.11, 0.11, 0.6, 8), 0x4f9a46, { pos: [0.45, 1.2, 0] }),
+        part(cyl(0.1, 0.1, 0.5, 8), 0x4f9a46, { pos: [-0.28, 1.25, 0], rot: [0, 0, Math.PI / 2] }),
+        part(cyl(0.09, 0.09, 0.45, 8), 0x4f9a46, { pos: [-0.42, 1.5, 0] }),
+      ],
+      { aoHeight: 1, aoStrength: 0.3 },
+    ),
+  );
+
+// Suvo drvo
+export const deadTree = () =>
+  cached('deadtree', () =>
+    build(
+      [
+        part(cyl(0.1, 0.18, 2.2, 6), 0x4a3a30, { pos: [0, 1.1, 0], rot: [0, 0, 0.08] }),
+        part(cyl(0.05, 0.08, 1.1, 5), 0x4a3a30, { pos: [0.35, 1.9, 0], rot: [0, 0, -0.8] }),
+        part(cyl(0.04, 0.07, 0.9, 5), 0x4a3a30, { pos: [-0.3, 1.6, 0.1], rot: [0.2, 0, 0.9] }),
+        part(cyl(0.03, 0.05, 0.7, 5), 0x4a3a30, { pos: [0.1, 2.4, -0.2], rot: [-0.5, 0, 0.2] }),
+      ],
+      { aoHeight: 1, aoStrength: 0.3 },
+    ),
+  );
+
+// Jelka pod snegom
+export const snowPine = () =>
+  cached('snowpine', () =>
+    build(
+      [
+        part(cyl(0.1, 0.14, 0.7, 6), 0x6b4a32, { pos: [0, 0.35, 0] }),
+        part(new THREE.ConeGeometry(0.9, 1.3, 7), 0x2f7a4a, { pos: [0, 1.1, 0] }),
+        part(new THREE.ConeGeometry(0.75, 0.5, 7), 0xf4f8ff, { pos: [0, 1.45, 0] }),
+        part(new THREE.ConeGeometry(0.65, 1.1, 7), 0x2f7a4a, { pos: [0, 1.85, 0] }),
+        part(new THREE.ConeGeometry(0.5, 0.45, 7), 0xf4f8ff, { pos: [0, 2.2, 0] }),
+        part(new THREE.ConeGeometry(0.4, 0.8, 7), 0x2f7a4a, { pos: [0, 2.5, 0] }),
+        part(new THREE.ConeGeometry(0.22, 0.35, 7), 0xffffff, { pos: [0, 2.82, 0] }),
+      ],
+      { aoHeight: 1.2, aoStrength: 0.3 },
+    ),
+  );
+
+// Okruglo drvo
+export const roundTree = () =>
+  cached('roundtree', () =>
+    build(
+      [
+        part(cyl(0.1, 0.15, 0.9, 6), 0x9a6a3e, { pos: [0, 0.45, 0] }),
+        part(new THREE.IcosahedronGeometry(0.85, 1), 0x4fbb4a, { pos: [0, 1.4, 0] }),
+        part(new THREE.IcosahedronGeometry(0.5, 1), 0x6fd052, { pos: [0.35, 1.75, 0.2] }),
+      ],
+      { aoHeight: 1.2, aoStrength: 0.35 },
+    ),
+  );
+
+// Kamenje
+export const rockCluster = (color = 0xa9b1bb) =>
+  cached('rocks-' + color, () =>
+    build(
+      [
+        part(new THREE.DodecahedronGeometry(0.5, 0), color, { pos: [0, 0.25, 0], scale: [1.2, 0.8, 1] }),
+        part(new THREE.DodecahedronGeometry(0.32, 0), color, { pos: [0.55, 0.15, 0.2], rot: [0.5, 0.3, 0] }),
+        part(new THREE.DodecahedronGeometry(0.25, 0), color, { pos: [-0.45, 0.12, -0.25], rot: [0.2, 0.8, 0] }),
+      ],
+      { aoHeight: 0.6, aoStrength: 0.4 },
+    ),
+  );
+
+// Prepreka sa šiljcima i bodljikavom žicom (zauzima pola trake)
+export const spikeBarricade = () =>
+  cached('spikes', () => {
+    const parts = [part(box(2, 0.18, 0.18), 0x6b4a2e, { pos: [0, 0.45, 0] })];
+    for (let i = 0; i < 4; i++) {
+      const x = -0.8 + i * 0.53;
+      parts.push(part(box(0.1, 1.1, 0.1), 0x5a3d26, { pos: [x, 0.42, 0], rot: [0.5, 0, 0] }));
+      parts.push(part(box(0.1, 1.1, 0.1), 0x5a3d26, { pos: [x, 0.42, 0], rot: [-0.5, 0, 0] }));
+      parts.push(part(new THREE.ConeGeometry(0.05, 0.3, 4), 0xc8ccd2, { pos: [x, 0.95, -0.25], rot: [-0.5, 0, 0] }));
+      parts.push(part(new THREE.ConeGeometry(0.05, 0.3, 4), 0xc8ccd2, { pos: [x, 0.95, 0.25], rot: [0.5, 0, 0] }));
+    }
+    parts.push(part(new THREE.TorusGeometry(0.22, 0.015, 4, 10), 0x9aa0a8, { pos: [-0.5, 0.7, 0], scale: [1, 1, 3] }));
+    parts.push(part(new THREE.TorusGeometry(0.22, 0.015, 4, 10), 0x9aa0a8, { pos: [0.3, 0.7, 0], scale: [1, 1, 3] }));
+    return build(parts, { aoHeight: 0.8, aoStrength: 0.3 });
+  });
+
+// Novčić (za skupljanje)
+export const coinModel = () =>
+  cached('coin', () =>
+    build([
+      part(cyl(0.32, 0.32, 0.08, 16), 0xffc934, { pos: [0, 0, 0], rot: [Math.PI / 2, 0, 0] }),
+      part(cyl(0.2, 0.2, 0.1, 12), 0xffe27a, { pos: [0, 0, 0], rot: [Math.PI / 2, 0, 0] }),
+    ]),
+  );
+
+// Betonski zid između traka (segment dužine 2), sa žuto-crnim prugama
+export const dividerBlock = () =>
+  cached('divider', () =>
+    build(
+      [
+        part(box(0.8, 0.35, 1.96), 0xb7bcc4, { pos: [0, 0.175, 0] }),
+        part(box(0.5, 0.35, 1.96), 0xc9ced6, { pos: [0, 0.5, 0] }),
+        part(box(0.52, 0.12, 0.5), 0xffc21f, { pos: [0, 0.5, -0.5] }),
+        part(box(0.52, 0.12, 0.5), 0x2a2a2a, { pos: [0, 0.5, 0] }),
+        part(box(0.52, 0.12, 0.5), 0xffc21f, { pos: [0, 0.5, 0.5] }),
+      ],
+      { aoHeight: 0.6, aoStrength: 0.4 },
+    ),
+  );

@@ -3,10 +3,11 @@
 // sa glatkim prelazima. Svaki vojnik je malo drugačiji (veličina, brzina, ritam), da ne liče na robote.
 // Svi vojnici se crtaju odjednom ("instancing"), pa i 160 vojnika radi glatko na telefonu.
 import * as THREE from 'three';
-import { MAX_RENDERED, SPIRAL, ROAD_HALF } from './config.js';
+import { MAX_RENDERED, SPIRAL, SQUEEZE_HALF, DIVIDER_HALF } from './config.js';
 import { CountLabel } from './text3d.js';
 import { shadowTexture } from './textures.js';
-import { soldierBody, soldierLeg, soldierArm, rifle, shadowPlane, MUZZLE_Z } from './models.js';
+import { soldierBody, soldierLeg, soldierArm, shadowPlane } from './models.js';
+import { weaponModel, MUZZLE } from './weapons.js';
 
 let bodyMat;
 let shadowMat;
@@ -79,7 +80,9 @@ export class Crowd {
     // Senku u svetlu bacaju samo tela (noge, ruke i puške imaju meku senku ispod), da bi bilo brže
     this.legs = make(soldierLeg(team), bm, N * 2, false);
     this.arms = make(soldierArm(team), bm, N * 2, false);
-    this.gun = make(rifle(), bm, N, false);
+    this.tier = 0;
+    this.gun = make(weaponModel(0), bm, N, false);
+    this.divider = true; // da li postoji zid između traka (vojnici ga preskaču)
     for (let i = 0; i < N; i++) this.body.setColorAt(i, _white);
     this.body.instanceColor.setUsage(THREE.DynamicDrawUsage);
     this.meshes = [this.shadow, this.body, this.legs, this.arms, this.gun];
@@ -207,7 +210,7 @@ export class Crowd {
     let sx = Math.cos(a) * r;
     const sz = Math.sin(a) * r * 0.9;
     const maxR = this.radius();
-    const allowed = ROAD_HALF - 0.35;
+    const allowed = this.squeeze ?? SQUEEZE_HALF;
     if (maxR > allowed) sx *= allowed / maxR;
     return [sx, sz];
   }
@@ -278,7 +281,13 @@ export class Crowd {
       _q.setFromEuler(_e);
       const wx = this.x + this.ox[i];
       const wz = this.z + this.oz[i] + pushBack;
-      _root.compose(_p.set(wx, bob, wz), _q, _s.set(sc, sc, sc));
+      // Preskakanje zida između traka
+      let hop = 0;
+      if (this.divider) {
+        const ax = Math.abs(wx);
+        if (ax < DIVIDER_HALF + 0.4) hop = (1 - ax / (DIVIDER_HALF + 0.4)) * 0.7;
+      }
+      _root.compose(_p.set(wx, bob + hop, wz), _q, _s.set(sc, sc, sc));
 
       _local.makeTranslation(wx, 0.02, wz);
       _local.elements[0] = _local.elements[10] = sc;
@@ -341,9 +350,24 @@ export class Crowd {
 
   // Bljesak na vrhu cevi vojnika i
   fireMuzzle(i) {
+    const v = this.muzzleWorld(i);
+    this.effects.muzzle(v[0], v[1], v[2], this.dir);
+  }
+
+  // Gde je vrh cevi vojnika i (u svetu); bez i = nasumičan vojnik iz prednjih redova
+  muzzleWorld(i = -1) {
+    if (i < 0) i = this.pickFront(this.z - 10);
+    if (i < 0) return [this.x, 0.75, this.z];
     this.gun.getMatrixAt(i, _out);
-    _v.set(0, 0.01, MUZZLE_Z).applyMatrix4(_out);
-    this.effects.muzzle(_v.x, _v.y, _v.z, this.dir);
+    _v.set(0, 0.01, MUZZLE[this.tier]).applyMatrix4(_out);
+    this.recoil[i] = 1;
+    return [_v.x, _v.y, _v.z];
+  }
+
+  // Menja oružje svim vojnicima
+  setWeapon(tier) {
+    this.tier = tier;
+    this.gun.geometry = weaponModel(tier);
   }
 
   dispose() {

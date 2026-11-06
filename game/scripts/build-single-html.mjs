@@ -1,5 +1,5 @@
 // Pravi jedan HTML fajl sa celom igrom (za probu preko linka u pregledaču telefona).
-// Pokreni posle `npm run export:web`. Rezultat: dist/army-rush-3d.html
+// Pokreni posle `npm run export:web`. Rezultat: dist/zombie-rush-3d.html
 // Fontovi i ostali fajlovi se ubacuju direktno u HTML, pa link radi bez ičega drugog.
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { join, extname } from 'node:path';
@@ -30,10 +30,10 @@ try {
 }
 js = js.replace(/<\/script/gi, '<\\/script');
 
-const html = `<title>Army Rush 3D</title>
+const html = `<title>Zombie Rush 3D</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-  :root { --sky: #8fd6ff; color-scheme: light; }
+  :root { --sky: #1a2230; color-scheme: light; }
   html, body { height: 100%; }
   body { background: var(--sky); overflow: hidden; overscroll-behavior: none; }
   #root { display: flex; height: 100%; flex: 1; touch-action: none; user-select: none; -webkit-user-select: none; }
@@ -41,5 +41,5 @@ const html = `<title>Army Rush 3D</title>
 <div id="root"></div>
 <script>${js}</script>
 `;
-writeFileSync('dist/army-rush-3d.html', html);
-console.log('Napravljeno: dist/army-rush-3d.html', Math.round(html.length / 1024), 'KB, ubačeno fajlova:', inlined);
+writeFileSync('dist/zombie-rush-3d.html', html);
+console.log('Napravljeno: dist/zombie-rush-3d.html', Math.round(html.length / 1024), 'KB, ubačeno fajlova:', inlined);

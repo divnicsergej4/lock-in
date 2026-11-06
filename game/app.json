@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Army Rush 3D",
-    "slug": "army-rush-3d",
+    "name": "Zombie Rush 3D",
+    "slug": "zombie-rush-3d",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

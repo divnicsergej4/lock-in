@@ -1,5 +1,5 @@
 {
-  "name": "army-rush-3d",
+  "name": "zombie-rush-3d",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
@@ -22,7 +22,6 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "export:web": "expo export --platform web",
-    "check:levels": "node scripts/check-levels.mjs",
     "build:link": "expo export --platform web && node scripts/build-single-html.mjs"
   },
   "private": true,

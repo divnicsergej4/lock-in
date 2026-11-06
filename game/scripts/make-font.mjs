@@ -6,7 +6,7 @@ import { writeFileSync, readFileSync } from 'node:fs';
 const src = 'node_modules/@expo-google-fonts/lilita-one/400Regular/LilitaOne_400Regular.ttf';
 const buf = readFileSync(src);
 const font = opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
-const chars = '0123456789+-x×÷/ ABCDEFGHIJKLMNOPQRSTUVWXYZ!';
+const chars = '0123456789+-x×÷/ ABCDEFGHIJKLMNOPQRSTUVWXYZ!%.:ŠČĆŽĐ★';
 const scale = 1000 / font.unitsPerEm;
 const r = (v) => Math.round(v * scale);
 const glyphs = {};

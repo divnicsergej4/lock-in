@@ -30,6 +30,9 @@ const C = {
   smokeLight: new THREE.Color(0xb9b4ad),
   dust: new THREE.Color(0xd8c9a8),
   muzzle: new THREE.Color(1.0, 0.8, 0.35),
+  goo: new THREE.Color(0x6cc83a),
+  plasma: new THREE.Color(0.3, 0.95, 1.0),
+  gold: new THREE.Color(1.0, 0.8, 0.25),
 };
 
 export class Effects {
@@ -204,6 +207,67 @@ export class Effects {
       x: x + rnd(-10, 10), y: rnd(0.8, 4), z: z + rnd(-20, 6), vx: rnd(-0.2, 0.2), vy: rnd(0.05, 0.2), vz: rnd(-0.2, 0.2),
       life: rnd(2.5, 4), size: 0.07, endSize: 0.07, color: C.fireHot, alpha: 0.35, fadeIn: 0.3,
     });
+  }
+
+  // Zelena krv i komadići kad zombi umre
+  goo(x, y, z, scale = 1) {
+    const q = this.quality.particles;
+    for (let i = 0; i < Math.round(6 * q * Math.min(2, scale)); i++) {
+      this.smoke.spawn({
+        x: x + rnd(-0.2, 0.2) * scale, y, z: z + rnd(-0.2, 0.2) * scale, vx: rnd(-1.5, 1.5) * scale, vy: rnd(0.5, 2.5), vz: rnd(-1.5, 1.5) * scale,
+        life: rnd(0.4, 0.8), size: 0.35 * scale, endSize: 0.9 * scale, color: C.goo, alpha: 0.85, drag: 2.5, gravity: -3, fadeIn: 0,
+      });
+    }
+    this.burst(x, y, z, 0x4f9a2a, Math.round(4 * Math.min(2, scale)), 0.9, { size: 0.9 * scale });
+    this.burst(x, y, z, 0x6f3a2a, 2, 0.8, { size: 0.7 * scale });
+    if (scale > 1.4) this.ring(x, z, 2 * scale);
+  }
+
+  // Kocka sa nagradom puca: veliki komadi u njenoj boji, bljesak, sjaj, udarni talas
+  cubeBreak(x, y, z, color, tier = 0) {
+    const c = new THREE.Color(color);
+    this.glow.spawn({ x, y, z, life: 0.22, size: 2.6, endSize: 4, color: c.clone().lerp(C.flash, 0.5), alpha: 1.3, fadeIn: 0 });
+    for (let i = 0; i < 10; i++) this.burst(x + rnd(-0.6, 0.6), y + rnd(-0.6, 0.6), z + rnd(-0.6, 0.6), color, 1, 1.5, { size: rnd(2.5, 4.2), life: 1.1 });
+    for (let i = 0; i < 6; i++) this.burst(x, y, z, 0xffffff, 1, 1.3, { size: rnd(1, 2) });
+    for (let i = 0; i < Math.round((10 + tier * 10) * this.quality.particles); i++) {
+      const a = Math.random() * 6.28;
+      const sp = rnd(2, 6);
+      this.glow.spawn({
+        x, y, z, vx: Math.cos(a) * sp, vy: rnd(1, 6), vz: Math.sin(a) * sp, life: rnd(0.5, 1), size: 0.22, endSize: 0.05,
+        color: tier >= 2 ? C.fireHot : c, alpha: 1.4, gravity: -9, drag: 1, fadeIn: 0,
+      });
+    }
+    this.smoke.spawn({ x, y, z, vy: 0.5, life: 0.9, size: 1.5, endSize: 3, color: C.smokeLight, alpha: 0.5, fadeIn: 0.05 });
+    this.ring(x, z, 3 + tier);
+    this.shake = Math.max(this.shake, 0.18 + tier * 0.06);
+  }
+
+  smokePuff(x, y, z) {
+    this.smoke.spawn({ x, y, z, vy: 0.3, life: 0.5, size: 0.3, endSize: 0.9, color: C.smokeLight, alpha: 0.5, fadeIn: 0 });
+  }
+
+  rocketTrail(x, y, z) {
+    this.smoke.spawn({ x: x + rnd(-0.05, 0.05), y, z, vy: rnd(0.1, 0.4), life: rnd(0.4, 0.7), size: 0.18, endSize: 0.7, color: C.smokeLight, alpha: 0.55, fadeIn: 0 });
+    this.glow.spawn({ x, y, z, life: 0.08, size: 0.3, endSize: 0.1, color: C.fire, alpha: 1.3, fadeIn: 0 });
+  }
+
+  plasmaHit(x, y, z) {
+    this.glow.spawn({ x, y, z, life: 0.2, size: 0.9, endSize: 1.6, color: C.plasma, alpha: 1.3, fadeIn: 0 });
+    for (let i = 0; i < 4; i++) {
+      this.glow.spawn({ x, y, z, vx: rnd(-4, 4), vy: rnd(0, 4), vz: rnd(-4, 4), life: 0.3, size: 0.12, endSize: 0.03, color: C.plasma, alpha: 1.4, gravity: -6, fadeIn: 0 });
+    }
+  }
+
+  // Novčić koji iskoči iz zombija
+  coinPop(x, y, z) {
+    this.glow.spawn({ x, y, z, vy: 3, life: 0.6, size: 0.35, endSize: 0.15, color: C.gold, alpha: 1.3, gravity: -2, fadeIn: 0 });
+  }
+
+  // Sjaj kad pokupiš novčić
+  sparkle(x, y, z, color = C.gold) {
+    for (let i = 0; i < 5; i++) {
+      this.glow.spawn({ x, y, z, vx: rnd(-2, 2), vy: rnd(1, 3.5), vz: rnd(-2, 2), life: 0.45, size: 0.18, endSize: 0.04, color, alpha: 1.4, gravity: -5, fadeIn: 0 });
+    }
   }
 
   // Komadići (kocke) koji lete i odskaču

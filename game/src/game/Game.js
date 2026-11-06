@@ -1,25 +1,29 @@
-// Glavni "mozak" igre: petlja koja se vrti 60 puta u sekundi, kretanje, kapije, borba, pobeda i poraz,
-// plus kamera, svetlo, senke i efekti.
+// Glavni "mozak" igre: petlja (60 puta u sekundi), kretanje kroz dve trake, automatsko pucanje,
+// zombiji, kocke sa nagradama, oružja, šef na kraju, kamera, svetlo i efekti.
 import * as THREE from 'three';
-import { COLORS, FORWARD_SPEED, ROAD_HALF, STEER_LERP, FIGHT_TICK, START_ARMY } from './config.js';
+import {
+  FORWARD_SPEED, LANE_X, LANE_CENTER_RANGE, STEER_LERP, START_ARMY, THREAT_RANGE, MAX_PROJECTILES_PER_FRAME,
+} from './config.js';
 import { generateLevel } from './levelGen.js';
-import { applyOp, isGood, opLabel } from './gates.js';
-import { buildLevel, disposeLevel, animateWorld } from './World.js';
+import { buildLevel, disposeLevel, animateWorld, hideInstance, ARENA_HALF } from './World.js';
 import { Crowd } from './Crowd.js';
 import { Effects } from './Effects.js';
 import { Fallen } from './Fallen.js';
-import { createEnvironment, HORIZON } from './Environment.js';
+import { Horde } from './zombies.js';
+import { Projectiles } from './projectiles.js';
+import { WEAPONS, MAX_TIER } from './weapons.js';
+import { CUBE_TYPES } from './cubes.js';
+import { createEnvironment } from './Environment.js';
 import { QUALITY_LEVELS, FrameMonitor } from './quality.js';
 
 const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
 const rnd = (a, b) => a + Math.random() * (b - a);
 const smooth = (t) => t * t * (3 - 2 * t);
 
-// Faze igre
 export const PHASE = {
-  READY: 'ready', // glavni meni, čeka početak
-  RUN: 'run', // trči
-  FIGHT: 'fight', // bori se
+  READY: 'ready', // glavni meni
+  RUN: 'run', // trčanje kroz trake
+  BOSS: 'boss', // borba sa šefom u areni
   WON: 'won',
   LOST: 'lost',
 };
@@ -30,7 +34,6 @@ export class Game {
     this.onUi = onUi;
     this.ui = {};
 
-    // Na telefonu nema pravog "canvas"-a, pa three.js-u dajemo zamenu.
     const canvas = gl.canvas && gl.canvas.addEventListener
       ? gl.canvas
       : {
@@ -44,8 +47,7 @@ export class Game {
         };
     this.renderer = new THREE.WebGLRenderer({ canvas, context: gl, antialias: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(1);
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping; // filmski kolor
-    this.renderer.toneMappingExposure = 1.08;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.width = 0;
@@ -56,38 +58,36 @@ export class Game {
     this.monitor = new FrameMonitor();
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.Fog(HORIZON, 50, 140);
-    this.camera = new THREE.PerspectiveCamera(55, 1, 0.5, 200);
-    this.baseFov = 55;
+    this.scene.fog = new THREE.Fog(0xffffff, 40, 120);
+    this.camera = new THREE.PerspectiveCamera(60, 1, 0.5, 220);
+    this.baseFov = 60;
     this.fovKick = 0;
 
-    // Svetlo: nebo + sunce koje baca senke (senke prate vojsku)
-    this.hemi = new THREE.HemisphereLight(0xd8efff, 0x5f7f48, 1.2);
-    this.sun = new THREE.DirectionalLight(0xfff0d8, 2.4);
+    this.hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+    this.sun = new THREE.DirectionalLight(0xffffff, 2.2);
     this.sun.castShadow = this.quality.shadows;
     this.sun.shadow.mapSize.set(this.quality.shadowMap, this.quality.shadowMap);
     const sc = this.sun.shadow.camera;
-    sc.left = -13;
-    sc.right = 13;
-    sc.top = 20;
+    sc.left = -14;
+    sc.right = 14;
+    sc.top = 24;
     sc.bottom = -14;
     sc.near = 1;
-    sc.far = 70;
+    sc.far = 80;
     this.sun.shadow.bias = -0.0006;
     this.sun.shadow.normalBias = 0.03;
-    this.sun.shadow.radius = 3;
     this.scene.add(this.hemi, this.sun, this.sun.target);
 
     this.env = createEnvironment(this.scene);
-    this.effects = new Effects(this.scene, { quality: this.quality, fog: { color: HORIZON, near: 50, far: 140 } });
-    this.fallen = { blue: new Fallen(this.scene, 'blue'), red: new Fallen(this.scene, 'red') };
+    this.effects = new Effects(this.scene, { quality: this.quality, fog: { color: 0xffffff, near: 40, far: 120 } });
+    this.fallen = new Fallen(this.scene, 'blue');
+    this.horde = new Horde(this.scene, this.effects);
+    this.projectiles = new Projectiles(this.scene, this.effects);
 
     this.coins = 0;
     this.levelNumber = 1;
     this.time = 0;
-    this.shake = 0;
     this.toastId = 0;
-    this.toast = null;
     this.last = now();
     this.running = true;
     this.loadLevel(1);
@@ -95,52 +95,85 @@ export class Game {
     this.raf = requestAnimationFrame(this.loop);
   }
 
+  // ---------------- Nivo ----------------
   loadLevel(n) {
     if (this.world) disposeLevel(this.world, this.scene);
     if (this.player) this.player.dispose();
     this.effects.clear();
-    this.fallen.blue.clear();
-    this.fallen.red.clear();
+    this.fallen.clear();
+    this.horde.clear();
+    this.projectiles.clear();
 
     this.levelNumber = n;
-    this.level = generateLevel(n, START_ARMY);
-    this.world = buildLevel(this.level, this.scene, { fallen: this.fallen, effects: this.effects });
-    this.player = new Crowd(this.scene, {
-      team: 'blue', count: this.level.startCount, x: 0, z: 0, fallen: this.fallen.blue, effects: this.effects,
-    });
-    this.targetX = 0;
+    this.level = generateLevel(n);
+    this.applyTheme(this.level.theme);
+    this.horde.hpMul = this.level.zombieHp;
+    this.world = buildLevel(this.level, this.scene, this.horde);
+    this.player = new Crowd(this.scene, { team: 'blue', count: this.level.startArmy || START_ARMY, x: LANE_X, z: 0, fallen: this.fallen, effects: null });
+    this.targetX = LANE_X;
+
+    this.stats = { tier: this.level.startTier, dmgBonus: 0, rateBonus: 0, speedBonus: 0, doubleT: 0 };
+    this.player.setWeapon(this.stats.tier);
     this.phase = PHASE.READY;
-    this.fightWith = null;
-    this.lastEnemy = null;
-    this.fightTimer = 0;
-    this.fightElapsed = 0;
-    this.earned = 0;
-    this.shake = 0;
+    this.shotBudget = 0;
+    this.levelCoins = 0;
+    this.kills = 0;
     this.panel = false;
     this.events = [];
-    this.dustAcc = 0;
-    this.artTimer = 0;
     this.toast = null;
-    // Uvodni prelet kamere: kreće visoko iznad bojišta i spušta se iza vojske
+    this.shake = 0;
+    this.dustAcc = 0;
+    this.minionT = 0;
+    this.lostTo = null;
     this.intro = 0;
-    this.camPos = new THREE.Vector3(0, 30, -24);
-    this.camLook = new THREE.Vector3(0, 0, -50);
+    this.camPos = new THREE.Vector3(0, 34, -30);
+    this.camLook = new THREE.Vector3(0, 0, -60);
     this.camera.position.copy(this.camPos);
     this.camera.lookAt(this.camLook);
     this.emit();
   }
 
-  // ---- Komande iz ekrana ----
+  applyTheme(th) {
+    this.scene.fog.color.set(th.horizon);
+    this.scene.fog.near = th.fogNear;
+    this.scene.fog.far = th.fogFar;
+    const sm = this.effects.smoke.mesh.material.uniforms;
+    sm.fogColor.value.set(th.horizon);
+    sm.fogNear.value = th.fogNear;
+    sm.fogFar.value = th.fogFar;
+    this.hemi.color.set(th.hemiSky);
+    this.hemi.groundColor.set(th.hemiGround);
+    this.hemi.intensity = th.hemi;
+    this.sun.color.set(th.sun);
+    this.sun.intensity = th.sunInt;
+    this.renderer.toneMappingExposure = th.exposure;
+    this.env.setTheme(th);
+  }
+
+  // ---------------- Komande iz ekrana ----------------
   start() {
     if (this.phase === PHASE.READY) {
       this.phase = PHASE.RUN;
-      this.intro = Math.max(this.intro, 0.85);
-      this.emit();
+      this.intro = Math.max(this.intro, 0.8);
     }
   }
 
+  // Prst pokazuje gde vojska treba da bude. Vojska uvek ostaje u jednoj od traka.
   steerTo(x) {
-    this.targetX = Math.max(-ROAD_HALF + 0.6, Math.min(ROAD_HALF - 0.6, x));
+    if (this.phase === PHASE.BOSS) {
+      this.targetX = Math.max(-ARENA_HALF + 2, Math.min(ARENA_HALF - 2, x));
+      return;
+    }
+    const side = x >= 0 ? 1 : -1;
+    const inLane = Math.max(LANE_X - LANE_CENTER_RANGE, Math.min(LANE_X + LANE_CENTER_RANGE, Math.abs(x)));
+    this.targetX = side * inLane;
+  }
+
+  // Kratak dodir leve ili desne strane ekrana = prelazak u tu traku
+  tapSide(side) {
+    if (this.phase === PHASE.READY) this.start();
+    if (this.phase === PHASE.BOSS) this.targetX = side * 3.5;
+    else this.targetX = side * LANE_X;
   }
 
   getTargetX() {
@@ -155,7 +188,7 @@ export class Game {
     this.loadLevel(this.levelNumber);
   }
 
-  // ---- Petlja ----
+  // ---------------- Petlja ----------------
   loop() {
     if (!this.running) return;
     const t = now();
@@ -175,92 +208,440 @@ export class Game {
     this.sun.castShadow = this.quality.shadows;
   }
 
-  // Zakazuje događaj za kasnije (npr. eksplozije jedna za drugom)
   later(delay, fn) {
     this.events.push({ at: this.time + delay, fn });
   }
 
+  // Kratak dnevnik događaja (za proveru težine)
+  log(msg) {
+    this.events_log = this.events_log || [];
+    this.events_log.push(`${this.time.toFixed(1)} ${msg}`);
+    if (this.events_log.length > 60) this.events_log.shift();
+  }
+
+  showToast(text, kind = 'good') {
+    this.toastId++;
+    this.toast = { id: this.toastId, text, kind };
+  }
+
+  weapon() {
+    return WEAPONS[this.stats.tier];
+  }
+
+  dmgPerShot() {
+    const s = this.stats;
+    return this.weapon().dmg * (1 + s.dmgBonus) * (s.doubleT > 0 ? 2 : 1);
+  }
+
+  shotsPerSecond() {
+    const s = this.stats;
+    return this.weapon().rate * (1 + s.rateBonus) * (1 + s.speedBonus * 0.5);
+  }
+
+  armyInfo() {
+    const p = this.player;
+    return {
+      x: p.x,
+      z: p.z,
+      front: p.z - p.depth(),
+      radius: p.radius(),
+      lane: this.phase === PHASE.BOSS || this.phase === PHASE.WON ? 0 : Math.sign(p.x) || 1,
+    };
+  }
+
+  halfWidth() {
+    const p = this.player;
+    return Math.min(p.radius(), p.squeeze ?? 1.85) + 0.15;
+  }
+
   update(dt) {
     const p = this.player;
-    const allEnemies = [...this.world.squads, this.world.enemy];
 
-    // Zakazani događaji
     if (this.events.length) {
       const due = this.events.filter((e) => e.at <= this.time);
       this.events = this.events.filter((e) => e.at > this.time);
       due.forEach((e) => e.fn());
     }
 
-    // Skretanje levo-desno
+    // Skretanje (sa malim nagibom vojnika)
     const prevX = p.x;
     p.x += (this.targetX - p.x) * (1 - Math.exp(-dt * STEER_LERP));
     const vx = (p.x - prevX) / Math.max(dt, 0.001);
-    p.lean += (Math.max(-0.3, Math.min(0.3, -vx * 0.035)) - p.lean) * Math.min(1, dt * 10);
+    p.lean += (Math.max(-0.3, Math.min(0.3, -vx * 0.03)) - p.lean) * Math.min(1, dt * 10);
 
-    p.aim = this.phase === PHASE.FIGHT;
+    if (this.stats.doubleT > 0) this.stats.doubleT = Math.max(0, this.stats.doubleT - dt);
+
     if (this.phase === PHASE.RUN) {
       p.moving = true;
       p.z -= FORWARD_SPEED * dt;
-      this.checkGates();
-      this.checkBarrels();
-      if (this.phase === PHASE.RUN) this.checkContact(allEnemies);
-    } else if (this.phase === PHASE.FIGHT) {
-      this.updateFight(dt);
+      this.checkCollisions();
+      if (p.z <= this.world.arenaZ - 3) this.enterBoss();
+    } else if (this.phase === PHASE.BOSS) {
+      p.moving = Math.abs(this.targetX - p.x) > 0.3;
+      this.updateBoss(dt);
     } else if (this.phase === PHASE.WON) {
       p.moving = false;
-      p.aim = false;
       p.cheer = true;
     } else {
       p.moving = false;
     }
 
-    // Neprijatelji jurišaju kad im se približiš
-    for (const e of allEnemies) {
-      if (!e.alive) {
-        e.crowd.label.group.visible = false;
-        continue;
-      }
-      const dist = e.crowd.z - p.z;
-      const near = this.phase === PHASE.RUN || this.phase === PHASE.FIGHT ? dist > -16 : false;
-      e.crowd.aim = this.fightWith === e || (near && dist > -9);
-      if (this.phase === PHASE.LOST) {
-        e.crowd.moving = false;
-        e.crowd.aim = false;
-        e.crowd.cheer = true;
-      } else if (near && this.fightWith !== e) {
-        e.crowd.moving = true;
-        e.crowd.z += (e.final ? 2.5 : 4) * dt;
-        e.crowd.x += (p.x - e.crowd.x) * Math.min(1, dt * 1.5);
-      }
-      e.crowd.update(dt, this.time);
+    const playing = this.phase === PHASE.RUN || this.phase === PHASE.BOSS;
+    if (playing) {
+      this.updateShooting(dt);
+      this.checkZombieContacts(dt);
+    } else {
+      p.aim = false;
     }
 
+    const army = this.armyInfo();
+    this.horde.update(dt, this.time, this.phase === PHASE.READY ? { ...army, front: army.front + 100 } : army, this.camera);
+    this.projectiles.update(dt, (pr, target) => this.onHit(pr, target));
     p.update(dt, this.time);
-    this.fallen.blue.update(dt);
-    this.fallen.red.update(dt);
+    this.fallen.update(dt);
+    // Kocke koje su još daleko (u magli) ne crtamo, da bi bilo brže
+    for (const c of this.world.cubes) {
+      c.group.visible = c.alive && c.z > p.z - 70 && c.z < p.z + 12;
+      if (c.group.visible) c.update(dt, this.time);
+    }
     this.updateAmbientFx(dt);
-    this.updateGateFades(dt);
     this.effects.update(dt);
-    animateWorld(this.world, this.time, dt);
+    animateWorld(this.world, this.time);
     this.updateCamera(dt);
     this.env.update(this.time, this.camera, p.z);
+    this.sun.position.set(p.x - 7, 20, p.z + 10);
+    this.sun.target.position.set(p.x * 0.5, 0, p.z - 6);
 
-    // Sunce i senke prate vojsku
-    this.sun.position.set(p.x - 7, 18, p.z + 9);
-    this.sun.target.position.set(p.x, 0, p.z - 5);
-
-    // Napredak kroz nivo (za traku na vrhu ekrana)
-    const total = Math.max(1, -this.level.enemy.z);
+    const total = Math.max(1, -this.world.arenaZ);
     this.progress = Math.max(0, Math.min(1, -p.z / total));
+
+    if (playing && p.count <= 0) this.lose();
     this.emit();
   }
 
-  // Prašina ispod nogu, dim i vatra iz zapaljenih tenkova, iskre u vazduhu
+  // ---------------- Pucanje ----------------
+  findTargets() {
+    const p = this.player;
+    const w = this.weapon();
+    const front = p.z - p.depth();
+    const lane = this.phase === PHASE.BOSS ? 0 : Math.sign(p.x) || 1;
+    const out = [];
+    // 1) Zombiji koji su blizu (u bilo kojoj traci) su najvažniji
+    for (const zb of this.horde.list) {
+      if (!zb.alive || zb.hp - zb.pending <= 0) continue;
+      const d = front - zb.z;
+      if (d < -2 || d > w.range) continue;
+      const near = d < THREAT_RANGE && Math.abs(zb.x - p.x) < 7;
+      const sameLane = lane === 0 || Math.sign(zb.x) === lane;
+      if (near || sameLane) out.push({ t: zb, d: near ? d - 100 : d });
+    }
+    if (out.some((o) => o.d < 0)) return out.filter((o) => o.d < 0).sort((a, b) => a.d - b.d).map((o) => o.t);
+    // 2) Kocke i buradi u istoj traci
+    if (lane !== 0) {
+      for (const c of this.world.cubes) {
+        if (!c.alive || c.hp - c.pending <= 0 || Math.sign(c.x) !== lane) continue;
+        const d = front - (c.z + 0.9);
+        if (d < -0.5 || d > w.range) continue;
+        out.push({ t: c, d: d + Math.abs(c.x - p.x) * 3 });
+      }
+      for (const b of this.world.barrels) {
+        if (!b.alive || b.hp - b.pending <= 0 || Math.sign(b.x) !== lane) continue;
+        const d = front - b.z;
+        if (d < 0 || d > w.range) continue;
+        out.push({ t: b, d: d - 2 });
+      }
+    }
+    return out.sort((a, b) => a.d - b.d).map((o) => o.t);
+  }
+
+  updateShooting(dt) {
+    const p = this.player;
+    const targets = this.findTargets();
+    if (!targets.length || p.count <= 0) {
+      p.aim = false;
+      this.shotBudget = 0;
+      return;
+    }
+    p.aim = true;
+    const w = this.weapon();
+    this.shotBudget += p.count * this.shotsPerSecond() * dt;
+    const shots = Math.floor(this.shotBudget);
+    if (shots <= 0) return;
+    this.shotBudget -= shots;
+    const maxVis = Math.max(1, Math.round(MAX_PROJECTILES_PER_FRAME * (0.5 + this.quality.particles * 0.5)));
+    const nVis = Math.min(shots, maxVis);
+    const dmgEach = (shots / nVis) * this.dmgPerShot();
+    const speedMul = 1 + this.stats.speedBonus;
+    let ti = 0;
+    for (let i = 0; i < nVis; i++) {
+      // Sledeća meta koja još nije "pokrivena" mecima u letu
+      while (ti < targets.length - 1 && targets[ti].hp - targets[ti].pending <= 0) ti++;
+      const target = targets[ti];
+      const from = p.muzzleWorld();
+      this.effects.muzzle(from[0], from[1], from[2], -1);
+      // Šteta koja je "na putu" se broji samo za metke koji su stvarno ispaljeni
+      if (w.pellets > 1) {
+        for (let k = 0; k < w.pellets; k++) {
+          if (this.projectiles.fire(from, target, dmgEach / w.pellets, w, speedMul, 1.4)) target.pending += dmgEach / w.pellets;
+        }
+      } else if (this.projectiles.fire(from, target, dmgEach, w, speedMul, 0.25)) {
+        target.pending += dmgEach;
+      }
+    }
+  }
+
+  onHit(pr, target) {
+    target.pending = Math.max(0, target.pending - pr.dmg);
+    const w = pr.w;
+    if (target.def && target.def.hp !== undefined && target.type) {
+      // Zombi
+      const [x, y, z] = target.aimPoint();
+      if (w.kind === 'plasma') this.effects.plasmaHit(x, y, z);
+      else if (w.kind === 'rocket') this.effects.explosion(x, 0.2, z, 0.55, { shake: 0.12, scorch: false });
+      else this.effects.impact(x, y, z);
+      if (target.alive && this.horde.damage(target, pr.dmg)) this.onZombieKilled(target);
+      if (w.splash > 0) this.splash(x, z, w.splash, pr.dmg * 0.6, target);
+      if (w.pierce > 0) {
+        let left = w.pierce;
+        for (const zb of this.horde.list) {
+          if (left <= 0) break;
+          if (zb === target || !zb.alive) continue;
+          if (Math.abs(zb.x - target.x) < 0.9 && zb.z < target.z && zb.z > target.z - 4) {
+            if (this.horde.damage(zb, pr.dmg * 0.7)) this.onZombieKilled(zb);
+            left--;
+          }
+        }
+      }
+    } else if (target.isBarrel) {
+      if (!target.alive) return;
+      this.effects.impact(target.x, 0.5, target.z);
+      target.hp -= pr.dmg;
+      if (target.hp <= 0) this.explodeBarrel(target);
+    } else {
+      // Kocka
+      if (!target.alive) return;
+      const [x, y, z] = target.aimPoint();
+      this.effects.impact(x + rnd(-0.5, 0.5), y + rnd(-0.5, 0.5), z);
+      if (w.kind === 'rocket') this.effects.explosion(x, y - 0.6, z, 0.45, { shake: 0.08, scorch: false });
+      if (target.hit(pr.dmg)) this.collectCube(target);
+    }
+  }
+
+  splash(x, z, r, dmg, skip) {
+    for (const zb of this.horde.list) {
+      if (zb === skip || !zb.alive) continue;
+      if (Math.hypot(zb.x - x, zb.z - z) < r && this.horde.damage(zb, dmg)) this.onZombieKilled(zb);
+    }
+  }
+
+  explodeBarrel(b) {
+    b.alive = false;
+    hideInstance(b.mesh, b.index);
+    this.effects.explosion(b.x, 0.3, b.z, 1.1, { shake: 0.45 });
+    this.splash(b.x, b.z, 3.8, 25 * this.level.zombieHp);
+    this.showToast('BUM!', 'good');
+  }
+
+  onZombieKilled(zb) {
+    this.kills++;
+    const c = zb.def.coin;
+    this.coins += c;
+    this.levelCoins += c;
+    this.effects.coinPop(zb.x, 1.2 * zb.scale, zb.z);
+    if (zb.type === 'mutant') this.showToast('MUTANT UNIŠTEN!', 'good');
+    if (zb.isBoss) this.win();
+  }
+
+  collectCube(cube) {
+    const def = cube.def;
+    const [x, y, z] = cube.aimPoint();
+    this.effects.cubeBreak(x, y, cube.z, def.color, def.tier);
+    const a = def.apply;
+    const s = this.stats;
+    let text = def.toast;
+    if (a.soldiers) {
+      this.player.setCount(this.player.count + a.soldiers);
+      this.player.labelPop = 1;
+    }
+    if (a.dmg) s.dmgBonus += a.dmg;
+    if (a.rate) s.rateBonus += a.rate;
+    if (a.speed) s.speedBonus += a.speed;
+    if (a.double) s.doubleT += a.double;
+    if (a.weapon) {
+      if (s.tier < MAX_TIER) {
+        s.tier++;
+        this.player.setWeapon(s.tier);
+        text = WEAPONS[s.tier].name + '!';
+        this.fovKick = 6;
+      } else {
+        s.dmgBonus += 0.25;
+        text = 'ŠTETA +25%';
+      }
+    }
+    this.log(`kocka ${text}`);
+    this.showToast(text, def.tier >= 2 ? 'epic' : 'good');
+  }
+
+  // ---------------- Sudari ----------------
+  checkCollisions() {
+    const p = this.player;
+    const front = p.z - p.depth();
+    const hw = this.halfWidth();
+    // Kocke koje nisu razbijene: udarac košta vojnike
+    for (const c of this.world.cubes) {
+      if (!c.alive) continue;
+      if (front <= c.z + 0.9 && front >= c.z - 1.5 && Math.abs(p.x - c.x) < 0.85) {
+        c.alive = false;
+        c.group.visible = false;
+        const loss = Math.min(p.count, Math.max(1, Math.ceil(c.hp / (5 * this.level.cubeHp))));
+        this.log(`udar u kocku -${loss}`);
+        p.kill(loss);
+        this.effects.cubeBreak(c.x, 0.9, c.z, 0x888888, 0);
+        this.showToast(`-${loss}`, 'bad');
+        this.shake = Math.max(this.shake, 0.35);
+      }
+    }
+    // Šiljci
+    for (const sp of this.world.spikes) {
+      if (!sp.alive) continue;
+      if (Math.abs(front - sp.z) < 0.7 && Math.abs(p.x - sp.x) < 1.0 + hw * 0.6) {
+        sp.alive = false;
+        hideInstance(sp.mesh, sp.index);
+        const loss = Math.min(p.count, 3 + Math.ceil(p.count * 0.06));
+        this.log(`šiljci -${loss}`);
+        p.kill(loss);
+        this.effects.burst(sp.x, 0.6, sp.z, 0x6b4a2e, 10, 1.2, { size: 1.6 });
+        this.showToast(`-${loss}`, 'bad');
+        this.shake = Math.max(this.shake, 0.3);
+      }
+    }
+    // Buradi na putu eksplodiraju ako vojska udari u njih
+    for (const b of this.world.barrels) {
+      if (b.alive && Math.abs(front - b.z) < 0.6 && Math.abs(p.x - b.x) < hw + 0.3) {
+        this.explodeBarrel(b);
+        p.kill(Math.min(p.count, 2));
+      }
+    }
+    // Novčići
+    for (const c of this.world.coins) {
+      if (!c.alive) continue;
+      if (c.z <= p.z + p.depth() && c.z >= front - 0.3 && Math.abs(c.x - p.x) < hw + 0.3) {
+        c.alive = false;
+        hideInstance(c.mesh, c.index);
+        this.coins += 3;
+        this.levelCoins += 3;
+        this.effects.sparkle(c.x, 0.8, c.z);
+      }
+    }
+  }
+
+  // Zombiji koji stignu do vojske: obični ubiju vojnika i nestanu, krupni se zakače i udaraju
+  checkZombieContacts(dt) {
+    const p = this.player;
+    const front = p.z - p.depth();
+    const hw = this.halfWidth();
+    for (const zb of this.horde.list) {
+      if (!zb.alive) continue;
+      if (zb.state === 'chase' && zb.z >= front - 0.2 && zb.z < p.z + p.depth() + 1 && Math.abs(zb.x - p.x) < hw + 0.35 * zb.scale) {
+        if (zb.def.attach) {
+          zb.state = 'attack';
+          zb.attachX = Math.max(-hw, Math.min(hw, zb.x - p.x));
+          zb.attackT = 0;
+        } else {
+          const spots = p.kill(Math.min(p.count, zb.def.dmg));
+          this.log(`${zb.type} -${zb.def.dmg}`);
+          spots.forEach(([x, y, z]) => this.effects.impact(x, y, z));
+          zb.hp = 0;
+          zb.alive = false;
+          zb.state = 'dying';
+          zb.deadT = 0;
+          this.effects.goo(zb.x, 0.6, zb.z, zb.scale);
+          this.shake = Math.max(this.shake, 0.12);
+        }
+      } else if (zb.state === 'attack') {
+        zb.hitTimer = (zb.hitTimer || 0) + dt;
+        if (zb.hitTimer >= 0.8) {
+          zb.hitTimer = 0;
+          const spots = p.kill(Math.min(p.count, zb.def.dmg));
+          this.log(`${zb.type} udara -${zb.def.dmg}`);
+          spots.slice(0, 3).forEach(([x, y, z]) => this.effects.impact(x, y, z));
+          if (zb.def.scale > 2) {
+            this.effects.ring(zb.x, zb.z + 1, 3 * zb.def.scale * 0.5);
+            this.shake = Math.max(this.shake, 0.35);
+          } else {
+            this.shake = Math.max(this.shake, 0.15);
+          }
+        }
+      }
+    }
+  }
+
+  // ---------------- Šef ----------------
+  enterBoss() {
+    this.phase = PHASE.BOSS;
+    this.player.divider = false;
+    this.player.squeeze = 5;
+    this.targetX = Math.max(-3.5, Math.min(3.5, this.player.x));
+    const boss = this.world.boss;
+    if (boss) boss.state = 'chase';
+    this.minionT = 1.5;
+    this.showToast('ŠEF!', 'epic');
+    this.shake = 0.3;
+  }
+
+  updateBoss(dt) {
+    const boss = this.world.boss;
+    if (!boss || !boss.alive) return;
+    this.minionT -= dt;
+    if (this.minionT <= 0) {
+      this.minionT = this.level.boss.minionEvery;
+      const n = 2 + Math.floor(this.levelNumber / 3);
+      for (let i = 0; i < n; i++) {
+        const type = Math.random() < 0.25 ? 'runner' : 'walker';
+        const zb = this.horde.spawn(type, boss.x + rnd(-4, 4), boss.z + rnd(-1, 1.5), { state: 'chase' });
+        if (zb) this.effects.dust(zb.x, zb.z, 2);
+      }
+    }
+  }
+
+  win() {
+    this.phase = PHASE.WON;
+    this.wonAt = this.time;
+    const bonus = 20 + this.levelNumber * 10;
+    this.coins += bonus;
+    this.levelCoins += bonus;
+    this.earned = this.levelCoins;
+    const boss = this.world.boss;
+    for (let i = 0; i < 5; i++) {
+      this.later(0.1 + i * 0.2, () => this.effects.explosion(boss.x + rnd(-2, 2), rnd(0.5, 3), boss.z + rnd(-1.5, 1.5), rnd(1, 1.5), { shake: 0.45, scorch: i === 0 }));
+    }
+    // Svi preostali zombiji padaju
+    this.later(0.4, () => {
+      for (const zb of this.horde.list) {
+        if (zb.alive) {
+          this.horde.damage(zb, 1e9);
+        }
+      }
+    });
+    this.later(1.2, () => this.effects.confetti(this.player.x, this.player.z - 3, 90));
+    this.showToast('POBEDA!', 'epic');
+    this.later(2.2, () => (this.panel = true));
+  }
+
+  lose() {
+    if (this.phase === PHASE.LOST) return;
+    this.phase = PHASE.LOST;
+    this.earned = this.levelCoins;
+    this.shake = Math.max(this.shake, 0.4);
+    this.later(1.4, () => (this.panel = true));
+  }
+
+  // ---------------- Atmosfera ----------------
   updateAmbientFx(dt) {
     const p = this.player;
     const q = this.quality;
     if (q.dust && p.wRun > 0.5 && p.rendered > 0) {
-      this.dustAcc += dt * Math.min(16, 5 + p.rendered * 0.12);
+      this.dustAcc += dt * Math.min(14, 4 + p.rendered * 0.1);
       while (this.dustAcc >= 1) {
         this.dustAcc -= 1;
         const f = p.randomFoot();
@@ -268,7 +649,7 @@ export class Game {
       }
     }
     for (const e of this.world.emitters) {
-      if (Math.abs(e.z - p.z) > 75) continue;
+      if (Math.abs(e.z - p.z) > 70) continue;
       e.acc += dt * e.rate * q.particles;
       while (e.acc >= 1) {
         e.acc -= 1;
@@ -279,207 +660,41 @@ export class Game {
     if (q.ambient && Math.random() < dt * 3) this.effects.ambient(p.x, p.z);
   }
 
-  showToast(text, good) {
-    this.toastId++;
-    this.toast = { id: this.toastId, text, good };
-  }
-
-  checkGates() {
-    const p = this.player;
-    for (const g of this.world.gates) {
-      if (g.used || p.z > g.z) continue;
-      g.used = true;
-      const side = p.x < 0 ? g.left : g.right;
-      g.chosen = side;
-      const before = p.count;
-      p.setCount(applyOp(p.count, side.op));
-      const good = isGood(side.op);
-      const sx = p.x < 0 ? -ROAD_HALF / 2 : ROAD_HALF / 2;
-      this.effects.burst(sx, 1.4, g.z, good ? 0x7fd0ff : 0xff7a8c, 22, 1.1);
-      this.showToast(opLabel(side.op), good);
-      if (good) {
-        this.fovKick = 4;
-      } else {
-        this.shake = Math.max(this.shake, 0.3);
-        for (let i = 0; i < Math.min(10, before - p.count); i++) {
-          this.effects.impact(p.x + rnd(-1.5, 1.5), 0.6, p.z + rnd(-1, 1));
-        }
-      }
-      if (p.count <= 0) this.lose();
-    }
-  }
-
-  // Eksplozivna buradi pored puta eksplodiraju kad vojska prođe
-  checkBarrels() {
-    const p = this.player;
-    const m = new THREE.Matrix4().makeScale(0, 0, 0);
-    for (const b of this.world.barrels) {
-      if (!b.alive || p.z - p.depth() - 6 > b.z) continue;
-      b.alive = false;
-      b.mesh.setMatrixAt(b.index, m);
-      b.mesh.instanceMatrix.needsUpdate = true;
-      this.effects.explosion(b.x, 0.3, b.z, 0.75, { shake: 0.35 });
-    }
-  }
-
-  checkContact(enemies) {
-    const p = this.player;
-    for (const e of enemies) {
-      if (!e.alive) continue;
-      const gap = p.z - p.depth() - (e.crowd.z + e.crowd.depth());
-      if (gap <= 1.2) {
-        this.phase = PHASE.FIGHT;
-        this.fightWith = e;
-        this.lastEnemy = e;
-        this.fightTimer = -0.3; // kratka pucnjava pre nego što počnu da padaju
-        this.fightElapsed = 0;
-        this.artTimer = 0.3;
-        if (e.final) this.showToast('BITKA!', true);
-        return;
-      }
-    }
-  }
-
-  updateFight(dt) {
-    const p = this.player;
-    const e = this.fightWith;
-    const ec = e.crowd;
-    p.moving = true;
-    ec.moving = true;
-
-    // Vojske se privlače jedna drugoj
-    const gap = p.z - p.depth() - (ec.z + ec.depth());
-    if (gap > -0.4) {
-      const step = Math.min(gap + 0.4, 4 * dt);
-      p.z -= step * 0.5;
-      ec.z += step * 0.5;
-    }
-    ec.x += (p.x - ec.x) * Math.min(1, dt * 3);
-
-    // Pucnjava: meci lete u oba smera
-    const shots = Math.min(6, 1 + Math.floor(Math.min(p.count, ec.count) / 15));
-    for (let i = 0; i < shots; i++) {
-      if (Math.random() < dt * 12) this.effects.shoot(p.frontSoldier(ec.z), ec.frontSoldier(p.z));
-      if (Math.random() < dt * 12) this.effects.shoot(ec.frontSoldier(p.z), p.frontSoldier(ec.z));
-    }
-
-    // U velikoj bici padaju granate po ivicama neprijateljske vojske
-    if (e.final) {
-      this.artTimer -= dt;
-      if (this.artTimer <= 0 && ec.count > 3) {
-        this.artTimer = rnd(0.35, 0.65);
-        const side = Math.random() < 0.5 ? -1 : 1;
-        const x = Math.random() < 0.6 ? side * rnd(ROAD_HALF - 1, ROAD_HALF + 1.5) : ec.x + rnd(-2, 2);
-        const z = ec.z - ec.depth() - rnd(0.5, 3);
-        this.effects.explosion(x, 0.2, z, 0.65, { shake: 0.2 });
-      }
-    }
-
-    this.fightTimer += dt;
-    this.fightElapsed += dt;
-    while (this.fightTimer >= FIGHT_TICK && p.count > 0 && ec.count > 0) {
-      this.fightTimer -= FIGHT_TICK;
-      const k = Math.max(1, Math.ceil(Math.min(p.count, ec.count) / 18));
-      const kk = Math.min(k, p.count, ec.count);
-      p.kill(kk).slice(0, 3).forEach(([x, y, z]) => this.effects.impact(x, y + 0.2, z));
-      ec.kill(kk).slice(0, 3).forEach(([x, y, z]) => this.effects.impact(x, y + 0.2, z));
-      p.hit(2, ec.z);
-      ec.hit(2, p.z);
-      this.shake = Math.max(this.shake, e.final ? 0.12 : 0.08);
-    }
-
-    if (ec.count <= 0) {
-      e.alive = false;
-      this.fightWith = null;
-      if (e.final) this.win();
-      else this.phase = PHASE.RUN;
-    } else if (p.count <= 0) {
-      this.lose();
-    }
-  }
-
-  win() {
-    this.phase = PHASE.WON;
-    this.wonAt = this.time;
-    this.earned = 10 + this.levelNumber * 5 + this.player.count;
-    this.coins += this.earned;
-    this.showToast('POBEDA!', true);
-    // Tvrđava eksplodira i ruši se
-    const c = this.world.castle;
-    const cz = c.group.position.z;
-    for (let i = 0; i < 7; i++) {
-      this.later(0.15 + i * 0.18, () => this.effects.explosion(rnd(-3.5, 3.5), rnd(0.5, 3.5), cz + rnd(-1, 1.6), rnd(0.9, 1.4), { shake: 0.4, scorch: false }));
-    }
-    this.later(0.35, () => (c.collapsing = true));
-    this.later(1.5, () => this.effects.explosion(0, 0.5, cz + 1, 1.8, { shake: 0.6 }));
-    this.later(1.9, () => this.effects.confetti(this.player.x, this.player.z - 2, 90));
-    this.later(2.3, () => (this.panel = true));
-  }
-
-  lose() {
-    this.phase = PHASE.LOST;
-    this.fightWith = null;
-    this.shake = Math.max(this.shake, 0.4);
-    this.later(1.3, () => (this.panel = true));
-  }
-
-  updateGateFades(dt) {
-    for (const g of this.world.gates) {
-      if (!g.used || g.fade >= 1) continue;
-      g.fade = Math.min(1, g.fade + dt * 2.5);
-      const k = 1 - g.fade;
-      [g.left, g.right].forEach((s) => {
-        s.panel.material.opacity = k;
-        s.labelMats.forEach((mt) => (mt.opacity = k));
-        s.glowMat.opacity = 0.22 * k;
-        if (s === g.chosen) {
-          const sc = 1 + g.fade * 0.35;
-          s.panel.scale.set(sc, sc, 1);
-          s.label.scale.setScalar(1.05 * sc);
-        }
-      });
-    }
-  }
-
+  // ---------------- Kamera ----------------
   updateCamera(dt) {
     const p = this.player;
-    const r = Math.min(p.radius(), 4);
-    const finalFight = this.phase === PHASE.FIGHT && this.fightWith && this.fightWith.final;
+    const r = Math.min(p.radius(), 3);
     let pos;
     let look;
     if (this.phase === PHASE.WON) {
-      // Polako kruži oko bojišta: vidi se vojska koja slavi i tvrđava koja se ruši
-      const a = Math.sin((this.time - this.wonAt) * 0.25) * 0.9;
-      const cz = (p.z + this.world.castle.group.position.z) / 2;
-      pos = new THREE.Vector3(p.x * 0.5 + Math.sin(a) * 15, 10, cz + Math.cos(a) * 15 + 4);
-      look = new THREE.Vector3(p.x * 0.5, 1.5, cz - 1);
-    } else if (this.phase === PHASE.LOST && this.lastEnemy) {
-      // Približava se neprijatelju koji slavi
-      const ec = this.lastEnemy.crowd;
-      pos = new THREE.Vector3(ec.x * 0.5, 6.5, ec.z + 9);
-      look = new THREE.Vector3(ec.x, 0.8, ec.z);
+      const a = Math.sin((this.time - this.wonAt) * 0.3) * 0.8;
+      pos = new THREE.Vector3(p.x * 0.5 + Math.sin(a) * 13, 9, p.z + Math.cos(a) * 13 - 2);
+      look = new THREE.Vector3(p.x * 0.5, 1.2, p.z - 6);
+    } else if (this.phase === PHASE.LOST) {
+      pos = new THREE.Vector3(p.x * 0.5, 7, p.z + 8);
+      look = new THREE.Vector3(p.x, 0.8, p.z - 3);
+    } else if (this.phase === PHASE.BOSS) {
+      pos = new THREE.Vector3(p.x * 0.3, 14, p.z + 13);
+      look = new THREE.Vector3(p.x * 0.2, 1, p.z - 13);
     } else {
-      const extra = finalFight ? 2.5 : 0;
-      pos = new THREE.Vector3(p.x * 0.35, 9.5 + r * 0.9 + extra, p.z + 11.5 + r * 0.9 + extra);
-      look = new THREE.Vector3(p.x * 0.3, 0, p.z - 9);
+      pos = new THREE.Vector3(p.x * 0.3, 10.5 + r * 0.4, p.z + 10.5 + r * 0.5);
+      look = new THREE.Vector3(p.x * 0.25, 0, p.z - 12);
     }
 
-    // Uvodni prelet
     if (this.intro < 1) {
-      this.intro = Math.min(1, this.intro + dt / 2.2);
+      this.intro = Math.min(1, this.intro + dt / 2.4);
       const k = smooth(this.intro);
-      const startPos = new THREE.Vector3(0, 30, p.z - 24);
-      const startLook = new THREE.Vector3(0, 0, p.z - 50);
+      const startPos = new THREE.Vector3(0, 34, p.z - 36);
+      const startLook = new THREE.Vector3(0, 0, p.z - 70);
       this.camPos.copy(startPos.lerp(pos, k));
       this.camLook.copy(startLook.lerp(look, k));
     } else {
-      const k = 1 - Math.exp(-dt * (this.phase === PHASE.WON ? 2.5 : 5));
+      const k = 1 - Math.exp(-dt * (this.phase === PHASE.WON ? 2.5 : 4.5));
       this.camPos.lerp(pos, k);
       this.camLook.lerp(look, k);
     }
     this.camera.position.copy(this.camPos);
 
-    // Tresenje kamere (jače kod eksplozija, slabije u borbi)
     this.shake = Math.max(this.shake, this.effects.shake);
     this.effects.shake = 0;
     this.shake = Math.max(0, this.shake - dt * 1.4);
@@ -492,9 +707,8 @@ export class Game {
     }
     this.camera.lookAt(this.camLook);
 
-    // Kratko "zumiranje" kad prođeš kroz dobru kapiju, i šire u velikoj bici
-    this.fovKick = Math.max(0, this.fovKick - dt * 10);
-    const fov = this.baseFov + this.fovKick + (finalFight ? 3 : 0);
+    this.fovKick = Math.max(0, this.fovKick - dt * 8);
+    const fov = this.baseFov + this.fovKick + (this.phase === PHASE.BOSS ? 3 : 0);
     if (Math.abs(this.camera.fov - fov) > 0.01) {
       this.camera.fov += (fov - this.camera.fov) * Math.min(1, dt * 8);
       this.camera.updateProjectionMatrix();
@@ -510,8 +724,7 @@ export class Game {
       this.height = h;
       this.renderer.setViewport(0, 0, w, h);
       this.camera.aspect = w / Math.max(1, h);
-      // Na uskim ekranima (telefon uspravno) malo proširimo pogled da put stane.
-      this.baseFov = this.camera.aspect < 0.7 ? 62 : 55;
+      this.baseFov = this.camera.aspect < 0.7 ? 64 : 55;
       this.camera.fov = this.baseFov;
       this.camera.updateProjectionMatrix();
     }
@@ -521,20 +734,32 @@ export class Game {
   }
 
   emit() {
-    const fe = this.fightWith;
-    const finalE = this.world.enemy;
-    const nearFinal = finalE.alive && finalE.crowd.z - this.player.z > -26 && this.phase !== PHASE.READY;
+    const s = this.stats;
+    const w = this.weapon();
+    const boss = this.world.boss;
+    const showBoss = boss && (this.phase === PHASE.BOSS || (this.phase === PHASE.RUN && this.progress > 0.93));
     const next = {
       phase: this.phase,
       level: this.levelNumber,
-      count: this.player ? this.player.count : 0,
+      theme: this.level.theme.name,
+      count: this.player.count,
       coins: this.coins,
-      earned: this.earned,
-      progress: Math.round((this.progress || 0) * 50) / 50,
+      earned: this.earned || 0,
+      kills: this.kills,
+      progress: Math.round((this.progress || 0) * 60) / 60,
       panel: this.panel,
       toast: this.toast,
-      enemy: nearFinal || (fe && fe.final) ? finalE.crowd.count : null,
-      enemyMax: this.level.enemy.count,
+      tier: s.tier,
+      weapon: w.name,
+      dmg: Math.round(this.dmgPerShot() * 10) / 10,
+      dps: Math.round(this.player.count * this.dmgPerShot() * this.shotsPerSecond()),
+      dmgPct: Math.round(s.dmgBonus * 100),
+      ratePct: Math.round(s.rateBonus * 100),
+      speedPct: Math.round(s.speedBonus * 100),
+      doubleT: Math.ceil(s.doubleT),
+      bossHp: showBoss ? Math.max(0, Math.ceil(boss.hp)) : null,
+      bossMax: boss ? Math.ceil(boss.maxHp) : 1,
+      lane: this.phase === PHASE.BOSS ? 0 : Math.sign(this.targetX),
     };
     const prev = this.ui;
     if (Object.keys(next).some((k) => next[k] !== prev[k])) {
@@ -551,3 +776,5 @@ export class Game {
     this.renderer.dispose();
   }
 }
+
+export { CUBE_TYPES };
