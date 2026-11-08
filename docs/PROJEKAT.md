@@ -506,6 +506,11 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
 4. App Store (Apple Developer $99 godišnje): iOS build preko EAS-a (Mac ne treba), Sign in with Apple, proizvodi u App
    Store Connect, TestFlight na Andrijinom iPhone-u (prvi pravi build na iPhone-u: holo, 120 Hz, push, kupovina),
    slike za iPhone 6.9", App Privacy, pregled. Apple Small Business Program (15% umesto 30% provizije) prijaviti ručno.
+   Stanje (8. nov. 2026): Andrija se upisao u Apple Developer Program preko sajta (aplikacija Apple Developer traži
+   iOS 26, a on ostaje na iOS 18), kao **Individual**, svojim **ličnim Apple ID-jem** (novi Apple ID na
+   `lockeddevsapps@gmail.com` Apple je odbio: „Your account cannot be created at this time“). Plaćeno $99,
+   čeka se mejl o aktivaciji (do 2 radna dana). Prodavac u App Store-u biće njegovo ime; kolega dobija pristup
+   preko Users and Access, EAS radi preko API ključa.
 5. Pre slanja u obe prodavnice: `docs/ZASTITA.md` deo 6 (Expo Go adrese iz Supabase-a, probni nalozi i `manual_test`
    pretplate, Google OAuth „In production“, pravi ključevi, bez „TEST PRICES“).
 6. Provere na telefonima koje fale: zajednički cilj na dva telefona sa pravim nalozima (`0006`, nova `send-goal-push`),
