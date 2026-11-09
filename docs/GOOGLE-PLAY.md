@@ -89,6 +89,8 @@ preview). Izmereno iz logova build-ova, ne nagađano.
   AAB se preuzima sa stranice build-a na expo.dev (dugme Download).
 
 ## 4. Interno testiranje ✅ 9. nov. (release 4 (1.0.0) objavljen, jedan Gmail na listi testera, License testing). Instalacija sa Play-a se proba na Redmi-ju (ne Honor-u); prvi pokušaj: „Item not found“
+iako je izdanje bilo „dostupno internim testerima“; prošlo posle brisanja podataka Play prodavnice i restarta
+telefona (9. nov. 2026, instalirano na Redmi)
 
 Kolega nema Android: na listi nije; iOS testira preko TestFlight-a. License testing je u novom izgledu Play Console-a:
 Upravljajte nalogom > Play apps settings > Monetization settings > License testing.
