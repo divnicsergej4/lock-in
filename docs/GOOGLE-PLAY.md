@@ -55,7 +55,8 @@ All apps > **Create app**:
 nedelje. Pretplata sa 7 dana probe je „Free“ aplikacija sa kupovinom u aplikaciji. Iz „Free“ se kasnije ne može u
 „Paid“ i obrnuto, pa ovo mora odmah tačno. Reklama nema (formular Ads: **No**, korak 5).
 
-Paket `com.lockintracker.app` se ne upisuje ovde: Play ga uzme iz prvog otpremljenog AAB-a i posle se ne menja.
+Naziv paketa: Play Console ga sad traži odmah pri pravljenju (9. nov. 2026): **`com.lockintracker.app`**, isti kao
+u AAB-u. Posle se ne menja.
 
 ## 3. Production build (AAB) ✅ gotov 6. nov.
 
