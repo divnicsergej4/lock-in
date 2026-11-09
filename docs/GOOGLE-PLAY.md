@@ -9,7 +9,9 @@ Ne šalju se u čat. Javni RevenueCat ključ `goog_…` nije tajna.
 
 Stanje: ✅ urađeno, ⬜ čeka.
 
-## 1. Registracija naloga (play.google.com/console/signup) ⬜
+## 1. Registracija naloga (play.google.com/console/signup) ✅ (osim merchant naloga, tačka 10)
+
+Nalog „Lockeddevs“ (lični, ID 9092827406118639524): identitet, uređaj (Honor) i telefon potvrđeni 9. nov. 2026.
 
 Pre početka: Google nalog na koji se otvara Play Console treba da bude onaj koji zadržavaš zauvek (prenos aplikacije
 na drugi nalog je spor), sa uključenom prijavom u dva koraka (2-Step Verification; Play Console je traži).
@@ -39,7 +41,7 @@ na drugi nalog je spor), sa uključenom prijavom u dva koraka (2-Step Verificati
 
 Srbija je podržana za prodavce na Google Play-u (od 2019).
 
-## 2. Nova aplikacija u Play Console-u ⬜
+## 2. Nova aplikacija u Play Console-u ✅ 9. nov.
 
 All apps > **Create app**:
 
@@ -86,7 +88,10 @@ preview). Izmereno iz logova build-ova, ne nagađano.
 - Komanda (iz `mobile/`): `npx eas-cli build --profile production --platform android --non-interactive --no-wait`.
   AAB se preuzima sa stranice build-a na expo.dev (dugme Download).
 
-## 4. Interno testiranje ⬜
+## 4. Interno testiranje ✅ 9. nov. (release 4 (1.0.0) objavljen, lista testera samo Gmail sa Honora, License testing)
+
+Kolega nema Android: na listi nije; iOS testira preko TestFlight-a. License testing je u novom izgledu Play Console-a:
+Upravljajte nalogom > Play apps settings > Monetization settings > License testing.
 
 1. Testing > **Internal testing** > Create new release.
 2. **Play App Signing:** ostavi „Use Google-generated key“ (podrazumevano). Google čuva ključ kojim se aplikacija
