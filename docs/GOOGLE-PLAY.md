@@ -88,7 +88,7 @@ preview). Izmereno iz logova build-ova, ne nagađano.
 - Komanda (iz `mobile/`): `npx eas-cli build --profile production --platform android --non-interactive --no-wait`.
   AAB se preuzima sa stranice build-a na expo.dev (dugme Download).
 
-## 4. Interno testiranje ✅ 9. nov. (release 4 (1.0.0) objavljen, lista testera samo Gmail sa Honora, License testing)
+## 4. Interno testiranje ✅ 9. nov. (release 4 (1.0.0) objavljen, jedan Gmail na listi testera, License testing). Instalacija sa Play-a se proba na Redmi-ju (ne Honor-u); prvi pokušaj: „Item not found“
 
 Kolega nema Android: na listi nije; iOS testira preko TestFlight-a. License testing je u novom izgledu Play Console-a:
 Upravljajte nalogom > Play apps settings > Monetization settings > License testing.
