@@ -167,8 +167,9 @@ describe('who is locked out', () => {
   const active = { kind: 'active', until: null } as const;
   const out = { kind: 'signed-out' } as const;
   test('signed in: the server (and RevenueCat) decide', () => {
-    expect(isLocked(true, none, null, false)).toBe(true);
-    expect(isLocked(true, active, null, false)).toBe(false);
+    expect(isLocked(true, none, null, true)).toBe(true);
+    expect(isLocked(true, active, null, true)).toBe(false);
+    expect(isLocked(true, none, null, false)).toBe(false); // a build that cannot sell: no dead-end plans screen
     expect(isLocked(true, { kind: 'unknown' }, null, true)).toBe(false); // offline: not locked
     expect(isLocked(true, { kind: 'checking' }, null, true)).toBe(false);
   });

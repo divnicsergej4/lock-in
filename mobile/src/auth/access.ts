@@ -39,12 +39,16 @@ export function decideAccess(server: unknown | 'error', store: boolean | null, n
  *   * not signed in: RevenueCat said this phone's Apple ID / Google account has none. Personal spending works
  *     without an account, so the store is the only one who knows; the trial starts there, with the purchase.
  * Not locked while it could not be asked (offline, still checking): RevenueCat keeps its last answer on the
- * phone for that, so a plan bought earlier still opens the app offline. And not locked by the store in a build
- * without RevenueCat keys (nothing could be bought there yet).
+ * phone for that, so a plan bought earlier still opens the app offline. And nobody is locked in a build that
+ * cannot sell (no RevenueCat keys: nothing could be bought there, so a locked plans screen would be a dead end;
+ * Andrija, 9 Nov 2026, a signed-in tester on the first Google Play build). paymentsReady is true in development
+ * too, where the plans screen sells the test plans.
+ * The server still refuses shared-goal changes without a trial or plan, whatever this says.
  */
 export function isLocked(signedIn: boolean, a: Access, store: { active: boolean } | null, paymentsReady: boolean): boolean {
+  if (!paymentsReady) return false;
   if (signedIn) return a.kind === 'none';
-  return paymentsReady && store != null && !store.active;
+  return store != null && !store.active;
 }
 
 /** The line under the account in Settings. */

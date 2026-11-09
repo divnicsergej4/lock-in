@@ -437,7 +437,10 @@ Urađeno:
   samo ekran za plaćanje, demo i Restore). Ko kupi bez naloga pa se kasnije prijavi: `Purchases.logIn` spoji kupovinu
   sa nalogom, a nova funkcija `sync-store-access` je upiše na server (webhook to ne javlja do sledeće obnove).
   **Zaključavanje:** prijavljen korisnik bez probe/pretplate (server) ili, bez naloga, bez kupovine u RevenueCat-u.
-  Ne zaključava se offline ni dok se proverava; build bez RevenueCat ključeva ne zaključava korisnike bez naloga.
+  Ne zaključava se offline ni dok se proverava; build bez RevenueCat ključeva ne zaključava **nikoga**, ni prijavljene
+  (ispravljeno 9. nov. 2026: na prvom Google Play build-u prijavljen tester bez probe je ostao na ekranu za plaćanje
+  bez ✕, a kupiti nije mogao; Andrija prijavio). U razvoju (Expo Go, probni planovi) prijavljen bez probe i dalje
+  ostaje zaključan. Server i dalje odbija izmene u zajedničkom cilju bez probe/pretplate.
   Doživotni plan nema probu („Buy for <cena>“). Kad je proba već iskorišćena (prodavnica kaže), nema „7 DAYS FREE“
   ni linije, piše „Your free week is over.“ i „Subscribe for <cena> a year“.
   Šta sam dodao jer ga dizajn nema (Andrija: „šta fali, dodaj“): ✕ kad aplikacija nije zaključana (otvoreno iz

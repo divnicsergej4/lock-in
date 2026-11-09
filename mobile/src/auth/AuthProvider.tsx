@@ -118,7 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return r;
   }, [update]);
 
-  const locked = isLocked(!!session, access, store, paymentsReady());
+  // In development without keys the plans screen sells the test plans, so a signed-in user without access stays locked there.
+  const locked = isLocked(!!session, access, store, paymentsReady() || __DEV__);
   const value = useMemo(
     () => ({ available: !!supabase, session, access, store, locked, refreshAccess, signOut, deleteAccount }),
     [session, access, store, locked, refreshAccess, signOut, deleteAccount],
