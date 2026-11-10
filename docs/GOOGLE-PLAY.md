@@ -130,7 +130,13 @@ Dopune uz PRODAVNICE.md:
 - **App access:** tekst iz dela 9 PRODAVNICE.md. Radi tek kad je Google OAuth „In production“ (korak 8.1).
 - Kategorija: Finance; kontakt: `support@lockintracker.app`, `https://lockintracker.app`.
 
-## 6. Proizvodi ⬜ (cene: Andrija i kolega)
+## 6. Proizvodi ✅ 10. nov. 2026 (obe pretplate, osnovni paketi i ponude `free-week` aktivni)
+
+Merchant nalog (profil za plaćanja) napravljen: javni naziv `Lockeddevs`, na izvodu kartice `LOCK IN`, kategorija
+Računarski softver, podrška `support@lockintracker.app`, sajt `https://lockintracker.app`. **Način isplate još
+nije dodat:** Google traži račun u **USD** (devizni), dinarski ne prolazi; zarada se čuva dok se ne doda. Grupa
+naloga za naknadu 15% napravljena (samo Lockeddevs); prihvatanje uslova još nije viđeno (za pretplate je 15%
+ionako). Mejl naloga u Play Console-u je `andrijadmitrovic02@gmail.com` (tako piše u grupi naloga).
 
 Pravi se posle otpremanja prvog AAB-a i merchant naloga. Monetize > Products:
 
