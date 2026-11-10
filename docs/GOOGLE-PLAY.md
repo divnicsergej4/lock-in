@@ -146,7 +146,12 @@ pakete iz RevenueCat ponude, pa se bez paketa Lifetime sam svede na mesečnu i g
   RevenueCat pakete), pa su ovi samo predlog imena.
 - „Never had any subscription“ znači: ko je jednom imao probu mesečne, nema novu probu ni na godišnjoj.
 - Cena se upisuje u USD, a Google sam preračuna za ostale zemlje. **Konačne cene (Andrija, 6. nov.): mesečna
-  $4.99, godišnja $29.99; u zemljama sa evrom ručno €4.99 i €29.99.**
+  $4.99, godišnja $29.99.** Evro se ne ispravlja ručno (Andrija, 10. nov.: „prihvatljivo nam je ovako“): ostaje
+  Google-ov preračun sa PDV-om (mesečna €5.49 u EU).
+- Benefits (iste na obe pretplate, najviše 4 × 40 znakova, skraćeno sa ekrana za plaćanje): `Roasts every time you
+  spend`, `A streak that keeps you honest every day`, `Shared goals with your friends`, `Charts, calendar and
+  spending patterns`. Opis, ikona, oznake i ocena uzrasta proizvoda: prazno. Porez: Prodaja digitalnih aplikacija,
+  Usluga.
 - Base plan i ponuda moraju biti **Activated**.
 
 ## 7. RevenueCat ⬜
