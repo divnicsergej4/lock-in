@@ -92,6 +92,12 @@ preview). Izmereno iz logova build-ova, ne nagađano.
 iako je izdanje bilo „dostupno internim testerima“; prošlo posle brisanja podataka Play prodavnice i restarta
 telefona (9. nov. 2026, instalirano na Redmi)
 
+Prvo ažuriranje na kanal `production` (Andrija: „Da, pošalji“, 10. nov. 2026), samo Android, sa
+`--environment production` (EAS promenljive; u paketu je pravi Supabase, nema probnog Turnstile ključa): build bez
+prodavnice više ne zaključava prijavljene (update group `6cc4d46a-3fc4-46ec-a8e8-d45f7e4d1043`, commit `f2ca3fc`).
+Komanda iz `mobile/`: `npx eas-cli update --channel production --platform android --environment production
+--message "..."`. Na kanal `production` i dalje ništa bez Andrijine dozvole.
+
 Kolega nema Android: na listi nije; iOS testira preko TestFlight-a. License testing je u novom izgledu Play Console-a:
 Upravljajte nalogom > Play apps settings > Monetization settings > License testing.
 
