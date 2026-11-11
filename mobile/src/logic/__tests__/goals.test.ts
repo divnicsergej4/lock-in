@@ -87,7 +87,7 @@ describe('the design example (Summer trip to Greece)', () => {
 
   test('totals, people and pins', () => {
     expect(v.members.map((m) => [m.name, m.total, m.color])).toEqual([
-      ['Sergej', 520, '#22e07a'], ['Marko', 400, '#5aa9f0'], ['Ana', 320, '#ff7eb6'],
+      ['Luke', 520, '#22e07a'], ['Mark', 400, '#5aa9f0'], ['Anna', 320, '#ff7eb6'],
     ]);
     expect(v.saved).toBe(1240);
     expect(v.pct).toBe(62);
@@ -100,7 +100,7 @@ describe('the design example (Summer trip to Greece)', () => {
   test('this week, streak and pace', () => {
     expect(v.members.map((m) => m.thisWeek)).toEqual([true, true, false]);
     expect(v.streak).toBe(3);
-    expect(streakCard(v)).toEqual({ title: '3-week squad streak', text: "Everyone put something in. Ana, you're up this week." });
+    expect(streakCard(v)).toEqual({ title: '3-week squad streak', text: "Everyone put something in. Anna, you're up this week." });
     const p = paceCard(v, NOW);
     expect(p.text).toBe('10 € a week each gets you there by May 1.');
   });
@@ -115,14 +115,14 @@ describe('the design example (Summer trip to Greece)', () => {
   });
 
   test('activity and the card', () => {
-    expect(v.activity[0].parts.map((x) => x.t).join('')).toBe('Marko put in 50 €');
-    expect(lastActivity(v, NOW)).toEqual({ parts: [{ t: 'Marko', role: 'name' }, { t: ' put in 50 €', role: 'text' }], when: '2h ago' });
+    expect(v.activity[0].parts.map((x) => x.t).join('')).toBe('Mark put in 50 €');
+    expect(lastActivity(v, NOW)).toEqual({ parts: [{ t: 'Mark', role: 'name' }, { t: ' put in 50 €', role: 'text' }], when: '2h ago' });
     const texts = v.activity.map((a) => a.parts.map((x) => x.t).join(''));
     expect(texts).toContain('The 50% pin clicked');
-    expect(texts).toContain('Ana joined the goal');
+    expect(texts).toContain('Anna joined the goal');
     expect(texts).toContain('You put in 120 €');
     expect(v.activity.find((a) => a.parts[0].t === 'You put in 120 €')?.contributionId).toBeTruthy();
-    expect(v.activity.find((a) => a.parts[0].t === 'Marko put in 50 €')?.contributionId).toBeUndefined();
+    expect(v.activity.find((a) => a.parts[0].t === 'Mark put in 50 €')?.contributionId).toBeUndefined();
     expect(leaveText(v)).toBe('If you leave, your 520 € is taken out of this goal. Everyone else keeps going.');
   });
 });

@@ -417,7 +417,8 @@ Urađeno:
   pozive, prijateljstva i nudge-ove, osvežavanje pri povratku u aplikaciju). Istekla pretplata: sve se vidi, sve osim
   izlaska (i brisanja svoje uplate) daje jasnu poruku. „Shared goal alerts“ se nude jednom, posle prvog pravljenja
   cilja ili uplate (u Expo Go-u se ne broje, pa ih pravi build ponudi). Demo: isti izgled sa „Summer trip to Greece“
-  (Sergej, Marko, Ana; 520 + 400 + 320 od 2,000 €, rok May 1, streak 3 nedelje). Tekst o privatnosti dopunjen (korak 6).
+  (Luke, Mark, Anna; 520 + 400 + 320 od 2,000 €, rok May 1, streak 3 nedelje; Andrija 12. nov. 2026: u demu nema
+  srpskih imena, ranije Sergej, Marko, Ana; prijatelj van cilja Luka → Jake, moj izbor). Tekst o privatnosti dopunjen (korak 6).
   Migracija `0006` + nova verzija `send-goal-push` (tekstovi za nudge, pin i otključavanje). Testovi: 18 provera logike
   cilja, 38 provera za `0006`, spisak kolona i RPC-ova u `privacy.test.mjs` dopunjen, 7 novih provera teksta push-a.
   Provereno u pregledaču (demo, tamna i svetla tema, mere prema slikama). Nije provereno na telefonima ni sa pravim

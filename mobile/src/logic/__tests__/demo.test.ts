@@ -7,6 +7,8 @@ import { at, state } from './helpers';
 import { prototype, TO_PROTO } from './prototype';
 
 const FROM_PROTO: Record<string, string> = Object.fromEntries(Object.entries(TO_PROTO).map(([en, sr]) => [sr, en]));
+// The app's demo uses English names (Andrija, 12 Nov 2026); the prototype still has Marko and Ana.
+const DEMO_NAMES: Record<string, string> = { Marko: 'Mark', Ana: 'Anna' };
 
 function protoDemo(now: number, cur: string) {
   const p = prototype(now);
@@ -28,7 +30,7 @@ function protoDemo(now: number, cur: string) {
     lim: Object.fromEntries(Object.entries(d.lim).map(([k, v]) => [cat(k), v])),
     plan: { items: Object.fromEntries(Object.entries(d.plan.items).map(([k, v]) => [cat(k), v])), save: d.plan.save },
     rec: d.rec.map((r: any) => ({ ...r, cat: cat(r.cat) })),
-    team: d.team,
+    team: { ...d.team, c: d.team.c.map((x: any) => ({ ...x, who: DEMO_NAMES[x.who] || x.who })) },
     t0: d.t0,
     tk0: d.tk0,
   };
@@ -68,6 +70,6 @@ describe('demo', () => {
     expect(t.name).toBe('Summer trip to Greece');
     expect(t.line).toBe('1,020 / 2,040 EUR');
     expect(t.pct).toBe(50);
-    expect(t.people).toEqual(['Me: 440', 'Marko: 320', 'Ana: 260']);
+    expect(t.people).toEqual(['Me: 440', 'Mark: 320', 'Anna: 260']);
   });
 });

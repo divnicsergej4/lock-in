@@ -114,8 +114,8 @@ export function demoData(s: AppState, now: number): AppState {
       t: A(240000),
       c: [
         { who: 'Me', amt: A(52000), t: day(30) },
-        { who: 'Marko', amt: A(38000), t: day(20) },
-        { who: 'Ana', amt: A(31000), t: day(9) },
+        { who: 'Mark', amt: A(38000), t: day(20) },
+        { who: 'Anna', amt: A(31000), t: day(9) },
       ],
     },
     tutSeen: 1,
