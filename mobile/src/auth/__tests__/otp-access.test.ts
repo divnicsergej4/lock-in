@@ -6,14 +6,14 @@ const NOW = Date.parse('2026-10-25T12:00:00Z');
 describe('email code', () => {
   test('"Send code" is locked for 60 s after sending', () => {
     expect(resendIn(otpStart, NOW)).toBe(0);
-    const st = codeSent('ana@example.com', NOW);
+    const st = codeSent('anna@example.com', NOW);
     expect(resendIn(st, NOW)).toBe(60);
     expect(resendIn(st, NOW + 59_001)).toBe(1);
     expect(resendIn(st, NOW + 60_000)).toBe(0);
   });
 
   test('after 5 wrong codes the code is dropped until a new one is sent', () => {
-    let st = codeSent('ana@example.com', NOW);
+    let st = codeSent('anna@example.com', NOW);
     for (let i = 0; i < MAX_WRONG_CODES - 1; i++) st = wrongCode(st);
     expect(canEnterCode(st)).toBe(true);
     st = wrongCode(st);
@@ -46,10 +46,10 @@ describe('email code', () => {
   test('typing and pasting the code, and the email', () => {
     expect(cleanCode('123 456')).toBe('123456');
     expect(cleanCode('Code: 1234567')).toBe('123456');
-    expect(normalizeEmail('  Ana@Example.COM ')).toBe('ana@example.com');
-    expect(isEmail('ana@example.com')).toBe(true);
-    expect(isEmail('ana@example')).toBe(false);
-    expect(isEmail('ana @example.com')).toBe(false);
+    expect(normalizeEmail('  Anna@Example.COM ')).toBe('anna@example.com');
+    expect(isEmail('anna@example.com')).toBe(true);
+    expect(isEmail('anna@example')).toBe(false);
+    expect(isEmail('anna @example.com')).toBe(false);
   });
 });
 

@@ -14,7 +14,7 @@ const befriend = (a, b) => psql(`insert into public.friendships values ('${a < b
 
 // ---- send_friend_request: 10 per hour, 30 per day, 3 times the same email per week ----
 console.log('friend requests');
-const A = await signup('ana@example.com');
+const A = await signup('anna@example.com');
 let sent = 0;
 for (let i = 0; i < 10; i++) if ((await sendInvite(A, `hour${i}@example.com`))[0]) sent++;
 ok(sent === 10, '10 invites in an hour go through', String(sent));
@@ -33,7 +33,7 @@ ok(!s && e.includes('up to 30 friend requests per day'), 'the 31st in the same d
 await ago('friend_request', '1 day');
 ok((await sendInvite(A, 'nextday@example.com'))[0], 'the next day invites work again');
 
-const B = await signup('bojan@example.com');
+const B = await signup('ben@example.com');
 for (let i = 0; i < 3; i++) [s, , e] = await sendInvite(B, 'same@example.com');
 ok(s, 'the same email can be invited (re-sent) 3 times in a week', e);
 [s, , e] = await sendInvite(B, 'same@example.com');

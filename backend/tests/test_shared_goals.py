@@ -52,13 +52,13 @@ def signup(email, paid=True):
 
 def main():
     setup()
-    A = signup('ana@example.com'); B = signup('Bojan@Example.com'); C = signup('ceca@example.com')
+    A = signup('anna@example.com'); B = signup('Ben@Example.com'); C = signup('cleo@example.com')
     D = signup('dule@example.com', paid=False)
 
-    ok(psql(f"select email from public.profiles where id='{B}'")[1] == 'bojan@example.com', 'signup creates a profile (email lower-cased)')
+    ok(psql(f"select email from public.profiles where id='{B}'")[1] == 'ben@example.com', 'signup creates a profile (email lower-cased)')
 
     # ---- friends ----
-    s, rid, e = as_user(A, "select public.send_friend_request('BOJAN@example.com')")
+    s, rid, e = as_user(A, "select public.send_friend_request('BEN@example.com')")
     ok(s, 'A invites B by email', e)
     s, out, e = as_user(C, f"select count(*) from public.friend_requests")
     ok(s and out == '0', 'C cannot see the invite between A and B', out + e)
@@ -69,13 +69,13 @@ def main():
     s, out, e = as_user(B, f"select public.respond_friend_request('{rid}', true)")
     ok(s, 'B accepts', e)
     ok(as_user(A, "select count(*) from public.friendships")[1] == '1', 'A and B are friends')
-    s, out, e = as_user(A, "select public.send_friend_request('bojan@example.com')")
+    s, out, e = as_user(A, "select public.send_friend_request('ben@example.com')")
     ok(not s and 'already friends' in e, 'inviting an existing friend again is refused', e)
-    s, out, e = as_user(A, "select public.send_friend_request('ana@example.com')")
+    s, out, e = as_user(A, "select public.send_friend_request('anna@example.com')")
     ok(not s and 'yourself' in e, 'cannot add yourself', e)
     s, out, e = as_user(A, "select public.send_friend_request('not an email')")
     ok(not s and 'invalid email' in e, 'bad email is refused', e)
-    s, out, e = as_user(D, "select public.send_friend_request('ana@example.com')")
+    s, out, e = as_user(D, "select public.send_friend_request('anna@example.com')")
     ok(not s and 'subscription required' in e, 'no trial/subscription: cannot add friends', e)
     s, out, e = as_user(A, "insert into public.friendships values ('%s','%s')" % tuple(sorted([A, C])))
     ok(not s, 'nobody can make a friendship without an accepted invite')
@@ -88,8 +88,8 @@ def main():
     ok(as_user(E, f"select public.respond_friend_request('{rid2}', true)")[0], 'Eva accepts')
 
     # two people inviting each other: the second invite simply accepts the first
-    s, _, e = as_user(C, "select public.send_friend_request('bojan@example.com')"); ok(s, 'C invites B', e)
-    s, _, e = as_user(B, "select public.send_friend_request('ceca@example.com')"); ok(s, 'B invites C back', e)
+    s, _, e = as_user(C, "select public.send_friend_request('ben@example.com')"); ok(s, 'C invites B', e)
+    s, _, e = as_user(B, "select public.send_friend_request('cleo@example.com')"); ok(s, 'B invites C back', e)
     ok(as_user(B, f"select count(*) from public.friendships where '{C}' in (user_a,user_b)")[1] == '1', 'crossed invites become a friendship')
 
     # ---- goals ----
@@ -120,7 +120,7 @@ def main():
     ok(not s, 'nobody can rewrite who created the goal')
     ok(as_user(C, f"select count(*) from public.profiles")[1] == '3', 'C sees names of everyone in the goal (A, B and herself)')
     s, _, e = as_user(A, f"update public.profiles set email = 'x@y.z' where id = '{A}'"); ok(not s, 'email cannot be changed from the app')
-    s, _, e = as_user(A, f"update public.profiles set display_name = 'Ana' where id = '{A}'"); ok(s, 'own display name can be changed', e)
+    s, _, e = as_user(A, f"update public.profiles set display_name = 'Anna' where id = '{A}'"); ok(s, 'own display name can be changed', e)
 
     # subscription runs out: can still look and leave, cannot change anything
     psql(f"update public.subscriptions set active_until = now() - interval '1 minute' where user_id = '{C}'")

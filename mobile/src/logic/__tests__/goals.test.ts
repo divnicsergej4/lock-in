@@ -14,7 +14,7 @@ const iso = (t: number) => new Date(t).toISOString();
 function snap(over: Partial<Snapshot> = {}): Snapshot {
   return {
     ...emptySnapshot('me'),
-    names: { me: 'Sergej', m: 'Marko', a: 'Ana' },
+    names: { me: 'Luke', m: 'Mark', a: 'Anna' },
     goals: [{ id: 'g', name: 'Summer trip to Greece', target: 2000, currency: 'EUR', deadline: '2027-05-01', created_at: iso(NOW - 60 * D) }],
     members: [
       { goal_id: 'g', user_id: 'me', joined_at: iso(NOW - 60 * D), added_by: 'me' },
@@ -133,14 +133,14 @@ describe('squad streak', () => {
     const s = snap({
       contributions: [
         c('me', 10, ws - 6 * D), c('m', 10, ws - 5 * D), c('a', 10, ws - 4 * D), // last week: all
-        c('me', 10, ws - 13 * D), c('a', 10, ws - 12 * D), // two weeks ago: Marko missed
+        c('me', 10, ws - 13 * D), c('a', 10, ws - 12 * D), // two weeks ago: Mark missed
         c('me', 10, ws + H),
       ],
     });
     const v = goalView(s, 'g', NOW)!;
     expect(v.streak).toBe(1);
     expect(v.missing).toEqual(['m', 'a']);
-    expect(streakCard(v).text).toBe("Everyone put something in. Marko and Ana, you're up this week.");
+    expect(streakCard(v).text).toBe("Everyone put something in. Mark and Anna, you're up this week.");
   });
 
   test('everyone this week counts at once', () => {
@@ -155,7 +155,7 @@ describe('squad streak', () => {
     const v = goalView(s, 'g', NOW)!;
     expect(streakCard(v)).toEqual({ title: 'No squad streak yet', text: "Every week everyone puts something in, the streak grows. You're up this week." });
     const s2 = snap({ contributions: [c('a', 10, ws + H)] });
-    expect(streakCard(goalView(s2, 'g', NOW)!).text).toContain('You and Marko are up this week.');
+    expect(streakCard(goalView(s2, 'g', NOW)!).text).toContain('You and Mark are up this week.');
   });
 
   test('members only count from the week they joined; weeks before the goal do not count', () => {
@@ -205,7 +205,7 @@ describe('pace and tags', () => {
     expect(v.members.find((m) => m.id === 'a')?.nudgedToday).toBe(true);
     expect(v.members.find((m) => m.id === 'm')?.nudgedToday).toBe(false);
     const t = v.activity.map((a) => a.parts.map((x) => x.t).join(''));
-    expect(t.slice(0, 2)).toEqual(['You nudged Ana', 'Marko nudged you']);
+    expect(t.slice(0, 2)).toEqual(['You nudged Anna', 'Mark nudged you']);
   });
 
   test('alone in a goal', () => {

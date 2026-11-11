@@ -51,10 +51,10 @@ export function money(amount: number, currency: string | null): string {
 }
 
 /**
- * The text for one person and one goal. One thing happened: "Marko added €50 to Summer trip", "Ana joined Summer
- * trip", "Eva left Summer trip", "Luka nudged you: Summer trip is waiting on you 👀", "Summer trip: the 50% pin
+ * The text for one person and one goal. One thing happened: "Mark added €50 to Summer trip", "Anna joined Summer
+ * trip", "Eva left Summer trip", "Luke nudged you: Summer trip is waiting on you 👀", "Summer trip: the 50% pin
  * clicked", "Summer trip is unlocked 🔓 Now book it before anyone spends it.". Several (merged): payments per
- * person are added up, "Summer trip: Marko added €120 (3 payments), Ana joined, Eva left", at most 3 parts, then
+ * person are added up, "Summer trip: Mark added €120 (3 payments), Anna joined, Eva left", at most 3 parts, then
  * "and N more".
  */
 export function goalText(g: Pick<Group, 'goal_name' | 'currency' | 'events'>): string {

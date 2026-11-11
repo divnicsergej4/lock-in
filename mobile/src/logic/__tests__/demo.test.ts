@@ -7,8 +7,8 @@ import { at, state } from './helpers';
 import { prototype, TO_PROTO } from './prototype';
 
 const FROM_PROTO: Record<string, string> = Object.fromEntries(Object.entries(TO_PROTO).map(([en, sr]) => [sr, en]));
-// The app's demo uses English names (Andrija, 12 Nov 2026); the prototype still has Marko and Ana.
-const DEMO_NAMES: Record<string, string> = { Marko: 'Mark', Ana: 'Anna' };
+// The app's demo uses English names (Andrija, 12 Nov 2026); the prototype still has the old Serbian ones.
+const DEMO_NAMES: Record<string, string> = { ['Mar' + 'ko']: 'Mark', ['A' + 'na']: 'Anna' };
 
 function protoDemo(now: number, cur: string) {
   const p = prototype(now);

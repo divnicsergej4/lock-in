@@ -110,7 +110,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   cilju na 24 h, ne sebi, traži probu/pretplatu, prekidač „Nudges from friends“. Push i za pređen pin i otključan cilj.
   Squad streak, fer deo, tempo i pinovi se računaju u aplikaciji (`mobile/src/logic/goals.ts`), bez novih tabela.
   Andrija je odobrio spisak svih novih tekstova (29. okt.): „Every euro“ u uvodu piše valutu cilja (euro, dollar,
-  krona…), bez naloga je isti izgled sa šarenim S M A i „Sign in to get started“, prekidač za nudge gasi samo push
+  krona…), bez naloga je isti izgled sa šarenim L M A (ranije S M A) i „Sign in to get started“, prekidač za nudge gasi samo push
   (red „Luka nudged you“ i dalje stoji u aplikaciji, onaj ko šalje ne saznaje), valuta cilja je glavna valuta u
   trenutku pravljenja (ispravljeno 29. okt., Andrija: „lepo sam ti bio rekao da stavis da se bira koja valuta je za
   cilj“: pri pravljenju cilja bira se valuta sa liste iz uvoda, podrazumevana je glavna; posle se ne menja), „On track“ = prosek uplata u poslednje 4 nedelje ≥ koliko treba nedeljno do roka.
@@ -417,8 +417,11 @@ Urađeno:
   pozive, prijateljstva i nudge-ove, osvežavanje pri povratku u aplikaciju). Istekla pretplata: sve se vidi, sve osim
   izlaska (i brisanja svoje uplate) daje jasnu poruku. „Shared goal alerts“ se nude jednom, posle prvog pravljenja
   cilja ili uplate (u Expo Go-u se ne broje, pa ih pravi build ponudi). Demo: isti izgled sa „Summer trip to Greece“
-  (Luke, Mark, Anna; 520 + 400 + 320 od 2,000 €, rok May 1, streak 3 nedelje; Andrija 12. nov. 2026: u demu nema
-  srpskih imena, ranije Sergej, Marko, Ana; prijatelj van cilja Luka → Jake, moj izbor). Tekst o privatnosti dopunjen (korak 6).
+  (Luke, Mark, Anna; 520 + 400 + 320 od 2,000 €, rok May 1, streak 3 nedelje). Andrija 12. nov. 2026: „ukloni
+  srpska imena svuda i zameni engleskim“. Ranije Sergej, Marko, Ana; prijatelj van cilja Luka → Jake; ekran bez
+  naloga S M A → L M A; primer na Privacy stranici „Mark added €50“; sva imena u testovima i komentarima
+  (Anna, Mark, Luke, Ben, Cleo, Dan, Ivy). Prototip (`index.html`) i SQL komentari u već postavljenim migracijama
+  nisu dirani. Slike ekrana cilja za prodavnice (`docs/prodavnica/`) još pokazuju stara imena i treba ih ponovo snimiti. Tekst o privatnosti dopunjen (korak 6).
   Migracija `0006` + nova verzija `send-goal-push` (tekstovi za nudge, pin i otključavanje). Testovi: 18 provera logike
   cilja, 38 provera za `0006`, spisak kolona i RPC-ova u `privacy.test.mjs` dopunjen, 7 novih provera teksta push-a.
   Provereno u pregledaču (demo, tamna i svetla tema, mere prema slikama). Nije provereno na telefonima ni sa pravim

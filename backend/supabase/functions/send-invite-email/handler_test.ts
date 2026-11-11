@@ -20,13 +20,13 @@ const post = (body: unknown, auth = 'Bearer user-token') =>
   });
 
 Deno.test('sends one email for an invite the database allows', async () => {
-  const t = setup({ to_email: 'eva@example.com', from_name: 'Ana' });
+  const t = setup({ to_email: 'eva@example.com', from_name: 'Anna' });
   const res = await handle(post({ request_id: RID }), t.deps);
   assertEquals(res.status, 200);
   assertEquals(t.claims, [RID]);
   assertEquals(t.sent.length, 1);
   assertEquals(t.sent[0].to, 'eva@example.com');
-  assertEquals(t.sent[0].subject, 'Ana invited you to Lock In');
+  assertEquals(t.sent[0].subject, 'Anna invited you to Lock In');
 });
 
 Deno.test('over the limit: 429 with the message from the database, no email', async () => {
@@ -43,13 +43,13 @@ Deno.test("someone else's invite, no subscription, not signed in: refused, no em
     assertEquals((await handle(post({ request_id: RID }), t.deps)).status, status);
     assertEquals(t.sent.length, 0);
   }
-  const t = setup({ to_email: 'eva@example.com', from_name: 'Ana' });
+  const t = setup({ to_email: 'eva@example.com', from_name: 'Anna' });
   assertEquals((await handle(post({ request_id: RID }, ''), t.deps)).status, 401);
   assertEquals(t.claims.length, 0);
 });
 
 Deno.test('bad input never reaches the database', async () => {
-  const t = setup({ to_email: 'eva@example.com', from_name: 'Ana' });
+  const t = setup({ to_email: 'eva@example.com', from_name: 'Anna' });
   assertEquals((await handle(post({ request_id: 'nope' }), t.deps)).status, 400);
   assertEquals((await handle(post({}), t.deps)).status, 400);
   assertEquals((await handle(new Request('https://x', { headers: { authorization: 'Bearer t' } }), t.deps)).status, 405);
@@ -57,12 +57,12 @@ Deno.test('bad input never reaches the database', async () => {
 });
 
 Deno.test('the email provider failing gives 502', async () => {
-  const t = setup({ to_email: 'eva@example.com', from_name: 'Ana' }, null, false);
+  const t = setup({ to_email: 'eva@example.com', from_name: 'Anna' }, null, false);
   assertEquals((await handle(post({ request_id: RID }), t.deps)).status, 502);
 });
 
 Deno.test('names cannot break the subject line', () => {
-  assertEquals(inviteEmail('a@b.co', 'Ana\r\nBcc: x@y.z').subject, 'Ana Bcc x y z invited you to Lock In');
+  assertEquals(inviteEmail('a@b.co', 'Anna\r\nBcc: x@y.z').subject, 'Anna Bcc x y z invited you to Lock In');
   assertEquals(inviteEmail('a@b.co', '   ').subject, 'A friend invited you to Lock In');
   assertEquals(inviteEmail('a@b.co', null).subject, 'A friend invited you to Lock In');
 });
@@ -73,12 +73,12 @@ Deno.test('a name can never become HTML, a link or an address', () => {
     '<script>alert(document.cookie)</script>',
     'https://evil.com/free-money',
     'www.evil.com',
-    'Ana visit evil.com now',
-    'ana@evil.com',
+    'Anna visit evil.com now',
+    'anna@evil.com',
     'ｅｖｉｌ．ｃｏｍ', // full-width look-alikes
-    'Ana‮moc.live', // right-to-left override
+    'Anna‮moc.live', // right-to-left override
     '<img src=x onerror=alert(1)>',
-    'Ana &lt;b&gt;',
+    'Anna &lt;b&gt;',
     'javascript:alert(1)',
   ];
   for (const name of evil) {
@@ -97,10 +97,10 @@ Deno.test('a name can never become HTML, a link or an address', () => {
 });
 
 Deno.test("real names stay as they are, cut to 40 characters", () => {
-  assertEquals(safeName('Ana-Marija O’Brien'), 'Ana-Marija O’Brien');
+  assertEquals(safeName('Anna-Marie O’Brien'), 'Anna-Marie O’Brien');
   assertEquals(safeName('Đorđe Šaković'), 'Đorđe Šaković');
   assertEquals(safeName('Сергеј'), 'Сергеј');
-  assertEquals(safeName('  Ana   \n Marko  '), 'Ana Marko');
+  assertEquals(safeName('  Anna   \n Mark  '), 'Anna Mark');
   const long = safeName('A'.repeat(30) + ' ' + 'B'.repeat(30));
   assertEquals(Array.from(long).length <= MAX_NAME, true);
   assertEquals(long, 'A'.repeat(30) + ' ' + 'B'.repeat(9));
@@ -108,7 +108,7 @@ Deno.test("real names stay as they are, cut to 40 characters", () => {
 
 Deno.test('an address that is not a plain email is not sent to', async () => {
   for (const to of ['eva@example.com<script>', '"eva"@example.com', 'eva@exa mple.com', 'eva@localhost']) {
-    const t = setup({ to_email: to, from_name: 'Ana' });
+    const t = setup({ to_email: to, from_name: 'Anna' });
     assertEquals((await handle(post({ request_id: RID }), t.deps)).status, 400, to);
     assertEquals(t.sent.length, 0);
   }

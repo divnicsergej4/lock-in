@@ -1,8 +1,8 @@
 import { assertEquals } from 'jsr:@std/assert@1';
 import { handle } from './handler.ts';
 
-const ANA = '6f1c2a3b-1234-4abc-8def-0123456789ab';
-const MARKO = '0a1b2c3d-1234-4abc-8def-0123456789ab';
+const ANNA = '6f1c2a3b-1234-4abc-8def-0123456789ab';
+const MARK = '0a1b2c3d-1234-4abc-8def-0123456789ab';
 
 function setup(tokens: Record<string, string>, deleteOk = true) {
   const deleted: string[] = [];
@@ -20,31 +20,31 @@ const post = (auth: string, body: unknown = {}) =>
   });
 
 Deno.test('deletes the signed-in user', async () => {
-  const t = setup({ 'Bearer ana-token': ANA });
-  const res = await handle(post('Bearer ana-token'), t.deps);
+  const t = setup({ 'Bearer anna-token': ANNA });
+  const res = await handle(post('Bearer anna-token'), t.deps);
   assertEquals(res.status, 200);
   assertEquals(await res.json(), { deleted: true });
-  assertEquals(t.deleted, [ANA]);
+  assertEquals(t.deleted, [ANNA]);
 });
 
 Deno.test('a user id in the body is ignored: you can only delete yourself', async () => {
-  const t = setup({ 'Bearer ana-token': ANA });
-  await handle(post('Bearer ana-token', { user_id: MARKO, id: MARKO }), t.deps);
-  assertEquals(t.deleted, [ANA]);
+  const t = setup({ 'Bearer anna-token': ANNA });
+  await handle(post('Bearer anna-token', { user_id: MARK, id: MARK }), t.deps);
+  assertEquals(t.deleted, [ANNA]);
 });
 
 Deno.test('no login, a bad or signed-out token, or a GET: nothing is deleted', async () => {
-  const t = setup({ 'Bearer ana-token': ANA });
+  const t = setup({ 'Bearer anna-token': ANNA });
   assertEquals((await handle(post(''), t.deps)).status, 401);
-  assertEquals((await handle(post('ana-token'), t.deps)).status, 401);
+  assertEquals((await handle(post('anna-token'), t.deps)).status, 401);
   assertEquals((await handle(post('Bearer '), t.deps)).status, 401);
   assertEquals((await handle(post('Bearer expired-or-signed-out'), t.deps)).status, 401);
-  const get = new Request('https://x/functions/v1/delete-account', { headers: { authorization: 'Bearer ana-token' } });
+  const get = new Request('https://x/functions/v1/delete-account', { headers: { authorization: 'Bearer anna-token' } });
   assertEquals((await handle(get, t.deps)).status, 405);
   assertEquals(t.deleted, []);
 });
 
 Deno.test('the auth server refusing gives 502, so the app does not say the account is gone', async () => {
-  const t = setup({ 'Bearer ana-token': ANA }, false);
-  assertEquals((await handle(post('Bearer ana-token'), t.deps)).status, 502);
+  const t = setup({ 'Bearer anna-token': ANNA }, false);
+  assertEquals((await handle(post('Bearer anna-token'), t.deps)).status, 502);
 });

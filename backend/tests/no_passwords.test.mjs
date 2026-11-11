@@ -125,10 +125,10 @@ async function scenarios(db, label) {
   const out = {};
 
   // 1. A password account, before anyone signs in with a code.
-  await auth.signUp('ana@example.com', 'ana-password-1');
-  out.beforeCode = await auth.signInWithPassword('ana@example.com', 'ana-password-1');
+  await auth.signUp('anna@example.com', 'anna-password-1');
+  out.beforeCode = await auth.signInWithPassword('anna@example.com', 'anna-password-1');
 
-  // 2. Pre-account takeover: Marko signs up with Eva's email and his password; later Eva signs in with a code.
+  // 2. Pre-account takeover: Mark signs up with Eva's email and his password; later Eva signs in with a code.
   await auth.signUp('eva@example.com', 'markos-password');
   await auth.sendCode('eva@example.com');
   out.evaCode = await auth.verifyCode('eva@example.com', auth.lastCode('eva@example.com'));
@@ -161,7 +161,7 @@ const { auth, out } = await scenarios(db);
 
 ok(out.beforeCode.error === 'invalid_credentials', 'password sign-up: signing in with that password fails even before confirming (not just "email not confirmed")', JSON.stringify(out.beforeCode));
 ok(out.evaCode.ok, 'Eva can sign in with the code on an account someone made with her email');
-ok(out.afterCode.error === 'invalid_credentials', 'after her code sign-in, the password Marko set does not work', JSON.stringify(out.afterCode));
+ok(out.afterCode.error === 'invalid_credentials', 'after her code sign-in, the password Mark set does not work', JSON.stringify(out.afterCode));
 ok(out.dashboard.error === 'invalid_credentials', 'a confirmed account made with a password in the dashboard cannot sign in with it', JSON.stringify(out.dashboard));
 ok(out.updateUser.error === 'invalid_credentials', 'a password set later with updateUser does not work', JSON.stringify(out.updateUser));
 ok(out.zoeGoogle.ok && out.zoePassword.error === 'invalid_credentials', 'Google on an unconfirmed password account works, the old password does not');
@@ -206,7 +206,7 @@ ok((await oldAuth.signInWithPassword('early@example.com', 'early-password')).err
 // Without 0003 the same scenarios show the problem, so the checks above test the real thing.
 const before = await freshDb({ before: '0003' });
 const { out: was } = await scenarios(before, 'control: the same steps without 0003');
-ok(was.afterCode.ok, 'without 0003: Marko signs in to Eva\'s account with his password after she confirmed it with a code');
+ok(was.afterCode.ok, 'without 0003: Mark signs in to Eva\'s account with his password after she confirmed it with a code');
 ok(was.beforeCode.error === 'email_not_confirmed' && was.dashboard.ok && was.updateUser.ok,
   'without 0003: passwords are checked and work', JSON.stringify([was.beforeCode, was.dashboard, was.updateUser]));
 ok(was.stored > 0, 'without 0003: passwords are stored');

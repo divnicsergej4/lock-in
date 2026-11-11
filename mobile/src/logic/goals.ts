@@ -432,7 +432,7 @@ export function goalTags(v: GoalView, now: number): Tag[] {
   return tags.slice(0, 3);
 }
 
-/** "Marko put in 50 € · 2h ago" on the card (or "No money in yet"). */
+/** "Mark put in 50 € · 2h ago" on the card (or "No money in yet"). */
 export function lastActivity(v: GoalView, now: number): { parts: ActivityPart[]; when: string } | null {
   const a = v.activity[0];
   if (!a) return null;

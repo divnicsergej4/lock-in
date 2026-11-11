@@ -7,7 +7,7 @@ const db = await freshDb();
 const { psql, asUser, ok, signup, fails } = helpers(db);
 let s, e;
 
-const A = await signup('ana@example.com');
+const A = await signup('anna@example.com');
 const [, G] = await asUser(A, "select public.create_goal('Greece', 2000, 'EUR')");
 const lit = (t) => (t === null ? 'null' : `E'${t.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\t/g, '\\t')}'`);
 
@@ -71,7 +71,7 @@ for (const [why, t] of Object.entries(BAD_TEXT)) {
 }
 [s, , e] = await asUser(A, `update public.profiles set display_name = '${'x'.repeat(41)}' where id = '${A}'`);
 ok(!s, 'refused: 41 characters', e);
-[s, , e] = await asUser(A, `update public.profiles set display_name = 'Ana-Marija O''Brien' where id = '${A}'`);
+[s, , e] = await asUser(A, `update public.profiles set display_name = 'Anna-Marie O''Brien' where id = '${A}'`);
 ok(s, 'accepted: a normal name', e);
 [s, , e] = await asUser(A, `update public.profiles set display_name = null where id = '${A}'`);
 ok(s, 'accepted: no name (NULL)', e);

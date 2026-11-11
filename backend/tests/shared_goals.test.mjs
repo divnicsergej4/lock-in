@@ -6,13 +6,13 @@ const db = await freshDb();
 const { psql, asUser, ok, signup, fails } = helpers(db);
 let s, out, e, rid, rid2, G, G2;
 
-const A = await signup('ana@example.com'); const B = await signup('Bojan@Example.com'); const C = await signup('ceca@example.com');
+const A = await signup('anna@example.com'); const B = await signup('Ben@Example.com'); const C = await signup('cleo@example.com');
 const D = await signup('dule@example.com', false);
 
-ok((await psql(`select email from public.profiles where id='${B}'`))[1] === 'bojan@example.com', 'signup creates a profile (email lower-cased)');
+ok((await psql(`select email from public.profiles where id='${B}'`))[1] === 'ben@example.com', 'signup creates a profile (email lower-cased)');
 
 // ---- friends ----
-[s, rid, e] = await asUser(A, "select public.send_friend_request('BOJAN@example.com')");
+[s, rid, e] = await asUser(A, "select public.send_friend_request('BEN@example.com')");
 ok(s, 'A invites B by email', e);
 [s, out, e] = await asUser(C, 'select count(*) from public.friend_requests');
 ok(s && out === '0', 'C cannot see the invite between A and B', out + e);
@@ -23,13 +23,13 @@ ok(!s, 'C cannot accept an invite meant for B');
 [s, out, e] = await asUser(B, `select public.respond_friend_request('${rid}', true)`);
 ok(s, 'B accepts', e);
 ok((await asUser(A, 'select count(*) from public.friendships'))[1] === '1', 'A and B are friends');
-[s, out, e] = await asUser(A, "select public.send_friend_request('bojan@example.com')");
+[s, out, e] = await asUser(A, "select public.send_friend_request('ben@example.com')");
 ok(!s && e.includes('already friends'), 'inviting an existing friend again is refused', e);
-[s, out, e] = await asUser(A, "select public.send_friend_request('ana@example.com')");
+[s, out, e] = await asUser(A, "select public.send_friend_request('anna@example.com')");
 ok(!s && e.includes('yourself'), 'cannot add yourself', e);
 [s, out, e] = await asUser(A, "select public.send_friend_request('not an email')");
 ok(!s && e.includes('invalid email'), 'bad email is refused', e);
-[s, out, e] = await asUser(D, "select public.send_friend_request('ana@example.com')");
+[s, out, e] = await asUser(D, "select public.send_friend_request('anna@example.com')");
 ok(!s && e.includes('subscription required'), 'no trial/subscription: cannot add friends', e);
 [s, out, e] = await asUser(A, `insert into public.friendships values ('${[A, C].sort().join("','")}')`);
 ok(!s, 'nobody can make a friendship without an accepted invite');
@@ -42,8 +42,8 @@ ok((await asUser(E, "select count(*) from public.friend_requests where status='p
 ok((await asUser(E, `select public.respond_friend_request('${rid2}', true)`))[0], 'Eva accepts');
 
 // two people inviting each other: the second invite simply accepts the first
-[s, , e] = await asUser(C, "select public.send_friend_request('bojan@example.com')"); ok(s, 'C invites B', e);
-[s, , e] = await asUser(B, "select public.send_friend_request('ceca@example.com')"); ok(s, 'B invites C back', e);
+[s, , e] = await asUser(C, "select public.send_friend_request('ben@example.com')"); ok(s, 'C invites B', e);
+[s, , e] = await asUser(B, "select public.send_friend_request('cleo@example.com')"); ok(s, 'B invites C back', e);
 ok((await asUser(B, `select count(*) from public.friendships where '${C}' in (user_a,user_b)`))[1] === '1', 'crossed invites become a friendship');
 
 // ---- goals ----
@@ -74,7 +74,7 @@ ok((await asUser(C, `select saved||'/'||members from public.goal_totals where go
 ok(!s, 'nobody can rewrite who created the goal');
 ok((await asUser(C, 'select count(*) from public.profiles'))[1] === '3', 'C sees names of everyone in the goal (A, B and herself)');
 [s, , e] = await asUser(A, `update public.profiles set email = 'x@y.z' where id = '${A}'`); ok(!s, 'email cannot be changed from the app');
-[s, , e] = await asUser(A, `update public.profiles set display_name = 'Ana' where id = '${A}'`); ok(s, 'own display name can be changed', e);
+[s, , e] = await asUser(A, `update public.profiles set display_name = 'Anna' where id = '${A}'`); ok(s, 'own display name can be changed', e);
 
 // subscription runs out: can still look and leave, cannot change anything
 await psql(`update public.subscriptions set active_until = now() - interval '1 minute' where user_id = '${C}'`);

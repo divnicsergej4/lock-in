@@ -30,7 +30,7 @@ const jwt = (payload: object) => `${b64url({ alg: 'HS256', typ: 'JWT' })}.${b64u
 const ANON = jwt({ role: 'anon', iss: 'supabase' });
 const UID = '6f1c2a3b-1234-4abc-8def-0123456789ab';
 // A real session is ~1.5–4 KB (two tokens and the user with its identities): over SecureStore's 2 KB.
-const ACCESS = jwt({ sub: UID, role: 'authenticated', aud: 'authenticated', exp: Math.floor(Date.now() / 1000) + 3600, email: 'ana@example.com', pad: 'x'.repeat(1500) });
+const ACCESS = jwt({ sub: UID, role: 'authenticated', aud: 'authenticated', exp: Math.floor(Date.now() / 1000) + 3600, email: 'anna@example.com', pad: 'x'.repeat(1500) });
 const REFRESH = 'refresh-token-abc123';
 
 async function everything() {
@@ -45,7 +45,7 @@ beforeEach(async () => {
 });
 
 describe('encrypted session storage', () => {
-  const session = JSON.stringify({ access_token: ACCESS, refresh_token: REFRESH, user: { id: UID, email: 'ana@example.com' } });
+  const session = JSON.stringify({ access_token: ACCESS, refresh_token: REFRESH, user: { id: UID, email: 'anna@example.com' } });
 
   test('what is saved comes back the same, also when it is bigger than SecureStore allows', async () => {
     expect(session.length).toBeGreaterThan(2048);
@@ -60,7 +60,7 @@ describe('encrypted session storage', () => {
     const blob = Object.values(all.async).join('');
     expect(blob).not.toContain(REFRESH);
     expect(blob).not.toContain(ACCESS.split('.')[1]);
-    expect(blob).not.toContain('ana@example.com');
+    expect(blob).not.toContain('anna@example.com');
     expect(blob).not.toContain('refresh_token');
     expect(all.secure).toHaveLength(1);
     const k = secure.get(all.secure[0])!;
@@ -141,7 +141,7 @@ describe('with supabase-js', () => {
       calls.push({ url, method: init?.method ?? 'GET', auth: headers.get('authorization') });
       if (opts.offline) throw new TypeError('Network request failed');
       const json = (status: number, body: unknown) => new Response(body == null ? null : JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
-      if (url.includes('/auth/v1/user')) return json(200, { id: UID, email: 'ana@example.com', aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, created_at: '2026-10-01T00:00:00Z' });
+      if (url.includes('/auth/v1/user')) return json(200, { id: UID, email: 'anna@example.com', aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, created_at: '2026-10-01T00:00:00Z' });
       if (url.includes('/auth/v1/logout')) return new Response(null, { status: 204 });
       if (url.includes('/functions/v1/delete-account')) return json(opts.deleteStatus ?? 200, opts.deleteStatus && opts.deleteStatus >= 400 ? { error: 'x' } : { deleted: true });
       return json(404, { msg: 'unexpected ' + url });

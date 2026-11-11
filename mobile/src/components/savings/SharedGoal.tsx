@@ -23,7 +23,7 @@ import { useStore } from '@/store/StoreProvider';
 import { useTourTarget } from '@/tour/registry';
 
 const SAMPLE = [
-  { initial: 'S', color: MEMBER_COLORS[0] },
+  { initial: 'L', color: MEMBER_COLORS[0] },
   { initial: 'M', color: MEMBER_COLORS[1] },
   { initial: 'A', color: MEMBER_COLORS[2] },
 ];
@@ -38,7 +38,7 @@ function GoldSection({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** "Marko wants to save with you" with Accept / Decline. */
+/** "Mark wants to save with you" with Accept / Decline. */
 function RequestCard({ r, s }: { r: FriendRequest; s: Snapshot }) {
   const g = useLook();
   const { run } = useGoals();
