@@ -168,6 +168,13 @@ uloge Pub/Sub Admin i Monitoring Viewer), pozvan u Play Console; RevenueCat: „
 Obaveštenja: topic `projects/lock-in-513222/topics/Play-Store-…` (RevenueCat ga napravio), upisan u Play Console >
 aplikacija > „Подешавање монетизације“ (do nje se dolazi i adresom `…/app/<broj>/monetization-setup`), probno
 obaveštenje primljeno. „Track new purchases from server-to-server notifications“ ostaje isključeno.
+Stanje 12. nov.: entitlement `access` (obe Play pretplate); ponuda `default` (Current, napravio ju je RevenueCat-ov
+vodič) sa paketima Monthly (`$rc_monthly` → `lockin_monthly:monthly`) i Yearly (`$rc_annual` → `lockin_annual:annual`),
+uz Test Store proizvode iz vodiča (ostaju; entitlement `lock_in_pro` iz vodiča takođe, aplikacija ga ne gleda).
+Webhook „Supabase“ → `revenuecat-webhook`, nova `REVENUECAT_WEBHOOK_AUTH` na oba mesta, test 200. Tajni ključ v1
+`supabase-sync` u Supabase Secrets kao `REVENUECAT_SECRET_KEY`; `sync-store-access` postavljena (bez prijave 401).
+Javni ključ `goog_…` je EAS promenljiva `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` (production, preview, development).
+Ostaje: novi production build → Internal testing → probna kupovina (korak 7).
 
 1. revenuecat.com > nalog > Project „Lock In“ > **Apps > + Google Play**: package `com.lockintracker.app`.
 2. **Service account (Play ↔ RevenueCat)**, radiš sam po RevenueCat-ovom uputstvu „Google Play Store service
