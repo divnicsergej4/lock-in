@@ -160,7 +160,14 @@ pakete iz RevenueCat ponude, pa se bez paketa Lifetime sam svede na mesečnu i g
   Usluga.
 - Base plan i ponuda moraju biti **Activated**.
 
-## 7. RevenueCat ⬜
+## 7. RevenueCat ⬜ (koraci 1–3 ✅ 11. nov. 2026)
+
+Stanje 11. nov.: RevenueCat projekat „Lock In“, aplikacija „Lock In (Play Store)“ (`com.lockintracker.app`).
+Service account `revenuecat@lock-in-513222.iam.gserviceaccount.com` (Google Cloud projekat `lock-in-513222`,
+uloge Pub/Sub Admin i Monitoring Viewer), pozvan u Play Console; RevenueCat: „Valid credentials“ isti dan.
+Obaveštenja: topic `projects/lock-in-513222/topics/Play-Store-…` (RevenueCat ga napravio), upisan u Play Console >
+aplikacija > „Подешавање монетизације“ (do nje se dolazi i adresom `…/app/<broj>/monetization-setup`), probno
+obaveštenje primljeno. „Track new purchases from server-to-server notifications“ ostaje isključeno.
 
 1. revenuecat.com > nalog > Project „Lock In“ > **Apps > + Google Play**: package `com.lockintracker.app`.
 2. **Service account (Play ↔ RevenueCat)**, radiš sam po RevenueCat-ovom uputstvu „Google Play Store service
