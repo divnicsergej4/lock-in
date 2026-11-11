@@ -1,0 +1,485 @@
+// The holographic ring (prototype section.holo): three panels on a ring in 3D. The finger turns it, a
+// spring settles it on the nearest panel. Everything that moves is driven on the UI thread (gesture →
+// shared values → animated styles, the spring stepped every frame), so it runs at the screen's own
+// refresh rate (120 Hz on ProMotion) and never waits for JavaScript.
+
+import { useIsFocused } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  Easing,
+  measure,
+  runOnJS,
+  useAnimatedProps,
+  useAnimatedRef,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useFrameCallback,
+  useReducedMotion,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
+import Svg, { Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
+
+import { bezier } from '@/components/intro/cssAnim';
+import { holo, useTheme } from '@/theme';
+import { tourBus, useTourTarget } from '@/tour/registry';
+
+import { HoloClock } from './holoClock';
+import { HoloLite } from './HoloLite';
+import { HoloPanel } from './HoloPanel';
+import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
+
+const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
+// iOS orders the panels by real depth (see poseMatrix), Android by elevation (RingPanel), the web by zIndex
+const IOS = Platform.OS === 'ios';
+const ANDROID = Platform.OS === 'android';
+
+// A phone that cannot draw the ring gets plain windows instead (HoloLite.tsx): Andrija's old Samsung drew it at about
+// 11 frames a second and then stopped responding ("app isn't responding", 4 Nov 2026). Decided by timing the ring's
+// first frames (see the frame callback) and remembered on the phone, so later the plain windows come right away.
+// a new name with the stricter test: the decision saved under the old one ('lockin.holoLite') is not trusted
+const LITE_KEY = 'lockin.holoLite2';
+let lite = false;
+const liteSubs = new Set<() => void>();
+AsyncStorage.getItem(LITE_KEY)
+  .then((v) => v === '1' && setLite())
+  .catch(() => {});
+function setLite() {
+  if (lite) return;
+  lite = true;
+  liteSubs.forEach((f) => f());
+}
+function goLite() {
+  setLite();
+  AsyncStorage.setItem(LITE_KEY, '1').catch(() => {});
+}
+function useLite() {
+  return useSyncExternalStore(
+    (f) => {
+      liteSubs.add(f);
+      return () => liteSubs.delete(f);
+    },
+    () => lite,
+  );
+}
+
+/** What a panel's content is given. */
+export interface PanelProps {
+  /** changes each time the panel becomes the front one: replay the arrival animations */
+  activation: number;
+  /** extra height the line chart / calendar may use so all panels are equally tall */
+  grow: number;
+  /** report the content's natural height (at grow = 0) */
+  onNatural: (h: number) => void;
+}
+
+/** One panel on the ring: its pose comes from the ring position, its float from the shared clock. */
+function RingPanel({
+  i,
+  L,
+  p,
+  sp,
+  floatT,
+  depth,
+  h,
+  activation,
+  onPressSide,
+  children,
+}: {
+  i: number;
+  L: HoloLayout;
+  p: SharedValue<number>;
+  sp: SharedValue<number>;
+  floatT: SharedValue<number>;
+  depth: number;
+  h: number | undefined;
+  activation: number;
+  onPressSide: (() => void) | null;
+  children: ReactNode;
+}) {
+  const style = useAnimatedStyle(() => {
+    const q = hPose(i, p.value, sp.value, L);
+    // Android: the panel turning to the front goes on top in the same frame, on the UI thread. Not through
+    // zIndex: Reanimated writes opacity, transform and elevation straight to the view, but a zIndex in the
+    // same style sent every frame of the panels through a React Native commit, and the frame where the front
+    // panel changed jumped a few pixels (seen frame by frame in Andrija's video, 3 Nov 2026). A positive
+    // elevation does not order anything: React Native draws siblings in child order and closes Android's
+    // reordering right after a child with elevation > 0 (ReactViewGroup.drawChild). A negative one stays
+    // inside the parent's reordering, which draws the side panels (−1) first and the front one (0) over them.
+    // No shadow either way (negative, and the outer view has no background).
+    if (ANDROID) return { opacity: q.opacity, elevation: i === hm(Math.round(p.value)) ? 0 : -1, transform: poseTransform(q) };
+    if (!IOS) return { opacity: q.opacity, transform: poseTransform(q) };
+    return { opacity: q.opacity, transform: [{ matrix: poseMatrix(q, i === hm(Math.round(p.value))) }] };
+  });
+  const dim = useDerivedValue(() => hPose(i, p.value, sp.value, L).dim);
+  // .vzf: @keyframes hfl 7s ease-in-out infinite (0 → −5 px → 0), panels offset by −2.4 s and −4.7 s
+  const float = useAnimatedStyle(() => {
+    const ph = (((floatT.value + [0, 2400, 4700][i]) % 7000) + 7000) % 7000 / 7000;
+    const k = bezier([0.42, 0, 0.58, 1], ph < 0.5 ? ph / 0.5 : (1 - ph) / 0.5);
+    return { transform: [{ translateY: -5 * k }] };
+  });
+  // needsOffscreenAlphaCompositing: on Android a fading panel is drawn as one picture; otherwise each of
+  // its layers is made see-through on its own and the panels show through each other (iOS always does this).
+  // Android: touches do not follow the elevation (React Native looks for the touched view in child order, and
+  // a side panel may come after the front one), so a side panel takes no touches; HoloRing's side strips turn
+  // the ring instead.
+  return (
+    <Animated.View
+      pointerEvents={ANDROID && onPressSide ? 'none' : 'auto'}
+      needsOffscreenAlphaCompositing={ANDROID}
+      style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}
+    >
+      <Animated.View style={float}>
+        <HoloPanel w={L.pw} h={h} dim={dim} activation={activation}>
+          {children}
+        </HoloPanel>
+      </Animated.View>
+      {/* a side panel: a tap turns the ring to it */}
+      {onPressSide && !ANDROID && <Pressable accessibilityRole="button" style={StyleSheet.absoluteFill} onPress={onPressSide} />}
+    </Animated.View>
+  );
+}
+
+/**
+ * A panel's content (chart, calendar), drawn again only when its own arrival, extra height or data change. Each
+ * turn of the ring re-rendered all three panels' contents two or three times (measured with the React Profiler:
+ * about 35 ms per render in a desktop browser, seconds of a blocked JavaScript thread on an Android phone).
+ */
+const PanelContent = memo(function PanelContent({
+  render,
+  activation,
+  grow,
+  onNatural,
+}: {
+  render: (p: PanelProps) => ReactNode;
+  activation: number;
+  grow: number;
+  onNatural: (h: number) => void;
+}) {
+  return <>{render({ activation, grow, onNatural })}</>;
+});
+
+type RingProps = {
+  panels: ((p: PanelProps) => ReactNode)[];
+  rows: number;
+  scrolling: SharedValue<boolean>;
+};
+
+/** The ring, or plain windows on a phone that cannot draw it (see goLite). */
+export const HoloRing = memo(function HoloRing(props: RingProps) {
+  return useLite() ? <HoloLite panels={props.panels} /> : <FullRing {...props} />;
+});
+
+/**
+ * `scrolling`: true while the page is being dragged or is gliding (set on the UI thread by the page's
+ * scroll handler). The ring's endless animations stand still then, and while the ring is off screen.
+ */
+function FullRing({ panels, rows, scrolling }: RingProps) {
+  const { width: W, height: screenH } = useWindowDimensions();
+  // the same object on every render: a new one would restart each panel's animated style when the ring lands
+  const L = useMemo(() => holoLayout(W), [W]);
+  const { name } = useTheme();
+  const k = holo[name];
+  const reduce = useReducedMotion();
+  const focused = useIsFocused();
+
+  // ---- ring state (UI thread) ----
+  const p = useSharedValue(0); // position: 0, 1, 2 = panels in front (any real number in between)
+  const v = useSharedValue(0); // speed while settling
+  const t = useSharedValue(0); // where it is going
+  const sp = useSharedValue(1); // unfolding when the tab opens (0 → 1)
+  const springOn = useSharedValue(false);
+  const springT = useSharedValue(0);
+  const landed = useSharedValue(true);
+  const moving = useSharedValue(false);
+  const floatT = useSharedValue(0);
+  const p0 = useSharedValue(0);
+  const ringOffset = useSharedValue(0);
+  const stepCarry = useSharedValue(0);
+  // timing the first frames (see the frame callback)
+  const probeWait = useSharedValue(0);
+  const probeN = useSharedValue(0);
+  const probeSlow = useSharedValue(0);
+
+  // ---- is anything worth animating? on screen, tab open, page not scrolling ----
+  const liveT = useSharedValue(0); // the clock of the endless animations (see holoClock)
+  const visible = useSharedValue(true);
+  const focusedSV = useSharedValue(true);
+  const box = useAnimatedRef<Animated.View>();
+  // when a scroll ends, check (on the UI thread) whether the ring is still on screen
+  useAnimatedReaction(
+    () => scrolling.value,
+    (s, prev) => {
+      if (s || !prev) return;
+      const m = measure(box);
+      visible.value = !!m && m.pageY + m.height > 0 && m.pageY < screenH;
+    },
+  );
+  // Android: while the page scrolls, the ring (standing still then) is kept as one picture, so each frame of the
+  // scroll only moves that picture instead of drawing the three panels, their charts and the calendar again. With
+  // everything on, the ring kept the scroll at about 52 FPS with 33 ms frames (Andrija's phone, 4 Nov 2026).
+  const [frozen, setFrozen] = useState(false);
+  useAnimatedReaction(
+    () => scrolling.value,
+    (s, prev) => {
+      if (ANDROID && s !== prev) runOnJS(setFrozen)(s);
+    },
+  );
+
+  // ---- JS state: which panel is in front (stacking, taps) and the arrival animations ----
+  const [cur, setCur] = useState(0);
+  const [act, setAct] = useState<number[]>([0, 0, 0]);
+  const stage = useTourTarget('vzc'); // the ring's stage, lit up by the tour
+  const activeRef = useRef(-1);
+  const activate = useCallback((i: number) => {
+    activeRef.current = i;
+    tourBus.holoAct = i; // the tour waits for the line (1) and the calendar (2)
+    setCur(i);
+    setAct((a) => a.map((n, j) => (j === i ? n + 1 : n)));
+  }, []);
+
+  // Android: the dots and taps follow only once the ring has landed (activate). A React render while the finger
+  // turns the ring was the second jump at the switch: its commit rewrote the panels' positions a frame late.
+  useAnimatedReaction(
+    () => hm(Math.round(p.value)),
+    (c, prev) => {
+      if (c !== prev && !ANDROID) runOnJS(setCur)(c);
+    },
+  );
+
+  /** Turn the ring to panel position `to` (prototype hGo). */
+  const go = useCallback(
+    (to: number, v0?: number) => {
+      'worklet';
+      t.value = to;
+      if (typeof v0 === 'number') v.value = v0;
+      if (reduce) {
+        p.value = hm(to);
+        t.value = p.value;
+        v.value = 0;
+        runOnJS(activate)(hm(to));
+        return;
+      }
+      springOn.value = true;
+      springT.value = 0;
+      landed.value = false;
+      moving.value = true;
+      // the dashed ring under the panels turns with them (stroke-dashoffset −t·46, .9s cubic-bezier(.2,.8,.2,1))
+      ringOffset.value = withTiming(-to * 46, { duration: 900, easing: Easing.bezier(0.2, 0.8, 0.2, 1) });
+    },
+    [reduce, activate, t, v, p, springOn, springT, landed, moving, ringOffset],
+  );
+
+  // the spring, stepped in exact 1/120 s steps however long each frame was
+  useFrameCallback((f) => {
+    const dt = (f.timeSincePreviousFrame ?? 16.7) / 1000;
+    // the clocks only move while the ring is live; a ring at rest then changes nothing per frame
+    const live = !scrolling.value && visible.value && focusedSV.value;
+    // a phone that really cannot draw the ring: 1.5 s after the ring comes on screen, 40 frames are timed, and only
+    // when at least 30 of them took over 50 ms (under 20 frames a second) the ring gives way to plain windows
+    // (goLite). A short burst of slow frames, like the whole app redrawing when the demo is switched on, is not
+    // enough: an average of 24 frames was, and it put Andrija's iPhone 15 Pro Max on plain windows (4 Nov 2026).
+    // The old Samsung drew every frame in about 90 ms.
+    if (live && probeN.value >= 0) {
+      probeWait.value += dt;
+      if (probeWait.value > 1.5) {
+        probeN.value += 1;
+        if (dt > 0.05) probeSlow.value += 1;
+        if (probeN.value >= 40) {
+          if (probeSlow.value >= 30) runOnJS(goLite)();
+          probeN.value = -1; // measured once
+        }
+      }
+    }
+    if (live) liveT.value += dt * 1000;
+    if (!springOn.value) {
+      if (live && !moving.value) floatT.value += dt * 1000;
+      return;
+    }
+    stepCarry.value += dt;
+    let pp = p.value;
+    let vv = v.value;
+    const to = t.value;
+    while (stepCarry.value >= SPRING_DT) {
+      stepCarry.value -= SPRING_DT;
+      [pp, vv] = springStep(pp, vv, to);
+      springT.value += SPRING_DT;
+      // the panel's content lights up only once it has (almost) landed
+      if (!landed.value && Math.abs(pp - to) < 0.03) {
+        landed.value = true;
+        if (hm(to) !== activeRef.current) runOnJS(activate)(hm(to));
+      }
+      if (settled(pp, vv, to) || springT.value >= SPRING_MAX_S) {
+        pp = hm(to);
+        t.value = pp;
+        vv = 0;
+        springOn.value = false;
+        moving.value = false;
+        stepCarry.value = 0;
+        if (!landed.value) {
+          landed.value = true;
+          runOnJS(activate)(hm(to));
+        }
+        break;
+      }
+    }
+    p.value = pp;
+    v.value = vv;
+  });
+
+  // the ring unfolds from the front panel each time the tab opens, then the front panel lights up
+  useEffect(() => {
+    focusedSV.value = focused;
+    if (!focused) return;
+    const c = hm(Math.round(p.value));
+    activate(c);
+    if (reduce) {
+      sp.value = 1;
+      return;
+    }
+    sp.value = 0;
+    sp.value = withTiming(1, { duration: 760, easing: Easing.out(Easing.cubic) });
+  }, [focused, reduce, activate, p, sp, focusedSV]);
+
+  // ---- the finger ----
+  const pan = Gesture.Pan()
+    .activeOffsetX([-7, 7])
+    .failOffsetY([-9, 9])
+    .onStart(() => {
+      springOn.value = false;
+      moving.value = true;
+      sp.value = 1;
+      p0.value = p.value;
+    })
+    .onUpdate((e) => {
+      p.value = p0.value - e.translationX / L.step;
+    })
+    .onEnd((e) => {
+      const r = swipeTarget(p.value, p0.value, e.velocityX, L.step);
+      go(r.t, r.v);
+    });
+
+  const tapTo = (i: number) => {
+    const kk = Math.round(t.value);
+    const dir = hm(i - kk) === 1 ? 1 : -1;
+    go(kk + dir);
+  };
+  const dotTo = (j: number) => {
+    const kk = Math.round(t.value);
+    const df = hm(j - kk + 1) - 1;
+    if (df) go(kk + df);
+    else if (activeRef.current !== j) activate(j);
+  };
+
+  // ---- equal panel heights (prototype hFit): the chart and the calendar may grow a little ----
+  const [nat, setNat] = useState<number[]>([0, 0, 0]);
+  const T = Math.max(...nat);
+  const grow = nat.map((n, i) => {
+    const ex = T - n;
+    if (!n || ex <= 6) return 0;
+    if (i === 1) return Math.min(44, Math.round(ex));
+    if (i === 2) return Math.min(52, 44 + ex / rows) - 44;
+    return 0;
+  });
+  const ph = nat.every((n) => n > 0) ? T + 16 + 14 + 2 : undefined;
+  // one function per panel, the same on every render (PanelContent is drawn again only when its props change)
+  const onNatural = useMemo(
+    () => Array.from({ length: HN }, (_, i) => (h: number) => setNat((a) => (Math.abs(a[i] - h) < 0.5 ? a : a.map((x, j) => (j === i ? h : x))))),
+    [],
+  );
+
+  // ---- the glowing base: two ellipses and the dashed ring ----
+  const bw = Math.min(W * 0.88, 430);
+  const sx = bw / 300;
+  const ringProps = useAnimatedProps(() => ({ strokeDashoffset: ringOffset.value }));
+
+  return (
+    <HoloClock.Provider value={liveT}>
+    <Animated.View ref={box}>
+      <GestureDetector gesture={pan}>
+        <View ref={stage} renderToHardwareTextureAndroid={frozen} style={{ height: (ph ?? 472) + HPT + HPB, overflow: 'hidden' }}>
+          <View pointerEvents="none" style={[st.base, { width: bw, marginLeft: -bw / 2 }]}>
+            <Svg width={bw} height={46}>
+              <Defs>
+                <RadialGradient id="hbg" cx="50%" cy="50%" r="50%">
+                  <Stop offset="0" stopColor={k.hb} stopOpacity={0.34} />
+                  <Stop offset="0.55" stopColor={k.hb} stopOpacity={0.1} />
+                  <Stop offset="1" stopColor={k.hb} stopOpacity={0} />
+                </RadialGradient>
+              </Defs>
+              <Ellipse cx={bw / 2} cy={23} rx={150 * sx} ry={23} fill="url(#hbg)" />
+              <Ellipse cx={bw / 2} cy={23} rx={132 * sx} ry={12.5} fill="none" stroke={k.hr} strokeOpacity={0.5} strokeWidth={1} />
+              <AnimatedEllipse cx={bw / 2} cy={23} rx={108 * sx} ry={9.5} fill="none" stroke={k.hr} strokeWidth={1.6} strokeDasharray={[2, 7]} animatedProps={ringProps} />
+            </Svg>
+          </View>
+          {panels.map((render, i) => {
+            const front = i === cur;
+            return (
+              <RingPanel
+                key={i}
+                i={i}
+                L={L}
+                p={p}
+                sp={sp}
+                floatT={floatT}
+                depth={front && !ANDROID ? 60 : 20} // Android: always 20, the panels are ordered by elevation (RingPanel)
+                h={ph}
+                activation={act[i]}
+                onPressSide={front ? null : () => tapTo(i)}
+              >
+                <PanelContent render={render} activation={act[i]} grow={grow[i]} onNatural={onNatural[i]} />
+              </RingPanel>
+            );
+          })}
+          {/* Android: the parts of the side panels showing left and right of the front one; a tap turns the
+              ring to that side (the side panels themselves take no touches, see RingPanel). Above the panels
+              by a zIndex that never changes, so the views are never reordered. */}
+          {ANDROID &&
+            ([-1, 1] as const).map((d) => (
+              <Pressable
+                key={d}
+                accessibilityRole="button"
+                onPress={() => go(Math.round(t.value) + d)}
+                style={[st.side, { top: HPT, height: ph ?? 472 }, d < 0 ? { left: 0, right: '50%', marginRight: L.pw / 2 } : { right: 0, left: '50%', marginLeft: L.pw / 2 }]}
+              />
+            ))}
+        </View>
+      </GestureDetector>
+      <View style={st.dots}>
+        {Array.from({ length: HN }, (_, j) => (
+          <Dot key={j} on={j === cur} color={k.dot} glow={k.dotOnGlow} onPress={() => dotTo(j)} />
+        ))}
+      </View>
+    </Animated.View>
+    </HoloClock.Provider>
+  );
+}
+
+function Dot({ on, color, glow, onPress }: { on: boolean; color: string; glow: string; onPress: () => void }) {
+  const { c } = useTheme();
+  const w = useSharedValue(on ? 22 : 8);
+  useEffect(() => {
+    w.value = withTiming(on ? 22 : 8, { duration: 250, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
+  }, [on, w]);
+  const anim = useAnimatedStyle(() => ({ width: w.value }));
+  return (
+    <Pressable accessibilityRole="button" accessibilityState={{ selected: on }} onPress={onPress} hitSlop={8}>
+      {/* the glow is kept as a bitmap instead of a shadow redrawn every frame (iOS; Android's bitmap would
+          cut off the glow, which lies outside the dot) */}
+      <Animated.View shouldRasterizeIOS style={[st.dot, { backgroundColor: on ? c.accent : color, boxShadow: on ? glow : undefined }, anim]} />
+    </Pressable>
+  );
+}
+
+const st = StyleSheet.create({
+  vzs: { position: 'absolute', top: HPT, left: '50%' },
+  base: { position: 'absolute', left: '50%', bottom: 8, height: 46 },
+  side: { position: 'absolute', zIndex: 30 },
+  dots: { flexDirection: 'row', justifyContent: 'center', gap: 8, paddingTop: 2, paddingBottom: 4 },
+  dot: { height: 8, borderRadius: 4 },
+});
