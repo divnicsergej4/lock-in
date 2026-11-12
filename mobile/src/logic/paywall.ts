@@ -55,6 +55,15 @@ export function trialDaysOf(intro: { price: number; periodUnit: string; periodNu
   return per * intro.periodNumberOfUnits * Math.max(1, intro.cycles);
 }
 
+/**
+ * Google Play: true when this customer ever had a subscription here (active or ended). The free-week offer is for
+ * "Never had any subscription", but Google still lists it on a plan they never had and then charges the full price
+ * (seen Nov 12, 2026: free week used on monthly, yearly still showed it), so the screen hides the trial itself.
+ */
+export function hadSubscription(info: { entitlements: { all: Record<string, unknown> }; allPurchasedProductIdentifiers: string[] }): boolean {
+  return Object.keys(info.entitlements.all).length > 0 || info.allPurchasedProductIdentifiers.length > 0;
+}
+
 /** Which plan is picked first: yearly, as in the design (else the first one there is). */
 export function defaultPlan(plans: PlanOption[]): PlanOption | null {
   return plans.find((p) => p.kind === 'yearly') ?? plans[0] ?? null;

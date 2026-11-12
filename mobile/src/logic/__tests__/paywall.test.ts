@@ -9,6 +9,7 @@ import {
   failCard,
   failReason,
   finePrint,
+  hadSubscription,
   header,
   offeredTrial,
   planCard,
@@ -88,6 +89,12 @@ describe('plans screen (06)', () => {
     expect(trialDaysOf({ price: 0, periodUnit: 'DAY', periodNumberOfUnits: 3, cycles: 1 })).toBe(3);
     expect(trialDaysOf({ price: 0.99, periodUnit: 'WEEK', periodNumberOfUnits: 1, cycles: 1 })).toBeNull();
     expect(trialDaysOf(null)).toBeNull();
+  });
+
+  test('Google Play: any subscription before (even ended) means no free week on any plan', () => {
+    expect(hadSubscription({ entitlements: { all: {} }, allPurchasedProductIdentifiers: [] })).toBe(false);
+    expect(hadSubscription({ entitlements: { all: { access: {} } }, allPurchasedProductIdentifiers: [] })).toBe(true);
+    expect(hadSubscription({ entitlements: { all: {} }, allPurchasedProductIdentifiers: ['lockin_monthly:monthly'] })).toBe(true);
   });
 });
 

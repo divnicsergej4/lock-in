@@ -7,7 +7,7 @@
 import { Platform } from 'react-native';
 import Purchases, { type CustomerInfo, type PurchasesPackage } from 'react-native-purchases';
 
-import { failReason, trialDaysOf, type FailReason, type PlanKind, type PlanOption, type Store, type StoreEntitlement } from '@/logic/paywall';
+import { failReason, hadSubscription, trialDaysOf, type FailReason, type PlanKind, type PlanOption, type Store, type StoreEntitlement } from '@/logic/paywall';
 
 import { TEST_PLANS } from './testStore';
 
@@ -97,14 +97,17 @@ export async function loadPlans(): Promise<PlansResult> {
     const cur = (await Purchases.getOfferings()).current;
     const found = (cur?.availablePackages ?? []).filter((p) => KINDS[p.packageType]);
     if (!found.length) return { ok: false, error: 'Couldn’t load the plans. Try again in a moment.' };
-    // iOS: the store says if this Apple ID already used the trial (Google Play only offers it to those who can get it)
+    // iOS: the store says if this Apple ID already used the trial.
+    // Google Play: no trial once they ever had a subscription here (see hadSubscription).
     let eligible: Record<string, { status: number }> = {};
+    let had = false;
     if (Platform.OS === 'ios') eligible = await Purchases.checkTrialOrIntroductoryPriceEligibility(found.map((p) => p.product.identifier)).catch(() => ({}));
+    else had = await Purchases.getCustomerInfo().then(hadSubscription).catch(() => false);
     packages.clear();
     const plans = found.map((p): PlanOption => {
       const kind = KINDS[p.packageType];
       packages.set(p.product.identifier, { pkg: p, kind });
-      const used = eligible[p.product.identifier]?.status === 1; // INTRO_ELIGIBILITY_STATUS_INELIGIBLE
+      const used = had || eligible[p.product.identifier]?.status === 1; // INTRO_ELIGIBILITY_STATUS_INELIGIBLE
       return {
         kind,
         id: p.product.identifier,

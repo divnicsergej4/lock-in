@@ -180,7 +180,11 @@ Drugi production AAB sa ključem (12. nov., versionCode 5, commit b36fd2d, build
 Provereno u fajlu: `goog_` ključ je u JS paketu. Release 5 objavljen na Internal testing i instaliran na Redmi
 (opt-in link: Internal testing > Testers > How testers join your test). Probna kupovina (12. nov., prijavljen,
 License testing): bez „TEST PRICES“, cene iz Play-a, „You're locked in.“, webhook upisao red u `public.subscriptions`
-(Andrija: „sve radi i piše kako treba“); red `manual_test` je time zamenjen. Ostaje: Restore, otkazivanje, istek.
+(Andrija: „sve radi i piše kako treba“); red `manual_test` je time zamenjen. Restore našao kupovinu, otkazivanje
+preko „Manage subscription“ radi, posle isteka ekran bez ✕. Greška nađena: posle probe na mesečnoj, godišnja je i dalje
+nudila „Start my free week“, a Google prozor je naplaćivao punu cenu (ponuda je ispravno „Never had any subscription“,
+ali je Google ipak lista). Ispravka u aplikaciji: na Android-u nema probe ni na jednom planu čim RevenueCat zna za bilo
+koju raniju pretplatu (`hadSubscription` u `logic/paywall.ts`). Stiže preko OTA ažuriranja ili sledećeg build-a.
 
 1. revenuecat.com > nalog > Project „Lock In“ > **Apps > + Google Play**: package `com.lockintracker.app`.
 2. **Service account (Play ↔ RevenueCat)**, radiš sam po RevenueCat-ovom uputstvu „Google Play Store service
