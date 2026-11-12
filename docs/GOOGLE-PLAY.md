@@ -185,6 +185,10 @@ preko „Manage subscription“ radi, posle isteka ekran bez ✕. Greška nađen
 nudila „Start my free week“, a Google prozor je naplaćivao punu cenu (ponuda je ispravno „Never had any subscription“,
 ali je Google ipak lista). Ispravka u aplikaciji: na Android-u nema probe ni na jednom planu čim RevenueCat zna za bilo
 koju raniju pretplatu (`hadSubscription` u `logic/paywall.ts`). Stiže preko OTA ažuriranja ili sledećeg build-a.
+Svesno ostavljeno (Andrija, 12. nov. 2026: „ok ostavi tako“): ko je imao pretplatu, ona istekla, pa reinstalira
+bez prijave i bez Restore, i dalje vidi „Start my free week“ (Google više ne daje istoriju isteklih kupovina, a
+RevenueCat ne zna ko je anoniman). Google prozor pre potvrde pokazuje punu cenu, a „You're locked in.“ prati ono što
+je prodavnica stvarno dala. Ako se neko žali: povraćaj u Play Console > Order management.
 
 1. revenuecat.com > nalog > Project „Lock In“ > **Apps > + Google Play**: package `com.lockintracker.app`.
 2. **Service account (Play ↔ RevenueCat)**, radiš sam po RevenueCat-ovom uputstvu „Google Play Store service
