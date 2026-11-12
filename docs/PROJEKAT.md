@@ -421,7 +421,8 @@ Urađeno:
   srpska imena svuda i zameni engleskim“. Ranije Sergej, Marko, Ana; prijatelj van cilja Luka → Jake; ekran bez
   naloga S M A → L M A; primer na Privacy stranici „Mark added €50“; sva imena u testovima i komentarima
   (Anna, Mark, Luke, Ben, Cleo, Dan, Ivy). Prototip (`index.html`) i SQL komentari u već postavljenim migracijama
-  nisu dirani. Slike ekrana cilja za prodavnice (`docs/prodavnica/`) još pokazuju stara imena i treba ih ponovo snimiti. Tekst o privatnosti dopunjen (korak 6).
+  nisu dirani. Slike za Google Play 6–8 ponovo snimljene na Android-u sa engleskim imenima (12. nov. 2026); slike za App Store
+6 i 7 (`docs/prodavnica/app-store/`) još pokazuju stara imena i treba ih ponovo snimiti na iPhone-u. Tekst o privatnosti dopunjen (korak 6).
   Migracija `0006` + nova verzija `send-goal-push` (tekstovi za nudge, pin i otključavanje). Testovi: 18 provera logike
   cilja, 38 provera za `0006`, spisak kolona i RPC-ova u `privacy.test.mjs` dopunjen, 7 novih provera teksta push-a.
   Provereno u pregledaču (demo, tamna i svetla tema, mere prema slikama). Nije provereno na telefonima ni sa pravim
