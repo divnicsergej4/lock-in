@@ -177,7 +177,10 @@ Webhook „Supabase“ → `revenuecat-webhook`, nova `REVENUECAT_WEBHOOK_AUTH` 
 Javni ključ `goog_…` je EAS promenljiva `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` (production, preview, development).
 Drugi production AAB sa ključem (12. nov., versionCode 5, commit b36fd2d, build
 `4b7a7d8e-b972-4f49-bbe8-3342727acdf6`): https://expo.dev/artifacts/eas/el5PhkpHkzhGmxi7_dRtGnbd-DAiSF4a27TxhvZgoCA.aab
-Provereno u fajlu: `goog_` ključ je u JS paketu. Ostaje: Internal testing → probna kupovina (korak 7).
+Provereno u fajlu: `goog_` ključ je u JS paketu. Release 5 objavljen na Internal testing i instaliran na Redmi
+(opt-in link: Internal testing > Testers > How testers join your test). Probna kupovina (12. nov., prijavljen,
+License testing): bez „TEST PRICES“, cene iz Play-a, „You're locked in.“, webhook upisao red u `public.subscriptions`
+(Andrija: „sve radi i piše kako treba“); red `manual_test` je time zamenjen. Ostaje: Restore, otkazivanje, istek.
 
 1. revenuecat.com > nalog > Project „Lock In“ > **Apps > + Google Play**: package `com.lockintracker.app`.
 2. **Service account (Play ↔ RevenueCat)**, radiš sam po RevenueCat-ovom uputstvu „Google Play Store service
