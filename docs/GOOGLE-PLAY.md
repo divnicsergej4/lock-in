@@ -133,8 +133,9 @@ Dopune uz PRODAVNICE.md:
 ## 6. Proizvodi ✅ 10. nov. 2026 (obe pretplate, osnovni paketi i ponude `free-week` aktivni)
 
 Merchant nalog (profil za plaćanja) napravljen: javni naziv `Lockeddevs`, na izvodu kartice `LOCK IN`, kategorija
-Računarski softver, podrška `support@lockintracker.app`, sajt `https://lockintracker.app`. **Način isplate još
-nije dodat:** Google traži račun u **USD** (devizni), dinarski ne prolazi; zarada se čuva dok se ne doda. Grupa
+Računarski softver, podrška `support@lockintracker.app`, sajt `https://lockintracker.app`. **Način isplate:**
+Google traži račun u **USD** (devizni), dinarski ne prolazi. 12. nov. 2026 dodat devizni USD račun (Banca Intesa,
+na Andrijino ime) i Google ga je verifikovao (dokument: ugovor o otvaranju računa, adresa i JMBG prekriveni). Grupa
 naloga za naknadu 15% napravljena (samo Lockeddevs); prihvatanje uslova još nije viđeno (za pretplate je 15%
 ionako). Mejl naloga u Play Console-u je `andrijadmitrovic02@gmail.com` (tako piše u grupi naloga).
 
