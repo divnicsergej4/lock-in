@@ -174,7 +174,9 @@ uz Test Store proizvode iz vodiča (ostaju; entitlement `lock_in_pro` iz vodiča
 Webhook „Supabase“ → `revenuecat-webhook`, nova `REVENUECAT_WEBHOOK_AUTH` na oba mesta, test 200. Tajni ključ v1
 `supabase-sync` u Supabase Secrets kao `REVENUECAT_SECRET_KEY`; `sync-store-access` postavljena (bez prijave 401).
 Javni ključ `goog_…` je EAS promenljiva `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` (production, preview, development).
-Ostaje: novi production build → Internal testing → probna kupovina (korak 7).
+Drugi production AAB sa ključem (12. nov., versionCode 5, commit b36fd2d, build
+`4b7a7d8e-b972-4f49-bbe8-3342727acdf6`): https://expo.dev/artifacts/eas/el5PhkpHkzhGmxi7_dRtGnbd-DAiSF4a27TxhvZgoCA.aab
+Provereno u fajlu: `goog_` ključ je u JS paketu. Ostaje: Internal testing → probna kupovina (korak 7).
 
 1. revenuecat.com > nalog > Project „Lock In“ > **Apps > + Google Play**: package `com.lockintracker.app`.
 2. **Service account (Play ↔ RevenueCat)**, radiš sam po RevenueCat-ovom uputstvu „Google Play Store service
