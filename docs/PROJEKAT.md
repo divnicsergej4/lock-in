@@ -517,8 +517,8 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
    Stanje (8. nov. 2026): Andrija se upisao u Apple Developer Program preko sajta (aplikacija Apple Developer traži
    iOS 26, a on ostaje na iOS 18), kao **Individual**, svojim **ličnim Apple ID-jem** (novi Apple ID na
    `lockeddevsapps@gmail.com` Apple je odbio: „Your account cannot be created at this time“). Plaćeno $99,
-   članstvo je aktivno, poreski podaci i banka popunjeni u App Store Connect-u (Business); 12. nov. 2026 se za
-   Paid Apps dodaje devizni USD račun (isti koji je Google verifikovao za isplate na Google Play-u). Prodavac u App Store-u biće njegovo ime; kolega dobija pristup
+   članstvo je aktivno, poreski podaci i banka popunjeni u App Store Connect-u (Business); 12. nov. 2026 je za
+   Paid Apps postavljen devizni USD račun (isti koji je Google verifikovao za isplate na Google Play-u). Prodavac u App Store-u biće njegovo ime; kolega dobija pristup
    preko Users and Access, EAS radi preko API ključa.
 5. Pre slanja u obe prodavnice: `docs/ZASTITA.md` deo 6 (Expo Go adrese iz Supabase-a, probni nalozi i `manual_test`
    pretplate, Google OAuth „In production“, pravi ključevi, bez „TEST PRICES“).
