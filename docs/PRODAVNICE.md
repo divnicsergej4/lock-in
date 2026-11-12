@@ -113,8 +113,11 @@ Pravi se iz `feature-graphic.html` (pravi fontovi iz aplikacije) komandom zapisa
 Na uvodu svako vidi „Then lock the fuck in.“, a „No mercy“ poruke imaju jače reči. Zato:
 - **Apple** (upitnik o uzrastu): Profanity or Crude Humor: **Infrequent/Mild**; sve ostalo None. Rezultat je
   verovatno 13+.
-- **Google** (IARC upitnik): da, aplikacija ima psovke („mild/moderate profanity“), bez nasilja, kocke i sl.
-  Rezultat je verovatno PEGI 12 / Teen.
+- **Google** (IARC upitnik, popunjen 12. nov. 2026): jezik minor + moderate + sexual expletives (sve Rarely:
+  „hell“, „shi“, „fuck“ samo na uvodu), alkohol Reference / Rarely (fore za Nights out), crude humor No, korisnici
+  dele sadržaj Yes (samo pozvani prijatelji; blokiranje, prijava i moderacija No), online sadržaj No, digitalne
+  kupovine Yes, ostalo No. Rezultat: **ESRB Mature 17+, PEGI 16, IARC 16+, Brazil 14+, USK 0**; opisi Strong
+  Language, Users Interact, In-App Purchases. (Ranija procena „blage psovke / PEGI 12“ nije bila tačna.)
 - Kategorija Finance + „Made for kids“: **ne**. Ciljna grupa u Google Play-u: 18+ (ili 13+ ako tako ostane u Privacy Policy).
 
 ## 6. Apple „App Privacy“
