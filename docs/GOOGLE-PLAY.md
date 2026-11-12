@@ -186,6 +186,7 @@ nudila „Start my free week“, a Google prozor je naplaćivao punu cenu (ponud
 ali je Google ipak lista). Ispravka u aplikaciji: na Android-u nema probe ni na jednom planu čim RevenueCat zna za bilo
 koju raniju pretplatu (`hadSubscription` u `logic/paywall.ts`). Poslato na kanal `production` (Andrija: „posalji na
 production“, 12. nov. 2026), samo Android, update group `a97ece6d-53d7-46b2-84c3-51030960dedc`, commit `54b601b`.
+Provereno na Redmi-ju (Andrija: „sad sve valja“): ni mesečna ni godišnja više ne nude besplatnu nedelju.
 Svesno ostavljeno (Andrija, 12. nov. 2026: „ok ostavi tako“): ko je imao pretplatu, ona istekla, pa reinstalira
 bez prijave i bez Restore, i dalje vidi „Start my free week“ (Google više ne daje istoriju isteklih kupovina, a
 RevenueCat ne zna ko je anoniman). Google prozor pre potvrde pokazuje punu cenu, a „You're locked in.“ prati ono što

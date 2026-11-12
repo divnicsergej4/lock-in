@@ -71,7 +71,7 @@ PRIVATE BY DESIGN
 • An account is only needed for shared goals
 • No ads. We don't sell your data
 
-Try everything free for 7 days, then choose a monthly or yearly subscription or a one-time lifetime purchase. Cancel anytime in Google Play.
+Try everything free for 7 days, then choose a monthly or yearly subscription. Cancel anytime in Google Play.
 
 Privacy Policy: https://lockintracker.app/privacy/
 Terms of Use: https://lockintracker.app/terms/
@@ -189,8 +189,9 @@ Lična potrošnja („Financial info“ sa telefona) se ne prijavljuje jer ne na
 
 **Obrasci (App content):** Privacy policy (gore); Ads: **No**; App access: deo funkcija traži prijavu (zajednički
 cilj) → uputstvo za recenzente: „Shared goals need an account: sign in with any Google account (Settings > Account,
-or Savings > Shared goals). Everything else works without an account. The app starts with a 7-day free trial;
-Settings > Help > Demo shows every screen filled with sample data.“ (za ovo Google OAuth mora biti „In
+or Savings > Shared goals). Everything else works without an account. To use the app, start the 7-day free trial on
+the plans screen (Start my free week). "Look around the demo first" there, and later Settings > Help > Demo, shows every screen
+filled with sample data.“ (izmenjeno 12. nov. 2026: aplikacija je zaključana dok se ne pokrene proba) (za ovo Google OAuth mora biti „In
 production“, `docs/ZASTITA.md` deo 6); Content rating: deo 5; Target audience: 18+; Data safety: deo 7 (Delete
 account URL `https://lockintracker.app/delete-account/`); Financial features: aplikacija samo prati troškove i
 štednju, ne nudi kredite, plaćanja ni ulaganja; Government apps: No; News: No; Health: No.
