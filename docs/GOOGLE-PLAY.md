@@ -115,6 +115,12 @@ Upravljajte nalogom > Play apps settings > Monetization settings > License testi
 
 ## 5. Stranica u prodavnici i obrasci ⬜
 
+Stanje 13. nov. 2026: Privacy policy, Ads (No), Content rating (Mature 17+ / PEGI 16, `docs/PRODAVNICE.md` deo 5),
+Data safety (7 vrsta podataka, sve Collected, nijedna Shared) i Sign in details popunjeni. Za Sign in details
+napravljen poseban Gmail za recenzente (Andrija ga čuva; mejl i lozinka samo u Play Console-u), prijavljen u
+aplikaciju i dobio `manual_review` do 2027-12-31 (provereno SQL-om). Link „Already have an account? Sign in“ na ekranu
+za plaćanje (commit `acdfdac`) mora stići na telefone pre pregleda (OTA `production` ili novi build).
+
 Sve vrednosti su u `docs/PRODAVNICE.md` deo 9 (tabela „Main store listing“ i „Obrasci“), deo 2 i 3 (tekstovi),
 deo 5 (uzrast), deo 7 (Data safety). Fajlovi: `docs/prodavnica/google-play/` (`icon-512.png`,
 `feature-graphic.png`, `1-home.png` … `8-who-put-in.png`).
