@@ -8,14 +8,14 @@ Ništa od toga ne ide u čet ni u repo. Javni RevenueCat ključ `appl_…` nije 
 Stanje pre ovog vodiča: Apple Developer Program aktivan (Individual, Andrijin lični Apple ID), porez popunjen,
 Paid Apps ugovor sa USD računom (12. nov.).
 
-## 1. Bundle ID ⬜
+## 1. Bundle ID ✅ 13. nov. (Sign In with Apple + Push Notifications; Service ID, Key i email izvori ne trebaju)
 developer.apple.com > Account > Certificates, IDs & Profiles > **Identifiers** > **+** > App IDs > App:
 - Description: `Lock In`
 - Bundle ID: **Explicit**, `com.lockintracker.app` (isto kao `ios.bundleIdentifier` u `mobile/app.json`)
 - Capabilities: **Sign In with Apple** i **Push Notifications** (ostalo ne dirati)
 - Continue > Register.
 
-## 2. Aplikacija u App Store Connect-u ⬜
+## 2. Aplikacija u App Store Connect-u ✅ 13. nov.
 appstoreconnect.apple.com > **Apps** > **+** > New App:
 - Platforms: **iOS**
 - Name: `Lock In: Finance Tracker`
