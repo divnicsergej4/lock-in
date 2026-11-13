@@ -17,7 +17,8 @@
     "ios": {
       "supportsTablet": false,
       "infoPlist": {
-        "CADisableMinimumFrameDurationOnPhone": true
+        "CADisableMinimumFrameDurationOnPhone": true,
+        "ITSAppUsesNonExemptEncryption": false
       },
       "usesAppleSignIn": true,
       "bundleIdentifier": "com.lockintracker.app"
