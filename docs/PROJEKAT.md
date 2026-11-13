@@ -447,7 +447,10 @@ Urađeno:
   (ispravljeno 9. nov. 2026: na prvom Google Play build-u prijavljen tester bez probe je ostao na ekranu za plaćanje
   bez ✕, a kupiti nije mogao; Andrija prijavio). U razvoju (Expo Go, probni planovi) prijavljen bez probe i dalje
   ostaje zaključan. Server i dalje odbija izmene u zajedničkom cilju bez probe/pretplate.
-  Doživotni plan nema probu („Buy for <cena>“). Kad je proba već iskorišćena (prodavnica kaže), nema „7 DAYS FREE“
+  Odjavljen korisnik na ekranu za plaćanje ima i „Already have an account? Sign in“ (13. nov. 2026; Google
+  recenzenti ne smeju da pokreću probu, pa ulaze nalogom sa pristupom na serveru; isto treba i onome ko je platio na
+  drugom telefonu ili u drugoj prodavnici): posle prijave, čim server kaže da nalog ima probu/pretplatu, ide se u
+  aplikaciju. Doživotni plan nema probu („Buy for <cena>“). Kad je proba već iskorišćena (prodavnica kaže), nema „7 DAYS FREE“
   ni linije, piše „Your free week is over.“ i „Subscribe for <cena> a year“.
   Šta sam dodao jer ga dizajn nema (Andrija: „šta fali, dodaj“): ✕ kad aplikacija nije zaključana (otvoreno iz
   Settings, ili build bez prodavnice); taj drugi naslov za iskorišćenu probu; tekst ispod dugmeta za doživotni

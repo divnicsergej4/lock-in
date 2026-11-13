@@ -190,11 +190,21 @@ Lična potrošnja („Financial info“ sa telefona) se ne prijavljuje jer ne na
 | Contact details | email `support@lockintracker.app`, website `https://lockintracker.app` |
 | Privacy policy | `https://lockintracker.app/privacy/` |
 
-**Obrasci (App content):** Privacy policy (gore); Ads: **No**; App access: deo funkcija traži prijavu (zajednički
-cilj) → uputstvo za recenzente: „Shared goals need an account: sign in with any Google account (Settings > Account,
-or Savings > Shared goals). Everything else works without an account. To use the app, start the 7-day free trial on
-the plans screen (Start my free week). "Look around the demo first" there, and later Settings > Help > Demo, shows every screen
-filled with sample data.“ (izmenjeno 12. nov. 2026: aplikacija je zaključana dok se ne pokrene proba) (za ovo Google OAuth mora biti „In
+**Obrasci (App content):** Privacy policy (gore); Ads: **No**; App access („Sign in details“): Google piše da
+recenzenti **ne mogu** da prave naloge, koriste svoje naloge ni pokreću besplatne probe (13. nov. 2026). Zato:
+poseban Gmail nalog za recenzente (Andrija ga pravi i sam upisuje mejl i lozinku u Play Console), na serveru mu je
+data pretplata `manual_review` (SQL ispod), a na ekranu za plaćanje postoji „Already have an account? Sign in“.
+Uputstvo (polje „Any other information“):
+„Sign in with the Google account above: on the first screen of plans tap "Already have an account? Sign in", then
+"Continue with Google". This account already has full access, no purchase or trial needed. Shared goals (Savings tab)
+use the same account. "Look around the demo first" shows every screen filled with sample data.“
+Štiklira se „Sign in details in this declaration provide full access…“.
+SQL za pristup (posle prve prijave recenzentskim nalogom, mejl zameniti):
+`insert into public.subscriptions (user_id, active_until, product) select id, '2027-12-31', 'manual_review' from
+auth.users where email = 'MEJL_RECENZENTA' on conflict (user_id) do update set active_until = excluded.active_until,
+product = excluded.product, updated_at = now();`
+Ovaj nalog i `manual_review` se **ne brišu** pri čišćenju pred objavu (`docs/ZASTITA.md` deo 6), jer ih recenzenti
+koriste i za svako sledeće ažuriranje. (za ovo Google OAuth mora biti „In
 production“, `docs/ZASTITA.md` deo 6); Content rating: deo 5; Target audience: 18+; Data safety: deo 7 (Delete
 account URL `https://lockintracker.app/delete-account/`); Financial features: aplikacija samo prati troškove i
 štednju, ne nudi kredite, plaćanja ni ulaganja; Government apps: No; News: No; Health: No.

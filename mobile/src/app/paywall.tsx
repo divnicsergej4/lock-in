@@ -2,7 +2,7 @@
 // "Locking you in…" while the store and the server are asked → "You're locked in." → the guided tour or not;
 // or "That didn't go through." with the reason. Restore purchase → "Welcome back." or "No purchase found".
 // Opened after the setup of a new user, from Settings > Subscription, and by itself when the app is locked
-// (no trial or plan: then there is no ✕, only the plans, the demo and the restore).
+// (no trial or plan: then there is no ✕, only the plans, the demo, the restore and, signed out, the sign-in).
 
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -65,6 +65,22 @@ export default function Paywall() {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => screen.k === 'processing');
     return () => sub.remove();
   }, [screen.k]);
+
+  // "Already have an account? Sign in": once the server says the account has a trial or plan, on into the app
+  const fromSignIn = useRef(false);
+  useEffect(() => {
+    if (fromSignIn.current && auth.session && auth.access.kind === 'active' && screen.k === 'plans') {
+      fromSignIn.current = false;
+      leave();
+    }
+  }, [auth.session, auth.access.kind, screen.k]);
+  const onSignIn =
+    auth.available && !auth.session && !demo
+      ? () => {
+          fromSignIn.current = true;
+          router.push('/sign-in');
+        }
+      : null;
 
   // "Waiting for approval." (Ask to Buy): when it is approved, RevenueCat tells us and it goes on by itself
   useEffect(() => {
@@ -179,6 +195,7 @@ export default function Paywall() {
         onBuy={onBuy}
         busy={busy}
         onDemo={onDemo}
+        onSignIn={onSignIn}
         onRestore={onRestore}
         onTerms={() => openWeb('terms/')}
         onPrivacy={() => openWeb('privacy/')}

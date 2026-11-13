@@ -37,6 +37,7 @@ export function PlansView({
   onBuy,
   busy,
   onDemo,
+  onSignIn,
   onRestore,
   onTerms,
   onPrivacy,
@@ -49,6 +50,7 @@ export function PlansView({
   onBuy: () => void;
   busy: boolean;
   onDemo: (() => void) | null; // null in the demo
+  onSignIn: (() => void) | null; // only when signed out: a plan bought on the other phone (or the reviewers' account) comes with the account
   onRestore: () => void;
   onTerms: () => void;
   onPrivacy: () => void;
@@ -151,6 +153,7 @@ export function PlansView({
             {/* the button's place in the page; the button itself is drawn over it (sticky) */}
             {ready && <View style={{ height: blockHeight }} />}
             {onDemo && <TextButton title="Look around the demo first" onPress={onDemo} underline />}
+            {onSignIn && <TextButton title="Already have an account? Sign in" onPress={onSignIn} underline />}
           </View>
         )}
 
