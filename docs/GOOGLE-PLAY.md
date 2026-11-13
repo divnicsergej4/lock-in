@@ -121,7 +121,9 @@ napravljen poseban Gmail za recenzente (Andrija ga čuva; mejl i lozinka samo u 
 aplikaciju i dobio `manual_review` do 2027-12-31 (provereno SQL-om). Link „Already have an account? Sign in“ na ekranu
 za plaćanje (commit `acdfdac`) mora stići na telefone pre pregleda. OTA nije dovoljan: `expo-updates` novo
 ažuriranje pokreće tek pri drugom otvaranju, pa bi recenzent pri prvom video staru verziju. Zato treći production
-AAB (versionCode 6, build `19eaacfe-9deb-4a0b-87c9-02e29e4aa080`, 13. nov.). Isto veče popunjeni i Target audience
+AAB (versionCode 6, build `19eaacfe-9deb-4a0b-87c9-02e29e4aa080`, 13. nov., commit `3729532`):
+https://expo.dev/artifacts/eas/oVA02xB4H92Wte6IV7XQVtv8uVRhwdKMl3lHJOMZPp4.aab (provereno u fajlu: link za prijavu i
+`goog_` ključ su u JS paketu). Isto veče popunjeni i Target audience
 (samo 18+, bez „Restrict minors“), Trader status (Yes, Terms URL), kategorija Finance i kontakt (bez telefona), stranica
 u prodavnici (tekstovi iz `docs/PRODAVNICE.md`, ikonica, feature graphic, 8 slika; ikonica i feature graphic označeni
 kao napravljeni uz AI, jer ih je pravio Claude). Sve sačuvano, ništa još nije poslato na pregled.
