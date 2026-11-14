@@ -56,7 +56,8 @@ App Store Connect > aplikacija > **Monetization > Subscriptions**:
 ## 6. iOS build i TestFlight ⬜
 Prvi build pokrenut 14. nov. (`186de768-29e0-4684-a2d4-461b282b1683`, build number 1): EAS napravio sertifikat,
 profil i push ključ; build gotov (commit `dff79f2`). `--auto-submit` je pao jer u `eas.json` nije bilo `submit` profila; dodat (`ascAppId`
-`6834582561`), pa se šalje sa `npx eas-cli submit --platform ios --latest`.
+`6834582561`), pa se šalje sa `npx eas-cli submit --platform ios --latest`. Poslato u App Store Connect 14. nov.
+(EAS napravio App Store Connect API ključ sa ulogom **App Manager**, ne Admin).
 `mobile/app.json` već ima `ITSAppUsesNonExemptEncryption: false` (samo standardno šifrovanje, Apple ne pita svaki put).
 Pokreće **Andrija u svom terminalu** (traži Apple ID prijavu i kod, to ne sme kroz mene), iz `mobile/`:
 ```
