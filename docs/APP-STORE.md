@@ -58,6 +58,13 @@ Prvi build pokrenut 14. nov. (`186de768-29e0-4684-a2d4-461b282b1683`, build numb
 profil i push ključ; build gotov (commit `dff79f2`). `--auto-submit` je pao jer u `eas.json` nije bilo `submit` profila; dodat (`ascAppId`
 `6834582561`), pa se šalje sa `npx eas-cli submit --platform ios --latest`. Poslato u App Store Connect 14. nov.
 (EAS napravio App Store Connect API ključ sa ulogom **App Manager**, ne Admin).
+Prva proba na iPhone-u (TestFlight, 15. nov.): (1) placeholder „Description (required)…“ sa razmaknutim slovima:
+iOS ponovo koristi prikaz drugog polja i placeholder zadrži njegov razmak slova (react-native issue 42589);
+ispravka: svako polje ima `letterSpacing: 0` ako ne zada svoj (`src/textScale/TextInput.tsx`). (2) prazna kutija
+plamena: tab koji nije napred se sakrije (`display: none`, TabFreeze), Fabric ponovo napravi prikaz Canvas-a, a Skia
+2.14 ga ostavi praznog (react-native-skia issue 4442, ispravke još nema); ispravka: plamen pravi nov Canvas kad se
+ekran vrati napred (`Flame.tsx`). Isto može da pogodi krug i liniju na Spending-u i prsten cilja: proveriti posle
+menjanja tabova. Obe ispravke su samo JS (stižu preko ažuriranja), ali build za pregled mora da ih ima ugrađene.
 `mobile/app.json` već ima `ITSAppUsesNonExemptEncryption: false` (samo standardno šifrovanje, Apple ne pita svaki put).
 Pokreće **Andrija u svom terminalu** (traži Apple ID prijavu i kod, to ne sme kroz mene), iz `mobile/`:
 ```

@@ -19,7 +19,7 @@ import {
   type SkPath,
 } from '@shopify/react-native-skia';
 import { useIsFocused } from 'expo-router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
@@ -152,6 +152,15 @@ export function Flame({ tier = 'or', style, levelUp = 0 }: { tier?: FlameTier; s
   useEffect(() => {
     frame.setActive(focused);
   }, [focused, frame]);
+  // a new Canvas each time the screen comes back to the front: a tab that is not in front is hidden
+  // (display: none, TabFreeze), Fabric then recreates the Canvas's native view, and Skia 2.14 leaves that new view
+  // blank (react-native-skia issue 4442; the empty flame box in the first TestFlight build)
+  const [gen, setGen] = useState(0);
+  const wasFocused = useRef(focused);
+  useEffect(() => {
+    if (focused && !wasFocused.current) setGen((g) => g + 1);
+    wasFocused.current = focused;
+  }, [focused]);
   // svg 54×68 showing a 64×80 viewBox: scale 0.84375, centred vertically
   const s = 54 / 64;
   const fk1 = (t: number) => {
@@ -225,7 +234,7 @@ export function Flame({ tier = 'or', style, levelUp = 0 }: { tier?: FlameTier; s
 
   return (
     <Animated.View style={[{ width: 70, height: 82 }, style, popStyle]}>
-      {tier === 'lg' && <RainbowRing clock={clock} />}
+      {tier === 'lg' && <RainbowRing key={gen} clock={clock} />}
       <View
         style={{
           width: 70,
@@ -241,7 +250,7 @@ export function Flame({ tier = 'or', style, levelUp = 0 }: { tier?: FlameTier; s
           justifyContent: 'center',
         }}
       >
-        <Canvas style={{ width: 54 + 40, height: 68 + 40, margin: -20 }} pointerEvents="none">
+        <Canvas key={gen} style={{ width: 54 + 40, height: 68 + 40, margin: -20 }} pointerEvents="none">
           {tier === 'rb' ? (
             <Group
               layer={
