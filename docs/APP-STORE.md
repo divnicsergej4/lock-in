@@ -27,7 +27,9 @@ appstoreconnect.apple.com > **Apps** > **+** > New App:
 ## 3. App Store Small Business Program ⬜
 developer.apple.com/app-store/small-business-program/ > Enroll: 15% provizije umesto 30%. Ne dešava se samo.
 
-## 4. Pretplate ⬜
+## 4. Pretplate ✅ 14. nov. (grupa `Lock In`, `lockin_monthly` $4.99 i `lockin_annual` $29.99, obe „Free for the first week“; Review Information sa slikom i „Add for Review“ tek uz prvu verziju)
+Odluke (13. nov. 2026): dostupno u svim zemljama osim Kosova (Andrija); cene u evrima ostaju kako Apple sam
+preračuna iz $4.99 (npr. €5.99 sa PDV-om; Andrija: „boli me uvo“).
 App Store Connect > aplikacija > **Monetization > Subscriptions**:
 1. Subscription Group: `Lock In` (obe pretplate u istoj grupi, da proba važi jednom za obe).
 2. Mesečna: Reference Name `Lock In Monthly`, Product ID **`lockin_monthly`**, Duration 1 Month, cena **$4.99**
