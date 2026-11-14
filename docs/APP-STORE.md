@@ -69,7 +69,7 @@ Andrija potvrdio uzrok plamena (prazno tek posle drugog taba, vrati se kad otvor
 dozvolu: ažuriranje `b4442b13` na kanal `production` (iOS i Android), 15. nov. Plamen posle toga radi (Andrija),
 ali holo grafikoni (krug i linija na Spending-u) isto ostanu prazni posle drugog taba: ista ispravka je sad
 zajednička (`components/useSkiaRemount.ts`) i važi za plamen, krug (i prazan krug) i liniju. Prsten cilja
-(`LockRing`) nije diran: proveriti.
+(`LockRing`) nije diran: proveriti. Ažuriranje `952810cc` na `production` (iOS i Android), 15. nov., uz Andrijinu dozvolu.
 `mobile/app.json` već ima `ITSAppUsesNonExemptEncryption: false` (samo standardno šifrovanje, Apple ne pita svaki put).
 Pokreće **Andrija u svom terminalu** (traži Apple ID prijavu i kod, to ne sme kroz mene), iz `mobile/`:
 ```
