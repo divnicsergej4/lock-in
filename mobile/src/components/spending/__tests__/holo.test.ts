@@ -5,7 +5,7 @@ import vm from 'vm';
 
 import { fnSource, stmtSource } from '@/logic/__tests__/prototype';
 
-import { HP, holoLayout, hm, hPose, poseMatrix, springStep, SPRING_DT, settled, SPRING_MAX_S, swipeTarget } from '../holo';
+import { depthMatrix, HP, holoLayout, hm, hPose, poseMatrix, springStep, SPRING_DT, settled, SPRING_MAX_S, swipeTarget } from '../holo';
 
 /** The prototype's ring code with its layout for a given screen width. */
 function prototypeRing(W: number) {
@@ -72,6 +72,24 @@ describe('the ring sits like the prototype', () => {
     return { x: (X * m[0] + Y * m[4] + m[12]) / w, y: (X * m[1] + Y * m[5] + m[13]) / w, d: (X * m[2] + Y * m[6] + m[14]) / w };
   }
 
+  /** 4 × 4 product a · b (row-major, as React Native and CATransform3D lay them out). */
+  function mul(a: number[], b: number[]) {
+    const r: number[] = [];
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) r.push([0, 1, 2, 3].reduce((s, k) => s + a[i * 4 + k] * b[k * 4 + j], 0));
+    return r;
+  }
+
+  test('iOS: the inner view (pose) has no depth shift; only the outer one moves along z', () => {
+    const L = holoLayout(390);
+    for (let p = 0; p < 3; p += 0.1)
+      for (let i = 0; i < 3; i++) {
+        const q = hPose(i, p, 1, L);
+        for (const v of poseMatrix(q)) expect(Math.abs(v)).toBeLessThan(1000);
+        const d = depthMatrix(q, true);
+        expect(d.filter((_, k) => k !== 14)).toEqual([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1]);
+      }
+  });
+
   test('iOS matrix: same picture as the CSS, and panels never cut into each other', () => {
     for (const W of [375, 390, 430]) {
       const L = holoLayout(W);
@@ -79,7 +97,8 @@ describe('the ring sits like the prototype', () => {
         const cur = hm(Math.round(p));
         const q = [0, 1, 2].map((i) => hPose(i, p, 1, L));
         const span = q.map((qi, i) => {
-          const m = poseMatrix(qi, i === cur);
+          // the inner view's pose, then the outer view's depth shift (row vectors: point · pose · depth)
+          const m = mul(poseMatrix(qi), depthMatrix(qi, i === cur));
           const ds: number[] = [];
           for (let X = -L.pw / 2; X <= L.pw / 2; X += L.pw / 8) {
             const r = viaMatrix(m, X, 37);

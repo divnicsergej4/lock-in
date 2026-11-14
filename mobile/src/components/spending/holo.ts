@@ -84,21 +84,38 @@ export function poseTransform(q: Pose) {
  * layout), followed by a depth shift that leaves every projected point where it was and only orders the
  * panels: the hPose depth (60 − 40·distance), and the front panel ahead of any tie. DEPTH_STEP is far larger
  * than the depth spread inside one panel (< 500), so no two panels ever cut into each other.
+ *
+ * The two parts sit on two nested views (RingPanel): the pose on the inner one, the depth shift (a plain move along
+ * z, depthMatrix) on the outer one; together they are exactly the old single matrix. In one matrix the shift put
+ * numbers of up to ~140 000 into the panel's own transform, and while something in the panel animated (the donut
+ * spinning in, its label arriving) iOS drew it at a fraction of the screen's resolution (first TestFlight build,
+ * Andrija's recording, 15 Nov 2026).
  */
 export const DEPTH_STEP = 2000;
-export function poseMatrix(q: Pose, front: boolean): number[] {
+export function poseMatrix(q: Pose): number[] {
   'worklet';
   const r = (q.ry * Math.PI) / 180;
   const c = Math.cos(r);
   const s = Math.sin(r);
-  const b = (q.depth + 10) * DEPTH_STEP + (front ? DEPTH_STEP / 2 : 0);
   const w = 1 - q.z / HP;
   // prettier-ignore
   return [
-    c, 0, -s + (b * s) / HP, s / HP,
+    c, 0, -s, s / HP,
     0, 1, 0, 0,
-    s, 0, c - (b * c) / HP, -c / HP,
-    q.x, 0, q.z + b * w, w,
+    s, 0, c, -c / HP,
+    q.x, 0, q.z, w,
+  ];
+}
+/** The depth shift that orders the panels (see above): a move along z only, which changes no projected point. */
+export function depthMatrix(q: Pose, front: boolean): number[] {
+  'worklet';
+  const b = (q.depth + 10) * DEPTH_STEP + (front ? DEPTH_STEP / 2 : 0);
+  // prettier-ignore
+  return [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, b, 1,
   ];
 }
 

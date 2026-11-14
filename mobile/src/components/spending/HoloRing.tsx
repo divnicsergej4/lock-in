@@ -32,7 +32,7 @@ import { tourBus, useTourTarget } from '@/tour/registry';
 import { HoloClock } from './holoClock';
 import { HoloLite } from './HoloLite';
 import { HoloPanel } from './HoloPanel';
-import { HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
+import { depthMatrix, HN, holoLayout, hm, hPose, HPB, HPT, poseMatrix, poseTransform, SPRING_DT, SPRING_MAX_S, settled, springStep, swipeTarget, type HoloLayout } from './holo';
 
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
 // iOS orders the panels by real depth (see poseMatrix), Android by elevation (RingPanel), the web by zIndex
@@ -114,8 +114,10 @@ function RingPanel({
     // No shadow either way (negative, and the outer view has no background).
     if (ANDROID) return { opacity: q.opacity, elevation: i === hm(Math.round(p.value)) ? 0 : -1, transform: poseTransform(q) };
     if (!IOS) return { opacity: q.opacity, transform: poseTransform(q) };
-    return { opacity: q.opacity, transform: [{ matrix: poseMatrix(q, i === hm(Math.round(p.value))) }] };
+    // iOS: only the depth shift here, the pose on the inner view (see poseMatrix)
+    return { opacity: q.opacity, transform: [{ matrix: depthMatrix(q, i === hm(Math.round(p.value))) }] };
   });
+  const pose = useAnimatedStyle(() => (IOS ? { transform: [{ matrix: poseMatrix(hPose(i, p.value, sp.value, L)) }] } : {}));
   const dim = useDerivedValue(() => hPose(i, p.value, sp.value, L).dim);
   // .vzf: @keyframes hfl 7s ease-in-out infinite (0 → −5 px → 0), panels offset by −2.4 s and −4.7 s
   const float = useAnimatedStyle(() => {
@@ -128,12 +130,8 @@ function RingPanel({
   // Android: touches do not follow the elevation (React Native looks for the touched view in child order, and
   // a side panel may come after the front one), so a side panel takes no touches; HoloRing's side strips turn
   // the ring instead.
-  return (
-    <Animated.View
-      pointerEvents={ANDROID && onPressSide ? 'none' : 'auto'}
-      needsOffscreenAlphaCompositing={ANDROID}
-      style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}
-    >
+  const body = (
+    <>
       <Animated.View style={float}>
         <HoloPanel w={L.pw} h={h} dim={dim} activation={activation}>
           {children}
@@ -141,6 +139,15 @@ function RingPanel({
       </Animated.View>
       {/* a side panel: a tap turns the ring to it */}
       {onPressSide && !ANDROID && <Pressable accessibilityRole="button" style={StyleSheet.absoluteFill} onPress={onPressSide} />}
+    </>
+  );
+  return (
+    <Animated.View
+      pointerEvents={ANDROID && onPressSide ? 'none' : 'auto'}
+      needsOffscreenAlphaCompositing={ANDROID}
+      style={[st.vzs, { width: L.pw, marginLeft: -L.pw / 2, zIndex: depth, transformOrigin: '50% 43%' }, style]}
+    >
+      {IOS ? <Animated.View style={[{ transformOrigin: '50% 43%' }, pose]}>{body}</Animated.View> : body}
     </Animated.View>
   );
 }
