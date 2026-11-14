@@ -41,7 +41,7 @@ App Store Connect > aplikacija > **Monetization > Subscriptions**:
 5. Za obe: Review Information > slika ekrana za plaćanje + napomena (posle prvog build-a, slika sa iPhone-a).
 6. Product ID-jevi su isti kao na Google Play-u: RevenueCat ih spaja pod isti entitlement `access`.
 
-## 5. RevenueCat za iOS ⬜
+## 5. RevenueCat za iOS ✅ 14. nov. (aplikacija „Lock In (App Store)“, In-App Purchase ključ, obaveštenja, proizvodi u `access` i `default`; `EXPO_PUBLIC_REVENUECAT_IOS_KEY` u EAS za sva tri okruženja)
 1. App Store Connect > Users and Access > Integrations > **In-App Purchase** > Generate key: `.p8` preuzimaš sam,
    uz Key ID i Issuer ID.
 2. RevenueCat > projekat Lock In > Apps > **+ App Store**: Bundle ID `com.lockintracker.app`; otpremi `.p8`, Key ID,
