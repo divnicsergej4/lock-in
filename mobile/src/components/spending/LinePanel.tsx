@@ -9,6 +9,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 
 import { LINE_HINT, LINE_LABEL_SPACE, lineChart, lineTip } from '@/logic/charts';
+import { useSkiaRemount } from '@/components/useSkiaRemount';
 import { fmt } from '@/logic/format';
 import { useStore } from '@/store/StoreProvider';
 import { holo, inter, useTheme } from '@/theme';
@@ -49,6 +50,7 @@ export function LinePanel({ activation, grow, onNatural }: PanelProps) {
   const H = 176 + grow;
   const L = useMemo(() => (W ? lineChart(state, Date.now(), W, H) : null), [state, W, H]);
   const nat = useNaturalHeight(onNatural, grow);
+  const gen = useSkiaRemount();
 
   // the selected day: the dot moves on the UI thread, the text follows in JS
   const [day, setDay] = useState(29);
@@ -139,7 +141,7 @@ export function LinePanel({ activation, grow, onNatural }: PanelProps) {
         {L && (
           <GestureDetector gesture={scrub}>
             <View style={StyleSheet.absoluteFill}>
-              <Canvas style={{ width: W, height: H + LINE_LABEL_SPACE }} pointerEvents="none">
+              <Canvas key={gen} style={{ width: W, height: H + LINE_LABEL_SPACE }} pointerEvents="none">
                 <Line p1={vec(0, L.zeroY)} p2={vec(W, L.zeroY)} color="#2b5a40" strokeWidth={1}>
                   <DashPathEffect intervals={[4, 4]} />
                 </Line>

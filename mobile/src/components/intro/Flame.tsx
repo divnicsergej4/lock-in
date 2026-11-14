@@ -19,7 +19,7 @@ import {
   type SkPath,
 } from '@shopify/react-native-skia';
 import { useIsFocused } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
@@ -33,6 +33,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
+import { useSkiaRemount } from '../useSkiaRemount';
 import { bezier } from './cssAnim';
 
 const BOX = 'inset 0 0 0 1px rgba(255,255,255,0.07), 0 8px 20px rgba(0,0,0,0.25)';
@@ -152,15 +153,8 @@ export function Flame({ tier = 'or', style, levelUp = 0 }: { tier?: FlameTier; s
   useEffect(() => {
     frame.setActive(focused);
   }, [focused, frame]);
-  // a new Canvas each time the screen comes back to the front: a tab that is not in front is hidden
-  // (display: none, TabFreeze), Fabric then recreates the Canvas's native view, and Skia 2.14 leaves that new view
-  // blank (react-native-skia issue 4442; the empty flame box in the first TestFlight build)
-  const [gen, setGen] = useState(0);
-  const wasFocused = useRef(focused);
-  useEffect(() => {
-    if (focused && !wasFocused.current) setGen((g) => g + 1);
-    wasFocused.current = focused;
-  }, [focused]);
+  // a new Canvas each time the screen comes back to the front (see useSkiaRemount)
+  const gen = useSkiaRemount();
   // svg 54×68 showing a 64×80 viewBox: scale 0.84375, centred vertically
   const s = 54 / 64;
   const fk1 = (t: number) => {

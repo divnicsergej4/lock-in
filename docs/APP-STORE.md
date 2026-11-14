@@ -66,7 +66,10 @@ plamena: tab koji nije napred se sakrije (`display: none`, TabFreeze), Fabric po
 ekran vrati napred (`Flame.tsx`). Isto može da pogodi krug i liniju na Spending-u i prsten cilja: proveriti posle
 menjanja tabova. Obe ispravke su samo JS (stižu preko ažuriranja), ali build za pregled mora da ih ima ugrađene.
 Andrija potvrdio uzrok plamena (prazno tek posle drugog taba, vrati se kad otvori „Can I afford this?“) i dao
-dozvolu: ažuriranje `b4442b13` na kanal `production` (iOS i Android), 15. nov.
+dozvolu: ažuriranje `b4442b13` na kanal `production` (iOS i Android), 15. nov. Plamen posle toga radi (Andrija),
+ali holo grafikoni (krug i linija na Spending-u) isto ostanu prazni posle drugog taba: ista ispravka je sad
+zajednička (`components/useSkiaRemount.ts`) i važi za plamen, krug (i prazan krug) i liniju. Prsten cilja
+(`LockRing`) nije diran: proveriti.
 `mobile/app.json` već ima `ITSAppUsesNonExemptEncryption: false` (samo standardno šifrovanje, Apple ne pita svaki put).
 Pokreće **Andrija u svom terminalu** (traži Apple ID prijavu i kod, to ne sme kroz mene), iz `mobile/`:
 ```
