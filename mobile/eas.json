@@ -39,5 +39,12 @@
         "gradleCommand": ":app:mergeReleaseNativeLibs :app:bundleRelease"
       }
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6834582561"
+      }
+    }
   }
 }
