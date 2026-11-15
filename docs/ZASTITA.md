@@ -395,7 +395,7 @@ Sve ovo služi samo za probu (Expo Go, test nalozi). Pre slanja na App Store / G
 4. Supabase > Authentication > Attack Protection: **CAPTCHA uključena** (Turnstile), ali tek kad je ugrađen u
    aplikaciju (3.2, korak 9); ako nije ugrađen, objava čeka na to.
 5. Supabase > Authentication > Sign In / Providers > Email: „Confirm email“ **uključeno** (vidi 3.2, korak 1).
-6. Google Cloud Console > OAuth consent screen: status **In production** (ne „Testing“, gde rade samo ručno
+6. ✅ (Andrija proverio 15. nov. 2026: In production; sada Google Auth Platform > Audience) Google Cloud Console > OAuth consent screen: status **In production** (ne „Testing“, gde rade samo ručno
    dodati test korisnici); u „Authorized redirect URIs“ samo Supabase callback.
 7. Resend: pošiljalac sa tvog domena (ne `onboarding@resend.dev`), domen potvrđen (SPF/DKIM).
 8. `mobile/.env.local` / EAS secrets za production build: adresa i javni ključ **pravog** Supabase projekta
