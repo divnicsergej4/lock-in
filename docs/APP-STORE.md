@@ -107,7 +107,8 @@ Ostaje: stranica verzije 1.0 (slike, opis, ključne reči, URL-ovi, build 2, pre
 Review Information pretplata (`review-paywall.png`).
 Tekstovi: `docs/PRODAVNICE.md` delovi 2–3 (u dugom opisu „Cancel anytime in your App Store settings.“), ključne reči,
 podnaslov. Slike 1290×2796 iz `docs/prodavnica/app-store/` 1–8 (6 i 7 ponovo snimljene 15. nov. sa engleskim
-imenima). Za Review Information obe pretplate: `review-paywall.png` (ekran za plaćanje sa oba plana, TestFlight).
+imenima). App Store Connect (nov. 2026) prvo traži „iPhone with Dynamic Island (medium display)“ 1206×2622 ili
+1179×2556: iste slike smanjene na 1206×2622 su u `docs/prodavnica/app-store-6.3/`. Za Review Information obe pretplate: `review-paywall.png` (ekran za plaćanje sa oba plana, TestFlight).
 App Privacy: deo 6 PRODAVNICE.md (+ Device ID / push token po potrebi). Age Rating: deo 5. Support URL
 `https://lockintracker.app/support/`, Privacy Policy URL `https://lockintracker.app/privacy/`, Terms link u opisu.
 App Review Information: isti Gmail nalog za recenzente kao na Google Play-u (Apple recenzent sme da koristi nalog koji
