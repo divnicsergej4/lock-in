@@ -80,7 +80,9 @@ Savings-u isto prazan posle drugog taba; Andrija: „na nivou cele aplikacije to
 aplikaciji ide kroz jedan Canvas (`components/SkiaCanvas.tsx`) koji se sam napravi iznova kad se ekran vrati napred
 (plamen, holo krug i linija, katanac cilja, lik i podvlaka na uvodu); test (`components/__tests__/skiaCanvas.test.ts`)
 pada ako neki fajl uzme Canvas direktno iz Skia-e. Ažuriranje `9c48b530` na `production`, 15. nov. (Andrija: „kad
-zavrsis posalji ono gde treba“). Za pregled treba nov build (2) sa ovim
+zavrsis posalji ono gde treba“).
+Build 2 (sa svim ispravkama ugrađenim) pokrenut 15. nov. sa commit-a `7142caa`, bez Apple prijave (sertifikat, profil i
+API ključ su na EAS-u): `ba0d28c3-00b8-4948-bda2-f5f584abc8aa`, sa `--auto-submit` (sam ide u App Store Connect). Za pregled treba nov build (2) sa ovim
 ispravkama ugrađenim (recenzent vidi ugrađeni kod, ažuriranje se primeni tek na drugom pokretanju).
 `mobile/app.json` već ima `ITSAppUsesNonExemptEncryption: false` (samo standardno šifrovanje, Apple ne pita svaki put).
 Pokreće **Andrija u svom terminalu** (traži Apple ID prijavu i kod, to ne sme kroz mene), iz `mobile/`:
@@ -98,7 +100,8 @@ Apple, Google i kod, probna kupovina (Sandbox nalog), Restore, push iz cilja, �
 
 ## 7. Stranica u prodavnici i obrasci ⬜
 Tekstovi: `docs/PRODAVNICE.md` delovi 2–3 (u dugom opisu „Cancel anytime in your App Store settings.“), ključne reči,
-podnaslov. Slike 1290×2796 iz `docs/prodavnica/app-store/` (6 i 7 ponovo snimiti, imaju stara imena).
+podnaslov. Slike 1290×2796 iz `docs/prodavnica/app-store/` 1–8 (6 i 7 ponovo snimljene 15. nov. sa engleskim
+imenima). Za Review Information obe pretplate: `review-paywall.png` (ekran za plaćanje sa oba plana, TestFlight).
 App Privacy: deo 6 PRODAVNICE.md (+ Device ID / push token po potrebi). Age Rating: deo 5. Support URL
 `https://lockintracker.app/support/`, Privacy Policy URL `https://lockintracker.app/privacy/`, Terms link u opisu.
 App Review Information: isti Gmail nalog za recenzente kao na Google Play-u (Apple recenzent sme da koristi nalog koji
