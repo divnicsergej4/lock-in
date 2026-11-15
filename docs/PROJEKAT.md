@@ -524,6 +524,9 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
    članstvo je aktivno, poreski podaci i banka popunjeni u App Store Connect-u (Business); 12. nov. 2026 je za
    Paid Apps postavljen devizni USD račun (isti koji je Google verifikovao za isplate na Google Play-u). Prodavac u App Store-u biće njegovo ime; kolega dobija pristup
    preko Users and Access, EAS radi preko API ključa. **Vodič korak po korak: `docs/APP-STORE.md`** (13. nov. 2026).
+   **15. nov. 2026: verzija 1.0 (build 2) sa obe pretplate poslata Apple-u na pregled**, ručna objava posle odobrenja.
+   Pre toga ispravljeno posle TestFlight probe: placeholder sa razmaknutim slovima, Skia crteži prazni posle drugog
+   ekrana (jedan zajednički Canvas za celu aplikaciju), mutan holo na iOS-u dok se animira (poza i dubina na dva sloja).
 5. Pre slanja u obe prodavnice: `docs/ZASTITA.md` deo 6 (Expo Go adrese iz Supabase-a, probni nalozi i `manual_test`
    pretplate, Google OAuth „In production“, pravi ključevi, bez „TEST PRICES“).
 6. Provere na telefonima koje fale: zajednički cilj na dva telefona sa pravim nalozima (`0006`, nova `send-goal-push`),

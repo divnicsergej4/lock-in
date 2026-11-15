@@ -54,7 +54,7 @@ App Store Connect > aplikacija > **Monetization > Subscriptions**:
 5. API keys: javni `appl_…` → EAS promenljiva `EXPO_PUBLIC_REVENUECAT_IOS_KEY` (plaintext, sva tri okruženja). Može
    da mi ga pošalje, pa to uradim ja.
 
-## 6. iOS build i TestFlight ⬜
+## 6. iOS build i TestFlight ✅ 15. nov. (build 2 proveren na iPhone-u posle ispravki)
 Prvi build pokrenut 14. nov. (`186de768-29e0-4684-a2d4-461b282b1683`, build number 1): EAS napravio sertifikat,
 profil i push ključ; build gotov (commit `dff79f2`). `--auto-submit` je pao jer u `eas.json` nije bilo `submit` profila; dodat (`ascAppId`
 `6834582561`), pa se šalje sa `npx eas-cli submit --platform ios --latest`. Poslato u App Store Connect 14. nov.
@@ -99,7 +99,7 @@ npx eas-cli submit --platform ios --latest
 TestFlight > Internal Testing: dodaj sebe, instaliraj TestFlight na iPhone. Proveri: holo i 120 Hz, Sign in with
 Apple, Google i kod, probna kupovina (Sandbox nalog), Restore, push iz cilja, „Already have an account? Sign in“.
 
-## 7. Stranica u prodavnici i obrasci ⬜
+## 7. Stranica u prodavnici i obrasci ✅ 15. nov.
 Urađeno 15. nov.: App Information (podnaslov, Finance, bez sadržaja trećih strana), uzrast 13+ (PRODAVNICE deo 5),
 Pricing and Availability (aplikacija Free, 175 zemalja sa Kosovom, bez Apple Silicon Mac-a), App Privacy (pet vrsta iz
 PRODAVNICE dela 6, sve App Functionality, povezano sa osobom, bez praćenja). Build 2 gotov 15. nov. 11:42 UTC.
@@ -114,7 +114,10 @@ App Privacy: deo 6 PRODAVNICE.md (+ Device ID / push token po potrebi). Age Rati
 App Review Information: isti Gmail nalog za recenzente kao na Google Play-u (Apple recenzent sme da koristi nalog koji
 mu daš; prijava „Continue with Google“), napomena kao u PRODAVNICE.md deo 9 + da se proba pokreće u Sandbox-u.
 
-## 8. Slanje na pregled ⬜
+## 8. Slanje na pregled ✅ poslato 15. nov. 2026 (čeka pregled)
+Poslato 15. nov. oko 14:22: „4 Items Submitted“ (iOS App 1.0 build 2, Lock In Monthly, Lock In Annual, grupa Lock In).
+Objava je ručna (Manually release): posle odobrenja ništa ne izlazi samo; pre klika na Release proći
+`docs/ZASTITA.md` deo 6 (nalog za recenzente i `manual_review` ostaju). Odgovor Apple-a stiže mejlom i u App Review.
 Postupak (Apple Help, nov. 2026): na stranici verzije više **nema** sekcije „In-App Purchases and Subscriptions“.
 Prve pretplate moraju sa novom verzijom, u **isti nacrt slanja**: (1) verzija 1.0 > Save > **Add for Review**
 (nacrt; prozor zatvoriti bez slanja); (2) Subscriptions > Lock In Monthly > **Add for Review** > izabrati postojeći
