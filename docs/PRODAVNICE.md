@@ -111,8 +111,10 @@ Pravi se iz `feature-graphic.html` (pravi fontovi iz aplikacije) komandom zapisa
 ## 5. Uzrast
 
 Na uvodu svako vidi „Then lock the fuck in.“, a „No mercy“ poruke imaju jače reči. Zato:
-- **Apple** (upitnik o uzrastu): Profanity or Crude Humor: **Infrequent/Mild**; sve ostalo None. Rezultat je
-  verovatno 13+.
+- **Apple** (novi upitnik, popunjen 15. nov. 2026): Features sve No (nema četa: nudge je gotova poruka; cilj vide
+  samo dodati prijatelji, pa nije User-Generated Content); Profanity or Crude Humor **Frequent** (No mercy fore
+  ~70% vremena), alkohol **Infrequent**, sve ostalo None / No. Rezultat: **13+**, bez override-a (Privacy: „not meant
+  for children under 13“).
 - **Google** (IARC upitnik, popunjen 12. nov. 2026): jezik minor + moderate + sexual expletives (sve Rarely:
   „hell“, „shi“, „fuck“ samo na uvodu), alkohol Reference / Rarely (fore za Nights out), crude humor No, korisnici
   dele sadržaj Yes (samo pozvani prijatelji; blokiranje, prijava i moderacija No), online sadržaj No, digitalne
