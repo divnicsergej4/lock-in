@@ -100,6 +100,11 @@ TestFlight > Internal Testing: dodaj sebe, instaliraj TestFlight na iPhone. Prov
 Apple, Google i kod, probna kupovina (Sandbox nalog), Restore, push iz cilja, „Already have an account? Sign in“.
 
 ## 7. Stranica u prodavnici i obrasci ⬜
+Urađeno 15. nov.: App Information (podnaslov, Finance, bez sadržaja trećih strana), uzrast 13+ (PRODAVNICE deo 5),
+Pricing and Availability (aplikacija Free, 175 zemalja sa Kosovom, bez Apple Silicon Mac-a), App Privacy (pet vrsta iz
+PRODAVNICE dela 6, sve App Functionality, povezano sa osobom, bez praćenja). Build 2 gotov 15. nov. 11:42 UTC.
+Ostaje: stranica verzije 1.0 (slike, opis, ključne reči, URL-ovi, build 2, pretplate, App Review Information) i
+Review Information pretplata (`review-paywall.png`).
 Tekstovi: `docs/PRODAVNICE.md` delovi 2–3 (u dugom opisu „Cancel anytime in your App Store settings.“), ključne reči,
 podnaslov. Slike 1290×2796 iz `docs/prodavnica/app-store/` 1–8 (6 i 7 ponovo snimljene 15. nov. sa engleskim
 imenima). Za Review Information obe pretplate: `review-paywall.png` (ekran za plaćanje sa oba plana, TestFlight).
