@@ -115,3 +115,9 @@ App Review Information: isti Gmail nalog za recenzente kao na Google Play-u (App
 mu daš; prijava „Continue with Google“), napomena kao u PRODAVNICE.md deo 9 + da se proba pokreće u Sandbox-u.
 
 ## 8. Slanje na pregled ⬜
+Postupak (Apple Help, nov. 2026): na stranici verzije više **nema** sekcije „In-App Purchases and Subscriptions“.
+Prve pretplate moraju sa novom verzijom, u **isti nacrt slanja**: (1) verzija 1.0 > Save > **Add for Review**
+(nacrt; prozor zatvoriti bez slanja); (2) Subscriptions > Lock In Monthly > **Add for Review** > izabrati postojeći
+nacrt (ne „Create New Submission“), dodati i grupu Lock In ako ponudi; (3) isto za Lock In Annual; (4) App Review >
+nacrt sadrži verziju, grupu i obe pretplate > **Submit for Review**. Status pretplata pre slanja: „Prepare for
+Submission“ (spremne). Nivoi: Monthly 1, Annual 2 (predlog za kasnije: isti nivo, jer otključavaju isto).
