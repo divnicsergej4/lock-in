@@ -2,14 +2,14 @@
 // day by day (a quick swipe turns the ring instead). On arrival the line draws itself and the totals
 // count up (prototype lnRender + lnDraw).
 
-import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { Circle, DashPathEffect, Group, Line, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 
 import { LINE_HINT, LINE_LABEL_SPACE, lineChart, lineTip } from '@/logic/charts';
-import { useSkiaRemount } from '@/components/useSkiaRemount';
+import { Canvas } from '@/components/SkiaCanvas';
 import { fmt } from '@/logic/format';
 import { useStore } from '@/store/StoreProvider';
 import { holo, inter, useTheme } from '@/theme';
@@ -50,7 +50,6 @@ export function LinePanel({ activation, grow, onNatural }: PanelProps) {
   const H = 176 + grow;
   const L = useMemo(() => (W ? lineChart(state, Date.now(), W, H) : null), [state, W, H]);
   const nat = useNaturalHeight(onNatural, grow);
-  const gen = useSkiaRemount();
 
   // the selected day: the dot moves on the UI thread, the text follows in JS
   const [day, setDay] = useState(29);
@@ -141,7 +140,7 @@ export function LinePanel({ activation, grow, onNatural }: PanelProps) {
         {L && (
           <GestureDetector gesture={scrub}>
             <View style={StyleSheet.absoluteFill}>
-              <Canvas key={gen} style={{ width: W, height: H + LINE_LABEL_SPACE }} pointerEvents="none">
+              <Canvas style={{ width: W, height: H + LINE_LABEL_SPACE }} pointerEvents="none">
                 <Line p1={vec(0, L.zeroY)} p2={vec(W, L.zeroY)} color="#2b5a40" strokeWidth={1}>
                   <DashPathEffect intervals={[4, 4]} />
                 </Line>

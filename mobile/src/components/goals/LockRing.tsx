@@ -4,9 +4,11 @@
 // until its right leg leaves the body, and the ring glows. Everything moves on the UI thread (Reanimated shared
 // values drawn by Skia), like the holo ring.
 
-import { BlurMask, Canvas, Circle, DashPathEffect, Group, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, DashPathEffect, Group, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { useEffect, useMemo } from 'react';
 import { Easing, useDerivedValue, useSharedValue, withDelay, withSequence, withSpring, withTiming, type SharedValue } from 'react-native-reanimated';
+
+import { Canvas } from '@/components/SkiaCanvas';
 
 import { useLook } from './look';
 import { GOLD, PINS } from '@/logic/goals';

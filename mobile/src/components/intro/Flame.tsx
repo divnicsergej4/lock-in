@@ -3,7 +3,6 @@
 // Drawn with Skia; everything moves on the UI thread.
 
 import {
-  Canvas,
   Circle,
   ColorMatrix,
   Shadow,
@@ -33,7 +32,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
-import { useSkiaRemount } from '../useSkiaRemount';
+import { Canvas } from '../SkiaCanvas';
 import { bezier } from './cssAnim';
 
 const BOX = 'inset 0 0 0 1px rgba(255,255,255,0.07), 0 8px 20px rgba(0,0,0,0.25)';
@@ -153,8 +152,6 @@ export function Flame({ tier = 'or', style, levelUp = 0 }: { tier?: FlameTier; s
   useEffect(() => {
     frame.setActive(focused);
   }, [focused, frame]);
-  // a new Canvas each time the screen comes back to the front (see useSkiaRemount)
-  const gen = useSkiaRemount();
   // svg 54×68 showing a 64×80 viewBox: scale 0.84375, centred vertically
   const s = 54 / 64;
   const fk1 = (t: number) => {
@@ -228,7 +225,7 @@ export function Flame({ tier = 'or', style, levelUp = 0 }: { tier?: FlameTier; s
 
   return (
     <Animated.View style={[{ width: 70, height: 82 }, style, popStyle]}>
-      {tier === 'lg' && <RainbowRing key={gen} clock={clock} />}
+      {tier === 'lg' && <RainbowRing clock={clock} />}
       <View
         style={{
           width: 70,
@@ -244,7 +241,7 @@ export function Flame({ tier = 'or', style, levelUp = 0 }: { tier?: FlameTier; s
           justifyContent: 'center',
         }}
       >
-        <Canvas key={gen} style={{ width: 54 + 40, height: 68 + 40, margin: -20 }} pointerEvents="none">
+        <Canvas style={{ width: 54 + 40, height: 68 + 40, margin: -20 }} pointerEvents="none">
           {tier === 'rb' ? (
             <Group
               layer={

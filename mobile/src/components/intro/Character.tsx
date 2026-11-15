@@ -2,10 +2,11 @@
 // Skia from the prototype's SVG. Every animated part reads the scene clock on the UI thread, so the
 // motion never waits for JavaScript.
 
-import { Canvas, Circle, Group, Oval, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { Circle, Group, Oval, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import type { ReactNode } from 'react';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 
+import { Canvas } from '../SkiaCanvas';
 import { ANIMS, GRADIENTS, KEYFRAMES, TREE, VIEWBOX } from './character.data';
 import { evaluate, fnsMatrix, withOrigin, type Anim, type Node } from './cssAnim';
 

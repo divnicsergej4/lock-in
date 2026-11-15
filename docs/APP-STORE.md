@@ -75,7 +75,11 @@ zajednička (`components/useSkiaRemount.ts`) i važi za plamen, krug (i prazan k
 Core Animation animirane delove crtao u maloj rezoluciji. Ispravka samo za iOS: poza na unutrašnjem sloju, pomak po
 dubini na spoljašnjem (`holo.ts` `poseMatrix` + `depthMatrix`, `HoloRing.tsx` RingPanel); slika i redosled panela
 isti (test). Android i web nedirnuti. Ažuriranje `ea72e7e7` na `production`, 15. nov., uz Andrijinu dozvolu.
-Andrija posle toga (15. nov.): „sad sve radi, nema ostalih gresaka nigde“. Za pregled treba nov build (2) sa ovim
+Andrija posle toga (15. nov.): „sad sve radi, nema ostalih gresaka nigde“. Pa ipak: katanac zajedničkog cilja na
+Savings-u isto prazan posle drugog taba; Andrija: „na nivou cele aplikacije to popravi“. Sada svaki Skia crtež u
+aplikaciji ide kroz jedan Canvas (`components/SkiaCanvas.tsx`) koji se sam napravi iznova kad se ekran vrati napred
+(plamen, holo krug i linija, katanac cilja, lik i podvlaka na uvodu); test (`components/__tests__/skiaCanvas.test.ts`)
+pada ako neki fajl uzme Canvas direktno iz Skia-e. Za pregled treba nov build (2) sa ovim
 ispravkama ugrađenim (recenzent vidi ugrađeni kod, ažuriranje se primeni tek na drugom pokretanju).
 `mobile/app.json` već ima `ITSAppUsesNonExemptEncryption: false` (samo standardno šifrovanje, Apple ne pita svaki put).
 Pokreće **Andrija u svom terminalu** (traži Apple ID prijavu i kod, to ne sme kroz mene), iz `mobile/`:

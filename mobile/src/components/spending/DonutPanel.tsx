@@ -2,13 +2,13 @@
 // When the panel comes to the front every arc starts as a dot at the top, makes one turn and grows into
 // its place (prototype dnSpin).
 
-import { Canvas, Circle, DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
+import { Circle, DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { CategoryIcon } from '@/components/CategoryIcon';
-import { useSkiaRemount } from '@/components/useSkiaRemount';
+import { Canvas } from '@/components/SkiaCanvas';
 import { bezier } from '@/components/intro/cssAnim';
 import { donut, DONUT_C, DONUT_EMPTY, DONUT_R, type DonutArc } from '@/logic/charts';
 import { fmt } from '@/logic/format';
@@ -46,10 +46,9 @@ function EmptyDonut({ color }: { color: string }) {
   // on the ring's clock: it rests while the page scrolls or the ring is off screen
   const t = useHoloClock();
   const spin = useAnimatedStyle(() => ({ transform: [{ rotate: ((t.value % 24000) / 24000) * 360 + 'deg' }] }));
-  const gen = useSkiaRemount();
   return (
     <Animated.View style={[StyleSheet.absoluteFill, spin]}>
-      <Canvas key={gen} style={{ width: SIZE, height: SIZE }}>
+      <Canvas style={{ width: SIZE, height: SIZE }}>
         <Group transform={[{ scale: S }]}>
           <Path path={circle} style="stroke" strokeWidth={12} color={color}>
             <DashPathEffect intervals={[3, 11]} />
@@ -67,7 +66,6 @@ export function DonutPanel({ activation, onNatural }: PanelProps) {
   const k = holo[name];
   const [sel, setSel] = useState<string | undefined>(undefined);
   const d = useMemo(() => donut(state, Date.now(), sel), [state, sel]);
-  const gen = useSkiaRemount();
 
   // the spin replays each time the panel comes to the front
   const clock = useSharedValue(10000);
@@ -109,7 +107,7 @@ export function DonutPanel({ activation, onNatural }: PanelProps) {
           <EmptyDonut color={k.hr} />
         ) : (
           <Pressable onPress={(e) => pickAt(e.nativeEvent.locationX, e.nativeEvent.locationY)} style={StyleSheet.absoluteFill}>
-            <Canvas key={gen} style={{ width: SIZE, height: SIZE }} pointerEvents="none">
+            <Canvas style={{ width: SIZE, height: SIZE }} pointerEvents="none">
               <Group transform={[{ scale: S }]}>
                 {d.arcs.map((a, i) => (
                   <Arc key={a.cat + ':' + a.width} a={a} i={i} clock={clock} />

@@ -2,7 +2,7 @@
 // "Then lock the fuck in.", the receipt and "Get started". Sizes and colours are the browser's
 // computed values from the prototype.
 
-import { Canvas, Group, Path as SkPath } from '@shopify/react-native-skia';
+import { Group, Path as SkPath } from '@shopify/react-native-skia';
 import { useEffect, useState } from 'react';
 import { Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View, type TextLayoutEvent } from 'react-native';
 
@@ -10,6 +10,8 @@ type TextLayoutLine = TextLayoutEvent['nativeEvent']['lines'][number];
 import { useDerivedValue, useFrameCallback, useReducedMotion, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Line, Path } from 'react-native-svg';
+
+import { Canvas } from '../SkiaCanvas';
 
 import { Character, characterHeight } from '@/components/intro/Character';
 import { bezier } from '@/components/intro/cssAnim';
