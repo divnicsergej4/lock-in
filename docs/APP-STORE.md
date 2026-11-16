@@ -118,6 +118,12 @@ mu daš; prijava „Continue with Google“), napomena kao u PRODAVNICE.md deo 9
 Poslato 15. nov. oko 14:22: „4 Items Submitted“ (iOS App 1.0 build 2, Lock In Monthly, Lock In Annual, grupa Lock In).
 Objava je ručna (Manually release): posle odobrenja ništa ne izlazi samo; pre klika na Release proći
 `docs/ZASTITA.md` deo 6 (nalog za recenzente i `manual_review` ostaju). Odgovor Apple-a stiže mejlom i u App Review.
+**15. nov. 21:07: odbijeno, Guideline 2.1 - Information Needed** (verzija Rejected, pretplate i grupa Ready for
+Review). Apple traži u Notes: snimak ekrana sa pravog iPhone-a na najnovijem iOS-u (od pokretanja; registracija,
+prijava, brisanje naloga, korisnički sadržaj sa prijavom/blokiranjem, plaćeni deo), svrhu i publiku, uputstvo za
+pristup, spoljne servise, razlike po regionima, dozvole za regulisanu delatnost. Odgovor (bez linka do videa):
+`docs/prodavnica/app-store-review-notes.txt` (3.147 znakova). Rizik: nemamo blokiranje ni prijavu prijatelja; u
+odgovoru piše da ništa nije javno i da se iz cilja može izaći. Ako Apple to ipak traži, dodaje se „Remove friend“.
 Postupak (Apple Help, nov. 2026): na stranici verzije više **nema** sekcije „In-App Purchases and Subscriptions“.
 Prve pretplate moraju sa novom verzijom, u **isti nacrt slanja**: (1) verzija 1.0 > Save > **Add for Review**
 (nacrt; prozor zatvoriti bez slanja); (2) Subscriptions > Lock In Monthly > **Add for Review** > izabrati postojeći
