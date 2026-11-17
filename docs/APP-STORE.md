@@ -82,6 +82,10 @@ aplikaciji ide kroz jedan Canvas (`components/SkiaCanvas.tsx`) koji se sam napra
 (plamen, holo krug i linija, katanac cilja, lik i podvlaka na uvodu); test (`components/__tests__/skiaCanvas.test.ts`)
 pada ako neki fajl uzme Canvas direktno iz Skia-e. Ažuriranje `9c48b530` na `production`, 15. nov. (Andrija: „kad
 zavrsis posalji ono gde treba“).
+Posle build-a 2 (17. nov., kolegin TestFlight): posle upisa troška tastatura je ostajala gore i krila roast. Sada se
+tastatura spusti posle svakog uspešnog upisa (`components/home/NewEntry.tsx`). Ažuriranje `04d73928` na `production`;
+Andrija: „sad radi“. Recenzenti build-a 2 to nemaju (ugrađen kod); ulazi u sledeći build. Od 17. nov. ažuriranja na
+`production` šaljem bez pitanja (Andrija: „nemoj više nikad da mi tražiš dozvolu nego samo pošalji“).
 Build 2 (sa svim ispravkama ugrađenim) pokrenut 15. nov. sa commit-a `7142caa`, bez Apple prijave (sertifikat, profil i
 API ključ su na EAS-u): `ba0d28c3-00b8-4948-bda2-f5f584abc8aa`, sa `--auto-submit` (sam ide u App Store Connect). Za pregled treba nov build (2) sa ovim
 ispravkama ugrađenim (recenzent vidi ugrađeni kod, ažuriranje se primeni tek na drugom pokretanju).
