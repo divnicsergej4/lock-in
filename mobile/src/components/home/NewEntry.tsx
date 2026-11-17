@@ -3,7 +3,7 @@
 // button. After an expense the roast from docs/FORE.md shows as a toast.
 
 import { useEffect, useState, type ComponentRef } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useAnimatedRef } from 'react-native-reanimated';
 
 import { useAppToast } from '@/components/AppToast';
@@ -103,6 +103,7 @@ export function NewEntry() {
       const r = addIncome(state, { amount: amt, type: itype, note, inSecond: second }, now);
       if (!r.ok) return toast(r.error);
       update(() => r.state);
+      Keyboard.dismiss();
       toast(r.toast);
       setAmt('');
       setNote('');
@@ -114,6 +115,7 @@ export function NewEntry() {
     const r = addExpense(state, { amount: amt, cat, note, sub, envId, inSecond: second }, now);
     if (!r.ok) return setErr(r.error);
     update(() => r.state);
+    Keyboard.dismiss(); // the roast toast sits above the tab bar, where the keyboard would hide it
     toast(r.toast);
     setAmt('');
     setNote('');
