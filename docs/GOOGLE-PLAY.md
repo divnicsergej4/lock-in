@@ -229,6 +229,13 @@ je prodavnica stvarno dala. Ako se neko žali: povraćaj u Play Console > Order 
 
 ## 8. Zatvoreno testiranje i produkcija ⬜
 
+Stanje 18. nov. 2026: za zatvoreno testiranje nov production AAB sa svim ispravkama posle release-a 6 (Skia crteži
+posle promene taba, razmaknuta slova, tastatura posle upisa): versionCode 7, build
+`65193118-5a3e-41be-b355-8140122012c2`, commit `58fb48c`:
+https://expo.dev/artifacts/eas/qSjbyqJ5h5zdPlZgE__P18mXJTsGJKVLvBrTGQIgtAs.aab (provereno u fajlu: `goog_` ključ i
+„Already have an account“ su u JS paketu). Testeri preko Google Group-e („Anyone can join“), da ne treba skupljati
+mejlove.
+
 1. Pre zatvorenog testiranja (testeri i recenzenti se prijavljuju Google-om): `docs/ZASTITA.md` deo 6, bar tačke 3
    (probni nalozi i `manual_test`, osim ako još testiraš), 6 (Google OAuth **In production**), 8, 13. Tačke 1–2
    (Expo Go adrese) tek kad više ne testiraš u Expo Go-u na iPhone-u, jer bez njih prijava u Expo Go-u ne radi.
