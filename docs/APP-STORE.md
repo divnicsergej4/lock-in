@@ -86,6 +86,13 @@ Posle build-a 2 (17. nov., kolegin TestFlight): posle upisa troška tastatura je
 tastatura spusti posle svakog uspešnog upisa (`components/home/NewEntry.tsx`). Ažuriranje `04d73928` na `production`;
 Andrija: „sad radi“. Recenzenti build-a 2 to nemaju (ugrađen kod); ulazi u sledeći build. Od 17. nov. ažuriranja na
 `production` šaljem bez pitanja (Andrija: „nemoj više nikad da mi tražiš dozvolu nego samo pošalji“).
+Snimak za Apple (19. nov., kolegin TestFlight, build 2) pregledan kadar po kadar: pokriva sve iz napomena. Nađeno:
+posle „Account deleted“ aplikacija se zaključala sa „Your free week is over.“, iako je proba tog Apple ID-ja aktivna
+(RevenueCat `logOut` daje nov anonimni id bez kupovina). Sada posle odjave i brisanja naloga ide `syncPurchases`, pa
+se proba/pretplata vrati bez „Restore purchase“ (commit `fc9815e`, ažuriranje `931ce390` na `production`, ulazi u
+sledeći iOS build i Android AAB posle versionCode 7). Nije provereno na telefonu. Otvoreno: u Settings je sve vreme
+pisalo „Plan active (finishing setup…)“, tj. server nije saznao za sandbox probu ni posle `sync-store-access`;
+proveriti u RevenueCat-u i logovima funkcije.
 Build 2 (sa svim ispravkama ugrađenim) pokrenut 15. nov. sa commit-a `7142caa`, bez Apple prijave (sertifikat, profil i
 API ključ su na EAS-u): `ba0d28c3-00b8-4948-bda2-f5f584abc8aa`, sa `--auto-submit` (sam ide u App Store Connect). Za pregled treba nov build (2) sa ovim
 ispravkama ugrađenim (recenzent vidi ugrađeni kod, ažuriranje se primeni tek na drugom pokretanju).
