@@ -93,6 +93,10 @@ se proba/pretplata vrati bez „Restore purchase“ (commit `fc9815e`, ažuriran
 sledeći iOS build i Android AAB posle versionCode 7). Nije provereno na telefonu. Otvoreno: u Settings je sve vreme
 pisalo „Plan active (finishing setup…)“, tj. server nije saznao za sandbox probu ni posle `sync-store-access`;
 proveriti u RevenueCat-u i logovima funkcije.
+Odgovor na 2.1 poslat 19. nov.: tekst iz `docs/prodavnica/app-store-review-notes.txt` sa linkom snimka (Google Drive,
+„Anyone with the link“, provereno bez prijave) kao poruka Apple-u i u App Review Information > Notes, pa Update Review.
+Pri tom je Apple tražio za **China mainland** bezbednosnu procenu i prijavu AI sadržaja: Kina je izbačena iz zemalja
+(Pricing and Availability), sve ostale zemlje ostaju. Status: 4 stavke **Waiting for Review**.
 Build 2 (sa svim ispravkama ugrađenim) pokrenut 15. nov. sa commit-a `7142caa`, bez Apple prijave (sertifikat, profil i
 API ključ su na EAS-u): `ba0d28c3-00b8-4948-bda2-f5f584abc8aa`, sa `--auto-submit` (sam ide u App Store Connect). Za pregled treba nov build (2) sa ovim
 ispravkama ugrađenim (recenzent vidi ugrađeni kod, ažuriranje se primeni tek na drugom pokretanju).
