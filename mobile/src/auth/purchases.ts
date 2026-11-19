@@ -41,13 +41,23 @@ export async function linkPurchases(userId: string): Promise<void> {
   }
 }
 
-/** On sign-out and account deletion: this phone is anonymous again for RevenueCat. */
+/**
+ * On sign-out and account deletion: this phone is anonymous again for RevenueCat. The new anonymous id has no
+ * purchases, so the trial or plan of this Apple ID / Google account is synced back to it right away (silently, no
+ * store prompt); otherwise the app locked right after "Account deleted" until "Restore purchase" (TestFlight, 19 Nov 2026).
+ */
 export async function unlinkPurchases(): Promise<void> {
   if (!ready()) return;
   try {
-    if (!(await Purchases.isAnonymous())) await Purchases.logOut();
+    if (await Purchases.isAnonymous()) return;
+    await Purchases.logOut();
   } catch {
-    // nothing to undo
+    return; // nothing to undo
+  }
+  try {
+    await Purchases.syncPurchases();
+  } catch {
+    // offline: the plans screen still has "Restore purchase"
   }
 }
 
