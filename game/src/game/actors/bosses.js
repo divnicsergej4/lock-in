@@ -8,8 +8,8 @@ import { shadowTexture } from '../fx/textures.js';
 import { LANE_X, ZOMBIE_SIDE, HERO_Z } from '../core/config.js';
 
 export const BOSSES = {
-  giant: { id: 'giant', name: 'GIGANT', model: 'boss', scale: 5.2, hp: 2600, speed: 1.05, radius: 1.45, coin: 150, contactDmg: 26 },
-  queen: { id: 'queen', name: 'KRALJICA MUTANATA', model: 'mutant', scale: 4.3, hp: 2100, speed: 1.7, radius: 1.15, coin: 150, contactDmg: 22 },
+  giant: { id: 'giant', name: 'GIGANT', model: 'boss', scale: 5.2, hp: 2600, speed: 1.3, radius: 1.45, coin: 150, contactDmg: 26 },
+  queen: { id: 'queen', name: 'KRALJICA MUTANATA', model: 'mutant', scale: 4.3, hp: 2100, speed: 2.1, radius: 1.15, coin: 150, contactDmg: 22 },
 };
 
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -81,7 +81,7 @@ export class Boss {
   damage(dmg) {
     if (!this.alive) return false;
     this.hp -= dmg;
-    this.hitT = 1;
+    if (this.hitT < 0.5) this.hitT = 1;
     this.recentDmg += dmg;
     if (this.hp <= 0) {
       this.hp = 0;
@@ -103,7 +103,7 @@ export class Boss {
     const ev = [];
     this.t += dt;
     this.stateT += dt;
-    this.hitT = Math.max(0, this.hitT - dt * 5);
+    this.hitT = Math.max(0, this.hitT - dt * 7);
     this.recentDmg = Math.max(0, this.recentDmg - this.maxHp * 0.06 * dt);
     if (this.state === 'dying') {
       this.deadT += dt;
@@ -128,8 +128,9 @@ export class Boss {
     const dx = hero.x - this.x;
     switch (this.state) {
       case 'enter':
-        this.z += this.def.speed * 1.6 * dt;
-        if (this.z > -46) {
+        // Brzo izlazi iz magle i zastane da zarikne kad se dobro vidi
+        this.z += 5 * dt;
+        if (this.z > -32) {
           this.setState('roar');
           ev.push({ type: 'roar' });
         }
@@ -273,7 +274,9 @@ export class Boss {
     this.legs.forEach((l, i) => (l.rotation.x = walking ? (i ? sw : -sw) * 0.5 : 0));
     this.arms[0].rotation.x = armL;
     this.arms[1].rotation.x = armR;
-    this.mat.emissive.setRGB(this.hitT * 0.5, this.hitT * 0.5, this.hitT * 0.5);
+    // Kratak, blag bljesak kad je pogođen (da ne pobeli kad ga gađa minigan)
+    const f = this.hitT > 0.7 ? (this.hitT - 0.7) * 0.5 : 0;
+    this.mat.emissive.setRGB(f + 0.03, f * 0.85, f * 0.8);
     this.shadow.material.opacity = 0.5 * (1 - Math.min(1, (this.jumpY || 0) / 6));
   }
 

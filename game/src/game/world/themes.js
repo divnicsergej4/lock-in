@@ -42,6 +42,8 @@ export const THEMES = [
   },
 ];
 
+// Raspored okruženja: susedni nivoi su uvek različiti, a šefovi (svaki 3. nivo) se smenjuju kroz sva tri okruženja
 export function themeFor(level) {
-  return THEMES[(level - 1) % THEMES.length];
+  const n = level - 1;
+  return THEMES[(n + Math.floor(n / 3)) % THEMES.length];
 }

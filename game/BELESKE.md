@@ -1,43 +1,35 @@
 # Beleške za nastavak rada (pročitaj prvo ovo)
 
-Poslednja sesija: 6. novembar 2026.
+Poslednja sesija: 20. novembar 2026.
 
 ## Ko i kako
-- Igru pravi korisnik koji **nije Andrija** (Andrija je ranije radio Lock In). Korisnik je **početnik**: objašnjavati jednostavno, na srpskom, korak po korak, bez stručnih reči.
-- Dogovor: igra se pravi **isključivo u React Native-u** (Expo), ne u Unity-ju.
-- Korisnik šalje velike "master" promptove na engleskom; prepričati mu ih i potvrditi pre velikih promena.
+- Igru pravi korisnik koji **nije Andrija** (Andrija je ranije radio Lock In). Korisnik je **početnik**: objašnjavati jednostavno, na srpskom, korak po korak.
+- Igra se pravi **isključivo u React Native-u** (Expo), ne u Unity-ju.
+- Korisnik šalje velike promptove na engleskom i traži da se urade **tačno kako piše** ("nema zajebancije"). Kad nešto ne može tačno, reći mu unapred.
+- Korisnik je razjasnio glavnu ideju: **junak stoji i puca, pomera se samo levo-desno; na jednoj strani zombiji, na drugoj polja napredovanja.** (Zato junak ne trči napred, iako je prvi prompt to tražio.)
 
 ## Pravila za repo
 - **Ne dirati granu `main`** (javni link Lock In aplikacije za testere). Vidi `../CLAUDE.md`.
-- Rad ide na granu `claude/vigilant-lamport-zvdl89`, sve u folderu `game/`. Ostatak Lock In-a se ne dira.
+- Rad ide na granu `claude/vigilant-lamport-zvdl89`, sve u folderu `game/`.
 - Po `../CLAUDE.md` nove izmene kasnije treba da idu na granu `razvoj`; spajanje u `main` samo uz Sergejevu dozvolu.
 
 ## Tehnika
-- Expo SDK 58, React Native 0.88, three.js 0.187, expo-gl, expo-linear-gradient, font Lilita One.
+- Expo SDK 58, React Native 0.88, three.js 0.187, expo-gl, expo-audio, AsyncStorage, expo-linear-gradient, font Lilita One.
 - `npx expo install` mora sa `EXPO_OFFLINE=1` (api.expo.dev je blokiran u oblaku).
-- Probni link za telefon (claude.ai artifact, privatan): **https://claude.ai/artifact/3iVawUeEaacrDAtrDTzZXS**
-  - pravi se sa `npm run build:link`, pa se `dist/zombie-rush-3d.html` objavi na isti link
-    (u prethodnoj sesiji fajl je kopiran u scratchpad kao `army-rush-3d.html` i objavljen; nova sesija treba da
-    objavi sa `url` ovog artifacta da bi link ostao isti).
-- Provera težine: `scripts/sim-bot.cjs` (automatski igrač u pregledaču, Playwright je već instaliran).
+- Probni link (claude.ai artifact, privatan): **https://claude.ai/artifact/3iVawUeEaacrDAtrDTzZXS**
+  - pravi se sa `npm run build:link`, pa se `dist/zombie-rush-3d.html` objavi na isti link (Artifact `url` ovog linka).
+- Provera težine: `node scripts/sim-bot.cjs 1,2,3` (Playwright je već instaliran u oblaku).
+- Za telefon se uspešno sklapa (`npx expo export --platform android --platform ios`), ali **nije isproban na pravom telefonu**.
 
 ## Istorija
-1. **Army Rush 3D** – vojska trči, kapije (+10, ×2, ÷2...), borba sa crvenom vojskom. (commit 93eeb1d)
-2. Nova grafika, pa "AAA" grafika: senke, efekti, animacije, vojni predmeti. (c65e8a2 – poslednja Army Rush verzija)
-3. **Zombie Rush 3D** (trenutno): korisnik je tražio potpuno novu igru sa dve trake. (a000b8e)
-4. Korisnik: "prelako" → igra otežana. (2452763)
+1. Army Rush 3D (vojska kroz kapije) → nova grafika → "AAA" grafika (c65e8a2)
+2. Zombie Rush 3D sa dve trake i vojskom koja trči (a000b8e, 2452763)
+3. **Novi Zombie Rush 3D** po velikom promptu + pojašnjenju (9ee290c jezgro, c527cdb meniji/zvuk/čuvanje, pa doterivanje)
 
-## Trenutno stanje (Zombie Rush 3D)
-- Leva traka: talasi zombija (walker, runner, brute, mutant). Desna traka: kocke sa nagradama.
-- Vojnici sami pucaju; traka se menja prevlačenjem ili dodirom leve/desne strane ekrana.
-- 7 oružja (pištolj → plazma top), 5 okruženja, šef u areni na kraju nivoa.
-- Posle otežavanja automatski igrač pobeđuje nivoe 1, 3, 4, a gubi 2, 5, 6, 7, 8.
-- **Čeka se odgovor korisnika** da li je težina sada dobra (poslednja poruka: "Zapamti sve, radićemo sutra dalje").
+## Trenutno stanje
+- Sve stavke iz prompta su urađene (vidi README): pucanje, zombiji sa svih strana, polja (×2 metaka, +municija, ×3 šteta, vatreni metci, novo oružje...), talasi, šefovi, 5 oružja, nadogradnje, zlatnici, dnevne nagrade, 3 okruženja, meniji (glavni, pauza, poraz, pobeda), zvuk i muzika, dodir, čuvanje napretka.
+- Težina (automatski igrač): nivoi 1–2 su uvod; od 3. nivoa bez nadogradnji se gubi, sa nadogradnjama se prelazi, ali ne uvek.
 
-## Šta nije urađeno / mogući sledeći koraci
-- Igra **nije isprobana na pravom telefonu** niti kroz Expo Go (samo web verzija preko linka).
-- Novčići i napredak se **ne čuvaju** kad se igra zatvori; nema prodavnice (u planu: trajne nadogradnje, oružja, izgledi).
-- Nema zvuka ni vibracije.
-- Na težim nivoima igra daje veću početnu vojsku i bolje oružje (privremeno, umesto prodavnice) – `levelGen.js`.
-- Fino podešavanje težine po korisnikovom osećaju (zombiji / kocke / šef) – vrednosti su u
-  `zombies.js` (ZTYPES), `cubes.js` (CUBE_TYPES), `levelGen.js` (talasi, šef), `weapons.js`.
+## Mogući sledeći koraci
+- Isprobati na pravom telefonu (Expo Go) i podesiti brzinu/težinu po osećaju korisnika.
+- Više vrsta zombija ili šefova, novi izgledi junaka, vibracija.
