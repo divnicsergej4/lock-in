@@ -2,7 +2,7 @@
 // Tok: učitavanje → "dodirni za početak" → glavni meni ⇄ oružarnica → igra (pauza) → pobeda/poraz.
 // Ovde se čuva napredak (zlatnici, nivo, nadogradnje, oružja, dnevne nagrade, podešavanja).
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, Platform, StyleSheet, Text, View, Pressable, Animated } from 'react-native';
+import { AppState, Platform, StyleSheet, Text, View, Pressable, Animated, useWindowDimensions } from 'react-native';
 import { GLView } from 'expo-gl';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, LilitaOne_400Regular } from '@expo-google-fonts/lilita-one';
@@ -296,9 +296,16 @@ export default function GameScreen() {
 
   const dStatus = save ? dailyStatus(save) : { available: false, day: 0 };
 
+  // Na računaru (širok prozor) igra je u okviru veličine telefona na sredini ekrana,
+  // kako je i zamišljena — tako i lepše izgleda i mnogo je lakša za crtanje
+  const win = useWindowDimensions();
+  const framed = Platform.OS === 'web' && win.width / Math.max(1, win.height) > 0.75;
+  const frame = framed ? { width: Math.min(Math.round(win.height * 0.5), 520), height: win.height } : { flex: 1, alignSelf: 'stretch' };
+
   return (
+    <View style={[styles.outer, framed && styles.outerFramed]}>
     <View
-      style={styles.root}
+      style={[styles.root, frame]}
       onLayout={(e) => {
         const { width, height } = e.nativeEvent.layout;
         if (gameRef.current) gameRef.current.setViewSize(width, height);
@@ -333,6 +340,7 @@ export default function GameScreen() {
 
       {screen === 'loading' || screen === 'tap' ? <Splash font={font} ready={screen === 'tap'} onTap={startApp} /> : null}
     </View>
+    </View>
   );
 }
 
@@ -352,7 +360,9 @@ function Splash({ font, ready, onTap }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0b0f16' },
+  outer: { flex: 1, backgroundColor: '#05070b' },
+  outerFramed: { alignItems: 'center', justifyContent: 'center' },
+  root: { backgroundColor: '#0b0f16', overflow: 'hidden' },
   splash: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   sTitleTop: { color: COLORS.toxic, fontSize: 50, letterSpacing: 8, marginBottom: -14, textShadowColor: 'rgba(30,70,10,0.9)', textShadowOffset: { width: 0, height: 4 }, textShadowRadius: 0 },
   sTitle: { color: '#fff', fontSize: 70, ...outline, textShadowOffset: { width: 0, height: 5 } },

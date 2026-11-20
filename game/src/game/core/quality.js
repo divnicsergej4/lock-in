@@ -1,8 +1,8 @@
 // Podešavanja kvaliteta grafike. Igra sama spusti kvalitet ako telefon ne stiže 60 slika u sekundi.
 export const QUALITY_LEVELS = [
-  { name: 'nisko', shadows: false, shadowMap: 512, particles: 0.5, dust: false, ambient: false },
-  { name: 'srednje', shadows: true, shadowMap: 1024, particles: 0.75, dust: true, ambient: false },
-  { name: 'visoko', shadows: true, shadowMap: 1024, particles: 1, dust: true, ambient: true },
+  { name: 'nisko', shadows: false, shadowMap: 512, particles: 0.5, dust: false, ambient: false, maxDpr: 1 },
+  { name: 'srednje', shadows: true, shadowMap: 1024, particles: 0.75, dust: true, ambient: false, maxDpr: 1.25 },
+  { name: 'visoko', shadows: true, shadowMap: 1024, particles: 1, dust: true, ambient: true, maxDpr: 1.5 },
 ];
 
 // Prati koliko traje jedna slika i javlja kad treba smanjiti kvalitet.

@@ -12,7 +12,7 @@ export function getLevel(n) {
   const bossLevel = n % 3 === 0;
   const waveCount = n === 1 ? 4 : Math.min(9, 4 + Math.floor((n + 1) / 2));
   // Prva dva nivoa su uvod: manje zombija dok igrač uči
-  const ease = n === 1 ? 0.7 : n === 2 ? 0.85 : 1;
+  const ease = n === 1 ? 0.58 : n === 2 ? 0.8 : 1;
   const waves = [];
   for (let w = 0; w < waveCount; w++) {
     const last = w === waveCount - 1;
@@ -46,7 +46,7 @@ export function getLevel(n) {
     addGroup('walker', fromAlley, 'alleyL');
     // Od trećeg nivoa zombiji ponekad dolaze i sa desne strane (kroz polja napredovanja)
     if (n >= 3 && w >= 1 && rng.chance(0.25 + L * 0.03)) addGroup('runner', 2 + Math.floor(L / 3), 'alleyR');
-    waves.push({ groups, label: last ? (bossLevel ? 'POSLEDNJI TALAS!' : 'VELIKI TALAS!') : `TALAS ${w + 1}`, spawnTime: 3.5 + w * 0.45 });
+    waves.push({ groups, label: last ? (bossLevel ? 'POSLEDNJI TALAS!' : 'VELIKI TALAS!') : `TALAS ${w + 1}`, spawnTime: 2.6 + w * 0.35 });
   }
 
   // Eksplozivna buradi u levoj traci
@@ -63,7 +63,7 @@ export function getLevel(n) {
     // Zombiji jačaju sve brže kako nivoi rastu (da nadogradnje ne učine igru prelakom)
     hpMul: 1 + 0.13 * (n - 1) + 0.014 * (n - 1) * (n - 1),
     dmgMul: 1 + 0.08 * (n - 1),
-    speedMul: 1 + 0.015 * L,
+    speedMul: n === 1 ? 0.85 : n === 2 ? 0.93 : 1 + 0.015 * L,
     chargeMul: 1 + 0.12 * (n - 1),
     coinMul: 1 + 0.08 * (n - 1),
   };

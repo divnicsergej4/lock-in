@@ -14,13 +14,13 @@ export const FIELD_SIDE = 1; // polja napredovanja dolaze desnom trakom
 // ---- Junak ----
 export const HERO_Z = 0;
 export const HERO_X_LIMIT = 4.55; // dokle junak može levo-desno
-export const HERO_MOVE_LERP = 20; // koliko brzo junak prati prst
-export const KEY_SPEED = 9; // brzina junaka kad se pomera tasterima (m/s)
+export const HERO_MOVE_LERP = 24; // koliko brzo junak prati prst
+export const KEY_SPEED = 12; // brzina junaka kad se pomera tasterima (m/s)
 export const HERO_RADIUS = 0.45;
 
 // ---- Svet ----
 export const SPAWN_Z = -62; // odavde (iz magle) dolaze zombiji i polja
-export const FIELD_SPEED = 5.0; // brzina polja napredovanja ka junaku
+export const FIELD_SPEED = 6.5; // brzina polja napredovanja ka junaku
 export const ALLEYS_Z = [-13, -27, -41]; // bočne ulice iz kojih izlaze zombiji
 
 // ---- Borba ----

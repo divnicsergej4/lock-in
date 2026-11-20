@@ -1,6 +1,6 @@
 # Beleške za nastavak rada (pročitaj prvo ovo)
 
-Poslednja sesija: 20. novembar 2026.
+Poslednja sesija: 20. novembar 2026 (kasno uveče; korisnik je otišao da spava i rekao "zapamti sve").
 
 ## Ko i kako
 - Igru pravi korisnik koji **nije Andrija** (Andrija je ranije radio Lock In). Korisnik je **početnik**: objašnjavati jednostavno, na srpskom, korak po korak.
@@ -30,6 +30,19 @@ Poslednja sesija: 20. novembar 2026.
 - Tastatura: A/D i strelice ← → za levo-desno (dok je taster pritisnut, junak puca), razmak = pucanje u mestu.
 - "Ubrzaj igru": brži zombiji (~35%), brža i češća polja (~40%), kraći razmaci između talasa, kraći uvod.
   (Ako je korisnik mislio da igra seče/kasni, to je drugi problem: performanse.)
+
+## NAJNOVIJE: korisniku se igra NE SVIĐA (20.11. uveče)
+- Na pitanje šta mu ne valja izabrao je SVE: brzina igre, izgled (grafika), kako se igra, cela igra.
+- Za brzinu je rekao: "i dalje je sporo" (posle prvog ubrzanja). Na kraju je napisao samo "ništa".
+- Šta je urađeno odmah posle toga:
+  - Na računaru (širok prozor) igra je u okviru veličine telefona na sredini ekrana, a rezolucija crtanja je
+    ograničena; igra ide punom brzinom i kad računar crta sporo (pretpostavka: igra mu je zapravo sekla/kasnila).
+  - Tempo još brži: zombiji, polja (6.5 m/s), talasi, sva oružja pucaju ~15% brže, junak brži.
+  - Nivoi 1–2 olakšani da ostanu uvod.
+- **Sutra prvo:** zamoliti korisnika da pošalje sliku ekrana ili snimak reklame/igre koju zamišlja
+  (ili ime igre iz reklame) i da kaže 2–3 konkretne stvari koje ne valjaju (izgled, način igre).
+  NE praviti ponovo celu igru naslepo — tri velike promene su već odbijene/kritikovane.
+  Moguće da misli na reklame tipa "Last War" (odred vojnika, ne jedan junak) — proveriti s njim.
 
 ## Trenutno stanje
 - Sve stavke iz prompta su urađene (vidi README): pucanje, zombiji sa svih strana, polja (×2 metaka, +municija, ×3 šteta, vatreni metci, novo oružje...), talasi, šefovi, 5 oružja, nadogradnje, zlatnici, dnevne nagrade, 3 okruženja, meniji (glavni, pauza, poraz, pobeda), zvuk i muzika, dodir, čuvanje napretka.

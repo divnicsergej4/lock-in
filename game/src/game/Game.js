@@ -293,14 +293,20 @@ export class Game {
     if (!this.running) return;
     this.raf = requestAnimationFrame(this.loop);
     const t = now();
-    let dt = Math.min(0.05, (t - this.last) / 1000);
+    const dt = Math.min(0.1, (t - this.last) / 1000);
     this.last = t;
     if (this.paused || !this.world) return;
     try {
       if (this.monitor.push(dt)) this.lowerQuality();
-      dt *= this.timeScale;
-      this.time += dt;
-      this.update(dt);
+      // Igra ide punom brzinom i kad uređaj crta manje slika u sekundi (vreme se deli na male korake)
+      let left = dt * this.timeScale;
+      let steps = 0;
+      while (left > 1e-6 && steps++ < 4) {
+        const step = Math.min(left, 1 / 30);
+        this.time += step;
+        this.update(step);
+        left -= step;
+      }
       this.render();
     } catch (e) {
       // Greška u jednom kadru ne sme da zaustavi igru
@@ -415,7 +421,7 @@ export class Game {
     const waveDone = this.spawnQueue.length === 0;
     if (this.waveIndex < lvl.waves.length - 1) {
       const since = t - this.waveStartT;
-      if (this.waveIndex < 0 || (waveDone && (alive <= 3 || since > 16))) {
+      if (this.waveIndex < 0 || (waveDone && (alive <= 4 || since > 12))) {
         this.waveGap -= dt;
         if (this.waveGap <= 0 || this.waveIndex < 0) this.startWave(this.waveIndex + 1);
       }
@@ -544,13 +550,13 @@ export class Game {
       const needAmmo = lowAmmo && !ammoComing && r.time - this.lastAmmoRow > 4;
       if (this.fieldTimer <= 0 || needAmmo) {
         const row = nextFieldRow(this.rng, this.level.number, { ammo: r.ammo, weapon: r.weapon, needAmmo });
-        const z = needAmmo ? -26 : SPAWN_Z;
+        const z = needAmmo ? -30 : SPAWN_Z;
         for (const it of row) {
           const f = new UpgradeField(this.world.group, it.type, it.x, z, { halfW: it.halfW || 1.05, value: it.value ?? 0, chargeMul: this.level.chargeMul });
           this.fields.push(f);
           if (it.type === 'ammo' && f.value > 0) this.lastAmmoRow = r.time;
         }
-        this.fieldTimer = this.phase === 'boss' ? rnd(5, 6) : rnd(3.6, 4.6);
+        this.fieldTimer = this.phase === 'boss' ? rnd(4, 5) : rnd(2.9, 3.6);
       }
     }
     const hero = this.hero;
@@ -1059,6 +1065,23 @@ export class Game {
 
   render() {
     const gl = this.gl;
+    // Na webu ograničavamo rezoluciju crtanja (veliki ekrani i "retina" ekrani su inače preteški)
+    const c = gl.canvas;
+    if (c && c.clientWidth && typeof window !== 'undefined') {
+      const scale = Math.min(window.devicePixelRatio || 1, this.quality.maxDpr || 1.5);
+      let tw = Math.round(c.clientWidth * scale);
+      let th = Math.round(c.clientHeight * scale);
+      const maxPx = 1.5e6;
+      if (tw * th > maxPx) {
+        const k = Math.sqrt(maxPx / (tw * th));
+        tw = Math.round(tw * k);
+        th = Math.round(th * k);
+      }
+      if (c.width !== tw || c.height !== th) {
+        c.width = tw;
+        c.height = th;
+      }
+    }
     const w = gl.drawingBufferWidth;
     const h = gl.drawingBufferHeight;
     if (w !== this.width || h !== this.height) {

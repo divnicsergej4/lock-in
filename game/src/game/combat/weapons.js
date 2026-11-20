@@ -7,28 +7,28 @@ import { part, build } from '../gfx/models.js';
 // speed = brzina metka (m/s), range = domet, splash = poluprečnik eksplozije (bacač granata)
 export const WEAPONS = {
   pistol: {
-    id: 'pistol', name: 'PIŠTOLJ', dmg: 12, rate: 3.2, pellets: 1, spread: 0.01, ammoPerShot: 1,
-    speed: 75, range: 62, kind: 'bullet', tracer: 0xffe08a, width: 0.05, knock: 0.18, recoil: 0.6, price: 0,
+    id: 'pistol', name: 'PIŠTOLJ', dmg: 12, rate: 3.68, pellets: 1, spread: 0.01, ammoPerShot: 1,
+    speed: 86, range: 62, kind: 'bullet', tracer: 0xffe08a, width: 0.05, knock: 0.18, recoil: 0.6, price: 0,
     desc: 'Pouzdan i precizan.',
   },
   shotgun: {
-    id: 'shotgun', name: 'SAČMARICA', dmg: 9, rate: 1.45, pellets: 6, spread: 0.16, ammoPerShot: 1,
-    speed: 62, range: 34, kind: 'pellet', tracer: 0xffb347, width: 0.045, knock: 0.55, recoil: 1.0, price: 450,
+    id: 'shotgun', name: 'SAČMARICA', dmg: 9, rate: 1.67, pellets: 6, spread: 0.16, ammoPerShot: 1,
+    speed: 71, range: 34, kind: 'pellet', tracer: 0xffb347, width: 0.045, knock: 0.55, recoil: 1.0, price: 450,
     desc: 'Razara zombije izbliza.',
   },
   rifle: {
-    id: 'rifle', name: 'JURIŠNA PUŠKA', dmg: 10, rate: 8, pellets: 1, spread: 0.025, ammoPerShot: 0.5,
-    speed: 85, range: 64, kind: 'bullet', tracer: 0xffd36a, width: 0.05, knock: 0.14, recoil: 0.45, price: 1300,
+    id: 'rifle', name: 'JURIŠNA PUŠKA', dmg: 10, rate: 9.2, pellets: 1, spread: 0.025, ammoPerShot: 0.5,
+    speed: 98, range: 64, kind: 'bullet', tracer: 0xffd36a, width: 0.05, knock: 0.14, recoil: 0.45, price: 1300,
     desc: 'Brza paljba, štedi municiju.',
   },
   minigun: {
-    id: 'minigun', name: 'MINIGAN', dmg: 8, rate: 16, pellets: 1, spread: 0.05, ammoPerShot: 0.25,
-    speed: 90, range: 62, kind: 'bullet', tracer: 0xfff1a0, width: 0.045, knock: 0.1, recoil: 0.3, spinUp: 0.4, price: 3200,
+    id: 'minigun', name: 'MINIGAN', dmg: 8, rate: 18.4, pellets: 1, spread: 0.05, ammoPerShot: 0.25,
+    speed: 103, range: 62, kind: 'bullet', tracer: 0xfff1a0, width: 0.045, knock: 0.1, recoil: 0.3, spinUp: 0.4, price: 3200,
     desc: 'Zid od metaka.',
   },
   launcher: {
-    id: 'launcher', name: 'BACAČ GRANATA', dmg: 60, rate: 1.25, pellets: 1, spread: 0, ammoPerShot: 2,
-    speed: 30, range: 60, kind: 'grenade', splash: 3.4, tracer: 0xff7a2a, width: 0.12, knock: 1, recoil: 1.2, price: 6500,
+    id: 'launcher', name: 'BACAČ GRANATA', dmg: 60, rate: 1.44, pellets: 1, spread: 0, ammoPerShot: 2,
+    speed: 34, range: 60, kind: 'grenade', splash: 3.4, tracer: 0xff7a2a, width: 0.12, knock: 1, recoil: 1.2, price: 6500,
     desc: 'Eksplozije koje čiste celu grupu.',
   },
 };
