@@ -121,9 +121,9 @@ napravljen poseban Gmail za recenzente (Andrija ga čuva; mejl i lozinka samo u 
 aplikaciju i dobio `manual_review` do 2027-12-31 (provereno SQL-om). **20. nov. 2026 taj Gmail je preuzet** (posle
 blokirane prijave u 00:45 neko je promenio lozinku, a oporavak preko SMS-a Google je blokirao: „previše puta korišćen“).
 Andrija je napravio nov Gmail za recenzente, prijavio ga u aplikaciju i dao mu `manual_review` do 2027-12-31
-(provereno SQL-om; prvi insert pre prijave nije upisao ništa, a vratio je „Success“). Ostaje: brisanje starog
-korisnika u Supabase-u (Authentication > Users), nov mejl i lozinka u Play Console (Sign in details, ranije App
-access) i App Store Connect (Sign-In Information). Link „Already have an account? Sign in“ na ekranu
+(provereno SQL-om; prvi insert pre prijave nije upisao ništa, a vratio je „Success“). Stari korisnik obrisan u
+Supabase-u; nov mejl i lozinka u Play Console (Sign in details, ranije App access) upisani i poslati na pregled
+(20. nov.). Ostaje App Store Connect (Sign-In Information). Link „Already have an account? Sign in“ na ekranu
 za plaćanje (commit `acdfdac`) mora stići na telefone pre pregleda. OTA nije dovoljan: `expo-updates` novo
 ažuriranje pokreće tek pri drugom otvaranju, pa bi recenzent pri prvom video staru verziju. Zato treći production
 AAB (versionCode 6, build `19eaacfe-9deb-4a0b-87c9-02e29e4aa080`, 13. nov., commit `3729532`):
