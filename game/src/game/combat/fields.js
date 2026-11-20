@@ -3,6 +3,7 @@
 // - Specijalna polja (×2 metaka, ×3 štete, vatreni metci, novo oružje, brža paljba): zaključana su dok ih
 //   ne napuniš pucanjem; zaključano polje ne daje ništa.
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { textGeometry } from '../gfx/text3d.js';
 import { FIELD_SPEED, HERO_Z } from '../core/config.js';
 
@@ -38,12 +39,26 @@ function panelGeometry(w, h, color) {
 let lockGeo;
 function lockGeometry() {
   if (!lockGeo) {
-    const body = new THREE.BoxGeometry(0.46, 0.38, 0.08);
-    const shackle = new THREE.TorusGeometry(0.15, 0.045, 6, 14, Math.PI);
+    const body = new THREE.BoxGeometry(0.46, 0.38, 0.08).toNonIndexed();
+    const shackle = new THREE.TorusGeometry(0.15, 0.045, 6, 14, Math.PI).toNonIndexed();
     shackle.translate(0, 0.19, 0);
-    lockGeo = [body, shackle];
+    lockGeo = mergeGeometries([body, shackle], false);
+    lockGeo.userData.shared = true;
   }
   return lockGeo;
+}
+
+// Okvir (dva stuba + gornja traka) kao jedan model; boja gornje trake se menja kad se polje otključa
+function frameGeometry(w) {
+  const post = (x) => new THREE.BoxGeometry(0.14, HEIGHT + 0.2, 0.14).translate(x, (HEIGHT + 0.2) / 2, 0).toNonIndexed();
+  const top = new THREE.BoxGeometry(w + 0.25, 0.22, 0.22).translate(0, HEIGHT + 0.1, 0).toNonIndexed();
+  const parts = [post(-(w / 2 + 0.05)), post(w / 2 + 0.05), top];
+  const geo = mergeGeometries(parts, false);
+  parts.forEach((g) => g.dispose());
+  const n = geo.getAttribute('position').count;
+  geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3).fill(1), 3));
+  geo.userData.topStart = n - top.getAttribute('position').count;
+  return geo;
 }
 
 export class UpgradeField {
@@ -74,24 +89,15 @@ export class UpgradeField {
     this.group.add(this.panel);
 
     // Okvir
-    this.frameMat = new THREE.MeshLambertMaterial({ color: 0xe9edf2 });
-    this.accentMat = new THREE.MeshLambertMaterial({ color: this.currentColor(), emissive: new THREE.Color(this.currentColor()).multiplyScalar(0.35) });
-    const postGeo = new THREE.BoxGeometry(0.14, HEIGHT + 0.2, 0.14);
-    [-1, 1].forEach((sgn) => {
-      const post = new THREE.Mesh(postGeo, this.frameMat);
-      post.position.set(sgn * (w / 2 + 0.05), (HEIGHT + 0.2) / 2, 0);
-      post.castShadow = true;
-      this.group.add(post);
-    });
-    const top = new THREE.Mesh(new THREE.BoxGeometry(w + 0.25, 0.22, 0.22), this.accentMat);
-    top.position.y = HEIGHT + 0.1;
-    this.group.add(top);
-    this.ownGeos = [postGeo, top.geometry, this.panel.geometry];
+    this.frameMat = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true, emissive: 0x000000 });
+    this.frame = new THREE.Mesh(frameGeometry(w), this.frameMat);
+    this.group.add(this.frame);
+    this.ownGeos = [this.frame.geometry, this.panel.geometry];
 
     // Natpisi
     this.white = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true });
-    this.side = new THREE.MeshBasicMaterial({ color: 0x1a2230, transparent: true });
-    this.big = new THREE.Mesh(textGeometry(this.labelText(), 0.12), [this.white, this.side]);
+    this.side = this.white;
+    this.big = new THREE.Mesh(textGeometry(this.labelText(), 0.12), this.white);
     this.big.position.set(0, 1.42, 0.06);
     this.small = new THREE.Mesh(textGeometry(this.def.caption, 0.03), this.white);
     this.small.position.set(0, 0.82, 0.06);
@@ -102,10 +108,8 @@ export class UpgradeField {
 
     // Specijalna polja: katanac i traka punjenja
     if (this.def.kind === 'special') {
-      const [lb, ls] = lockGeometry();
       this.lockMat = new THREE.MeshLambertMaterial({ color: 0xc9ced6, emissive: 0x202428 });
-      this.lock = new THREE.Group();
-      this.lock.add(new THREE.Mesh(lb, this.lockMat), new THREE.Mesh(ls, this.lockMat));
+      this.lock = new THREE.Mesh(lockGeometry(), this.lockMat);
       this.lock.position.set(0, 2.02, 0.08);
       this.group.add(this.lock);
       this.barBg = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.8, 0.16), new THREE.MeshBasicMaterial({ color: 0x0b1018, transparent: true, opacity: 0.75 }));
@@ -148,9 +152,10 @@ export class UpgradeField {
     const c = geo.getAttribute('color');
     for (let i = 0; i < c.count; i++) c.setXYZ(i, col.r, col.g, col.b);
     c.needsUpdate = true;
-    this.accentMat.color.copy(col);
-    this.accentMat.emissive.copy(col).multiplyScalar(0.35);
-    this.side.color.copy(col).multiplyScalar(0.35);
+    // Gornja traka okvira dobija boju polja (stubovi ostaju beli)
+    const fc = this.frame.geometry.getAttribute('color');
+    for (let i = this.frame.geometry.userData.topStart; i < fc.count; i++) fc.setXYZ(i, col.r * 1.3, col.g * 1.3, col.b * 1.3);
+    fc.needsUpdate = true;
     if (this.lock) this.lock.visible = !this.unlocked;
   }
 
@@ -196,7 +201,11 @@ export class UpgradeField {
     const near = Math.min(1, Math.max(0, (this.z + 7) / 6));
     const glow = this.isGood() ? 0.12 * Math.sin(t * 5 + this.x) : 0;
     this.panelMat.opacity = (1 - this.fade) * (0.85 + glow + this.flash * 0.5) * (1 - near * 0.55);
-    this.white.opacity = this.side.opacity = 1 - this.fade;
+    this.white.opacity = 1 - this.fade;
+    // Daleka polja ne crtaju sitne detalje (natpis ispod, traku punjenja), to se ionako ne vidi
+    const far = this.z < -44;
+    this.small.visible = !far;
+    if (this.barBg) this.barBg.visible = this.barFg.visible = !far;
     if (this.barFg) {
       const k = this.unlocked ? 1 : Math.min(1, this.charge / Math.max(1, this.need));
       this.barFg.scale.x = Math.max(0.001, k);
@@ -213,7 +222,7 @@ export class UpgradeField {
   dispose() {
     this.parent.remove(this.group);
     this.ownGeos.forEach((g) => g.dispose());
-    [this.panelMat, this.frameMat, this.accentMat, this.white, this.side, this.lockMat, this.barBg && this.barBg.material, this.barFg && this.barFg.material]
+    [this.panelMat, this.frameMat, this.white, this.lockMat, this.barBg && this.barBg.material, this.barFg && this.barFg.material]
       .filter(Boolean)
       .forEach((m) => m.dispose());
   }

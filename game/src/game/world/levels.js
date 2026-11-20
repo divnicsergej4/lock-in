@@ -10,18 +10,21 @@ export function getLevel(n) {
   const rng = createRng(n * 7907 + 3);
   const L = Math.min(n, 20);
   const bossLevel = n % 3 === 0;
-  const waveCount = Math.min(9, 4 + Math.floor((n + 1) / 2));
+  const waveCount = n === 1 ? 4 : Math.min(9, 4 + Math.floor((n + 1) / 2));
+  // Prva dva nivoa su uvod: manje zombija dok igrač uči
+  const ease = n === 1 ? 0.7 : n === 2 ? 0.85 : 1;
   const waves = [];
   for (let w = 0; w < waveCount; w++) {
     const last = w === waveCount - 1;
     let budget = 5 + L * 1.25 + w * (1.6 + L * 0.35);
     if (last) budget *= 1.45;
+    budget *= ease;
     const groups = [];
     const addGroup = (type, count, from) => {
       if (count > 0) groups.push({ type, count, from });
     };
     // Krupni zombiji i naduvenci se pojavljuju od drugog nivoa
-    if (n >= 2 && (w >= 2 || n >= 4) && rng.chance(0.35 + L * 0.03)) {
+    if (n >= 2 && (w >= 2 || (n >= 4 && w >= 1)) && rng.chance(0.35 + L * 0.03)) {
       const c = 1 + (rng.chance(L * 0.04) ? 1 : 0);
       addGroup('brute', c, 'front');
       budget -= c * COST.brute;
@@ -57,8 +60,9 @@ export function getLevel(n) {
     waves,
     barrels,
     boss: bossLevel ? (Math.floor(n / 3) % 2 === 1 ? 'giant' : 'queen') : null,
-    hpMul: 1 + 0.16 * (n - 1),
-    dmgMul: 1 + 0.06 * (n - 1),
+    // Zombiji jačaju sve brže kako nivoi rastu (da nadogradnje ne učine igru prelakom)
+    hpMul: 1 + 0.13 * (n - 1) + 0.014 * (n - 1) * (n - 1),
+    dmgMul: 1 + 0.08 * (n - 1),
     speedMul: 1 + 0.015 * L,
     chargeMul: 1 + 0.12 * (n - 1),
     coinMul: 1 + 0.08 * (n - 1),

@@ -77,7 +77,7 @@ export class Game {
     this.sun.shadow.bias = -0.0005;
     this.sun.shadow.normalBias = 0.04;
     this.muzzleLight = new THREE.PointLight(0xffc070, 0, 9, 1.6);
-    this.baseLight = new THREE.PointLight(0xffd8a0, 0, 30, 1.3);
+    this.baseLight = new THREE.PointLight(0xffd8a0, 0, 46, 1.1);
     this.baseLight.position.set(0, 5.5, 4.5);
     this.scene.add(this.hemi, this.sun, this.sun.target, this.muzzleLight, this.baseLight);
 
@@ -138,7 +138,9 @@ export class Game {
     this.sun.color.set(th.sun.color);
     this.sun.intensity = th.sun.intensity;
     this.renderer.toneMappingExposure = th.exposure;
-    this.baseLight.intensity = th.baseLight ? 22 : 0;
+    this.baseLight.intensity = th.baseLight ? 60 : 0;
+    // Noću zombiji blago svetle da bi se videli u mraku
+    this.horde.setNight(!!th.night);
     this.env.setTheme(th);
     this.world = buildWorld(this.level, this.scene, { menu });
     this.rng = createRng(n * 977 + 5);
@@ -268,17 +270,24 @@ export class Game {
   // ======================= Petlja =======================
   loop() {
     if (!this.running) return;
+    this.raf = requestAnimationFrame(this.loop);
     const t = now();
     let dt = Math.min(0.05, (t - this.last) / 1000);
     this.last = t;
-    if (!this.paused) {
+    if (this.paused || !this.world) return;
+    try {
       if (this.monitor.push(dt)) this.lowerQuality();
       dt *= this.timeScale;
       this.time += dt;
       this.update(dt);
       this.render();
+    } catch (e) {
+      // Greška u jednom kadru ne sme da zaustavi igru
+      if (!this.errorLogged) {
+        this.errorLogged = true;
+        console.error('Greška u igri:', e && e.message, e && e.stack);
+      }
     }
-    this.raf = requestAnimationFrame(this.loop);
   }
 
   lowerQuality() {
@@ -510,7 +519,7 @@ export class Game {
       const needAmmo = lowAmmo && !ammoComing && r.time - this.lastAmmoRow > 4;
       if (this.fieldTimer <= 0 || needAmmo) {
         const row = nextFieldRow(this.rng, this.level.number, { ammo: r.ammo, weapon: r.weapon, needAmmo });
-        const z = needAmmo ? -34 : SPAWN_Z;
+        const z = needAmmo ? -26 : SPAWN_Z;
         for (const it of row) {
           const f = new UpgradeField(this.world.group, it.type, it.x, z, { halfW: it.halfW || 1.05, value: it.value ?? 0, chargeMul: this.level.chargeMul });
           this.fields.push(f);
@@ -961,6 +970,15 @@ export class Game {
       }
     }
     if (this.quality.ambient && Math.random() < dt * 5) this.effects.ambientKind(this.level.theme.ambient, 0, -10);
+    // Zombiji povremeno ječe (češće kad ih je više)
+    if (this.mode === 'play' && this.phase !== 'won') {
+      this.groanT = (this.groanT ?? 2) - dt;
+      const alive = this.horde.countAlive();
+      if (this.groanT <= 0 && alive > 0) {
+        this.groanT = rnd(1.4, 3.2) / Math.min(2, 0.6 + alive * 0.08);
+        this.sound.play('groan' + (1 + Math.floor(Math.random() * 3)), { vol: 0.8 });
+      }
+    }
   }
 
   // ======================= Kamera =======================

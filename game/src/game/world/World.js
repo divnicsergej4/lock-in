@@ -296,26 +296,27 @@ export function buildWorld(level, scene, { menu = false } = {}) {
     if (sh) sh.renderOrder = -1;
   }
 
-  // Svetleće tačke (sjaj lampi i vatri) i sjaj na zemlji ispod njih
-  const glowMat = new THREE.MeshBasicMaterial({ map: glowTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
-  const glowSprites = glows.map((g) => {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), glowMat.clone());
-    m.material.color.set(g.color);
-    m.position.set(g.x, g.y, g.z);
-    m.scale.setScalar(g.size);
-    m.renderOrder = 3;
-    group.add(m);
-    let pool = null;
-    if (g.ground) {
-      pool = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), glowMat.clone());
-      pool.material.color.set(g.color);
-      pool.material.opacity = 0.35;
-      pool.position.set(g.x, 0.03, g.z);
-      pool.scale.setScalar(g.size * 2.2);
-      group.add(pool);
-    }
-    return { ...g, mesh: m, pool, phase: rng.range(0, 6) };
+  // Svetleće tačke (sjaj lampi i vatri) i sjaj na zemlji ispod njih — sve u dva modela (brže crtanje)
+  const glowGeo = new THREE.PlaneGeometry(1, 1);
+  const glowMatI = new THREE.MeshBasicMaterial({ map: glowTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
+  const glowMesh = new THREE.InstancedMesh(glowGeo, glowMatI, Math.max(1, glows.length));
+  glowMesh.count = glows.length;
+  glowMesh.renderOrder = 3;
+  glowMesh.frustumCulled = false;
+  const pools = glows.filter((g) => g.ground);
+  const poolMesh = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), glowMatI, Math.max(1, pools.length));
+  poolMesh.count = pools.length;
+  poolMesh.frustumCulled = false;
+  const _gc = new THREE.Color();
+  pools.forEach((g, i) => {
+    _m.compose(_p.set(g.x, 0.03, g.z), _q.identity(), _s.set(g.size * 2.2, 1, g.size * 2.2));
+    poolMesh.setMatrixAt(i, _m);
+    poolMesh.setColorAt(i, _gc.set(g.color).multiplyScalar(0.3));
   });
+  if (pools.length) poolMesh.instanceColor.needsUpdate = true;
+  if (glows.length) glowMesh.setColorAt(0, _gc.set(0xffffff));
+  group.add(glowMesh, poolMesh);
+  const glowSprites = glows.map((g) => ({ ...g, phase: rng.range(0, 6), poolIndex: pools.indexOf(g) }));
   const blinkMeshes = blinkers.map((b) => {
     const red = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), new THREE.MeshBasicMaterial({ map: glowTexture(), color: 0xff2a2a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
     const blue = red.clone();
@@ -343,12 +344,18 @@ export function buildWorld(level, scene, { menu = false } = {}) {
       }
       chevrons.instanceMatrix.needsUpdate = true;
       // Svetla trepere, okrenuta ka kameri
-      for (const g of glowSprites) {
-        g.mesh.quaternion.copy(camera.quaternion);
+      glowSprites.forEach((g, i) => {
         let k = 1;
         if (g.flicker) k = 0.75 + Math.sin(t * 11 + g.phase) * 0.12 + Math.sin(t * 23 + g.phase * 2) * 0.1;
-        g.mesh.material.opacity = 0.85 * k;
-        if (g.pool) g.pool.material.opacity = 0.3 * k;
+        _m.compose(_p.set(g.x, g.y, g.z), camera.quaternion, _s.setScalar(g.size));
+        glowMesh.setMatrixAt(i, _m);
+        glowMesh.setColorAt(i, _gc.set(g.color).multiplyScalar(0.85 * k));
+        if (g.poolIndex >= 0) poolMesh.setColorAt(g.poolIndex, _gc.set(g.color).multiplyScalar(0.3 * k));
+      });
+      if (glowSprites.length) {
+        glowMesh.instanceMatrix.needsUpdate = true;
+        glowMesh.instanceColor.needsUpdate = true;
+        if (pools.length) poolMesh.instanceColor.needsUpdate = true;
       }
       const on = Math.sin(t * 9) > 0;
       for (const b of blinkMeshes) {
