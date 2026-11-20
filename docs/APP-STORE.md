@@ -128,6 +128,8 @@ App Privacy: deo 6 PRODAVNICE.md (+ Device ID / push token po potrebi). Age Rati
 `https://lockintracker.app/support/`, Privacy Policy URL `https://lockintracker.app/privacy/`, Terms link u opisu.
 App Review Information: isti Gmail nalog za recenzente kao na Google Play-u (Apple recenzent sme da koristi nalog koji
 mu daš; prijava „Continue with Google“), napomena kao u PRODAVNICE.md deo 9 + da se proba pokreće u Sandbox-u.
+20. nov. 2026: taj Gmail je preuzet, napravljen je nov nalog za recenzente (`docs/GOOGLE-PLAY.md` deo 5); novi mejl i
+lozinka idu u Sign-In Information dok verzija čeka pregled.
 
 ## 8. Slanje na pregled ✅ poslato 15. nov. 2026 (čeka pregled)
 Poslato 15. nov. oko 14:22: „4 Items Submitted“ (iOS App 1.0 build 2, Lock In Monthly, Lock In Annual, grupa Lock In).
