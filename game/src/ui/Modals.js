@@ -67,6 +67,7 @@ export function SettingsModal({ font, settings, onChange, onClose }) {
       <View style={styles.help}>
         <Text style={[styles.helpTitle, font]}>KAKO SE IGRA</Text>
         <Text style={styles.helpText}>• Prevlači prst levo-desno da pomeraš junaka. Dok držiš prst, junak puca.</Text>
+        <Text style={styles.helpText}>• Na računaru: A / D ili strelice ← → za levo-desno (dok držiš taster, junak puca), razmak = pucanje u mestu.</Text>
         <Text style={styles.helpText}>• Levo dolaze zombiji. Ubij ih pre nego što stignu do tebe.</Text>
         <Text style={styles.helpText}>• Desno dolaze polja napredovanja. Pucaj u njih: brojevi rastu, a zaključana se otključavaju. Stani ispod polja da ga pokupiš.</Text>
         <Text style={styles.helpText}>• Pazi na municiju i crvena polja sa minusom.</Text>

@@ -165,6 +165,7 @@ function Tutorial({ font, onDone }) {
           <Animated.View style={[styles.finger, { transform: [{ translateX: tx }] }]} />
         </View>
         <Text style={styles.tutText}>Drži prst na ekranu i pomeraj ga levo-desno. Dok držiš, junak puca.</Text>
+        <Text style={styles.tutKeys}>Na računaru: A / D ili strelice ← → (razmak = pucanje u mestu)</Text>
         <View style={styles.tutRow}>
           <Text style={[styles.tutSide, font, { color: '#9dff4a' }]}>◀ ZOMBIJI</Text>
           <Text style={[styles.tutSide, font, { color: '#8cc2ff' }]}>POLJA ▶</Text>
@@ -213,6 +214,7 @@ const styles = StyleSheet.create({
   tutTrack: { width: 200, height: 46, borderRadius: 23, backgroundColor: 'rgba(255,255,255,0.12)', justifyContent: 'center', alignItems: 'center' },
   finger: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#fff', borderWidth: 4, borderColor: '#5aa2ff' },
   tutText: { color: '#e6ecf5', fontSize: 15, fontWeight: '700', textAlign: 'center', lineHeight: 20 },
+  tutKeys: { color: '#ffd75a', fontSize: 13, fontWeight: '800', textAlign: 'center' },
   tutRow: { flexDirection: 'row', gap: 30 },
   tutSide: { fontSize: 20, ...outlineSm },
 });

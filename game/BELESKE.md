@@ -26,6 +26,11 @@ Poslednja sesija: 20. novembar 2026.
 2. Zombie Rush 3D sa dve trake i vojskom koja trči (a000b8e, 2452763)
 3. **Novi Zombie Rush 3D** po velikom promptu + pojašnjenju (9ee290c jezgro, c527cdb meniji/zvuk/čuvanje, pa doterivanje)
 
+## Poslednje izmene po želji korisnika
+- Tastatura: A/D i strelice ← → za levo-desno (dok je taster pritisnut, junak puca), razmak = pucanje u mestu.
+- "Ubrzaj igru": brži zombiji (~35%), brža i češća polja (~40%), kraći razmaci između talasa, kraći uvod.
+  (Ako je korisnik mislio da igra seče/kasni, to je drugi problem: performanse.)
+
 ## Trenutno stanje
 - Sve stavke iz prompta su urađene (vidi README): pucanje, zombiji sa svih strana, polja (×2 metaka, +municija, ×3 šteta, vatreni metci, novo oružje...), talasi, šefovi, 5 oružja, nadogradnje, zlatnici, dnevne nagrade, 3 okruženja, meniji (glavni, pauza, poraz, pobeda), zvuk i muzika, dodir, čuvanje napretka.
 - Težina (automatski igrač): nivoi 1–2 su uvod; od 3. nivoa bez nadogradnji se gubi, sa nadogradnjama se prelazi, ali ne uvek.

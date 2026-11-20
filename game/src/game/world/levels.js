@@ -46,7 +46,7 @@ export function getLevel(n) {
     addGroup('walker', fromAlley, 'alleyL');
     // Od trećeg nivoa zombiji ponekad dolaze i sa desne strane (kroz polja napredovanja)
     if (n >= 3 && w >= 1 && rng.chance(0.25 + L * 0.03)) addGroup('runner', 2 + Math.floor(L / 3), 'alleyR');
-    waves.push({ groups, label: last ? (bossLevel ? 'POSLEDNJI TALAS!' : 'VELIKI TALAS!') : `TALAS ${w + 1}`, spawnTime: 5 + w * 0.6 });
+    waves.push({ groups, label: last ? (bossLevel ? 'POSLEDNJI TALAS!' : 'VELIKI TALAS!') : `TALAS ${w + 1}`, spawnTime: 3.5 + w * 0.45 });
   }
 
   // Eksplozivna buradi u levoj traci

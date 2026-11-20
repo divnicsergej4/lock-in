@@ -7,6 +7,8 @@
 - Junak **stoji** na dnu puta i pomera se **samo levo-desno** (prevlačenjem prsta).
 - **Dok držiš prst, junak puca** napred; puška sama malo skrene ka zombiju ispred junaka.
   Kad ispred nema ničega, ne troši municiju.
+- **Na računaru (tastatura):** **A** ili **←** = levo, **D** ili **→** = desno (dok držiš taster, junak i puca),
+  **razmak (Space)** = pucanje u mestu.
 - **Leva strana: zombiji.** Dolaze spreda iz magle i iz bočnih ulica; kad su blizu (ili kad si na drugoj
   strani), presecaju ka junaku i napadaju. Od 3. nivoa neki dolaze i sa desne strane.
 - **Desna strana: polja napredovanja** klize ka junaku. Staneš ispod polja da ga pokupiš.

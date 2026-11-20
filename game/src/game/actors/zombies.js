@@ -8,10 +8,10 @@ import { LANE_X, LANE_HALF, MEDIAN_START_Z, ZOMBIE_SIDE, HERO_Z } from '../core/
 // hp = život, speed = brzina (m/s), dmg = šteta junaku po udarcu, coin = nagrada,
 // scale = veličina, radius = koliko je "širok" (za pogotke i guranje), cap = najviše odjednom
 export const ZTYPES = {
-  walker: { name: 'ZOMBI', hp: 30, speed: 2.0, dmg: 8, coin: 2, scale: 1.6, radius: 0.36, cap: 90, attackEvery: 0.9 },
-  runner: { name: 'TRKAČ', hp: 20, speed: 4.6, dmg: 6, coin: 3, scale: 1.5, radius: 0.33, cap: 50, attackEvery: 0.7 },
-  brute: { name: 'GRMALJ', hp: 210, speed: 1.35, dmg: 22, coin: 12, scale: 2.5, radius: 0.62, cap: 12, attackEvery: 1.3 },
-  bloater: { name: 'NADUVENKO', hp: 55, speed: 1.5, dmg: 26, coin: 5, scale: 1.75, radius: 0.5, cap: 16, attackEvery: 1, explodes: true },
+  walker: { name: 'ZOMBI', hp: 30, speed: 2.7, dmg: 8, coin: 2, scale: 1.6, radius: 0.36, cap: 90, attackEvery: 0.9 },
+  runner: { name: 'TRKAČ', hp: 20, speed: 5.8, dmg: 6, coin: 3, scale: 1.5, radius: 0.33, cap: 50, attackEvery: 0.7 },
+  brute: { name: 'GRMALJ', hp: 210, speed: 1.8, dmg: 22, coin: 12, scale: 2.5, radius: 0.62, cap: 12, attackEvery: 1.3 },
+  bloater: { name: 'NADUVENKO', hp: 55, speed: 2.0, dmg: 26, coin: 5, scale: 1.75, radius: 0.5, cap: 16, attackEvery: 1, explodes: true },
 };
 
 export const PALETTE = {

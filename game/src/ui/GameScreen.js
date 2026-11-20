@@ -2,7 +2,7 @@
 // Tok: učitavanje → "dodirni za početak" → glavni meni ⇄ oružarnica → igra (pauza) → pobeda/poraz.
 // Ovde se čuva napredak (zlatnici, nivo, nadogradnje, oružja, dnevne nagrade, podešavanja).
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, StyleSheet, Text, View, Pressable, Animated } from 'react-native';
+import { AppState, Platform, StyleSheet, Text, View, Pressable, Animated } from 'react-native';
 import { GLView } from 'expo-gl';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, LilitaOne_400Regular } from '@expo-google-fonts/lilita-one';
@@ -62,6 +62,40 @@ export default function GameScreen() {
   }, [save && save.settings.sound, save && save.settings.music]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => () => gameRef.current && gameRef.current.destroy(), []);
+
+  // Tastatura na računaru: A/D ili strelice ← → pomeraju junaka (i dok je taster pritisnut, junak puca),
+  // razmak (Space) = pucanje u mestu. Radi samo tokom igre (ne u menijima, pauzi i uputstvu).
+  const keysActiveRef = useRef(false);
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return undefined;
+    const which = (e) => {
+      const c = e.code;
+      const k = (e.key || '').toLowerCase();
+      if (c === 'KeyA' || c === 'ArrowLeft' || k === 'a' || k === 'arrowleft') return 'left';
+      if (c === 'KeyD' || c === 'ArrowRight' || k === 'd' || k === 'arrowright') return 'right';
+      if (c === 'Space' || k === ' ' || k === 'spacebar') return 'fire';
+      return null;
+    };
+    const down = (e) => {
+      const name = which(e);
+      if (!name || !keysActiveRef.current || !gameRef.current) return;
+      e.preventDefault();
+      gameRef.current.setKey(name, true);
+    };
+    const up = (e) => {
+      const name = which(e);
+      if (name && gameRef.current) gameRef.current.setKey(name, false);
+    };
+    const blur = () => gameRef.current && gameRef.current.releaseKeys();
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    window.addEventListener('blur', blur);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+      window.removeEventListener('blur', blur);
+    };
+  }, []);
 
   // Kad aplikacija ode u pozadinu, igra se pauzira
   useEffect(() => {
@@ -247,6 +281,10 @@ export default function GameScreen() {
 
   // ---------- Dodir za igru (prevlačenje levo-desno) ----------
   const canAim = screen === 'game' && !paused && !tutorialVisible;
+  keysActiveRef.current = canAim;
+  useEffect(() => {
+    if (!canAim && gameRef.current) gameRef.current.releaseKeys();
+  }, [canAim]);
   const responder = {
     onStartShouldSetResponder: () => canAim,
     onMoveShouldSetResponder: () => canAim,

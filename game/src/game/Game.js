@@ -3,7 +3,7 @@
 // Ovde su: petlja (60 puta u sekundi), pucanje, pogoci, talasi, polja, šef, pobeda/poraz, kamera i svetla.
 import * as THREE from 'three';
 import {
-  CAMERA, HERO_X_LIMIT, HERO_MOVE_LERP, HERO_Z, LANE_X, SPAWN_Z, ALLEYS_Z, AIM_CONE, CRIT_CHANCE, ROAD_HALF,
+  CAMERA, HERO_X_LIMIT, HERO_MOVE_LERP, HERO_Z, LANE_X, SPAWN_Z, ALLEYS_Z, AIM_CONE, CRIT_CHANCE, ROAD_HALF, KEY_SPEED,
 } from './core/config.js';
 import { createRng } from './core/rng.js';
 import { QUALITY_LEVELS, FrameMonitor } from './core/quality.js';
@@ -99,6 +99,7 @@ export class Game {
     this.toastId = 0;
     this.hurtId = 0;
     this.input = { down: false, startX: 0, startHeroX: 0 };
+    this.keys = { left: false, right: false, fire: false };
     this.targetX = 0;
     this.last = now();
     this.running = true;
@@ -189,7 +190,7 @@ export class Game {
     this.waveStartT = 0;
     this.waveGap = 1.2;
     this.spawnQueue = [];
-    this.fieldTimer = 2.5;
+    this.fieldTimer = 1.2;
     this.lastAmmoRow = -10;
     this.fireTimer = 0;
     this.spin = 0;
@@ -203,6 +204,7 @@ export class Game {
     this.camPos.set(0, 30, -12);
     this.camLook.set(0, 0, -50);
     this.input.down = false;
+    this.releaseKeys();
     this.toast(`NIVO ${n}`, 'epic');
     this.sound.play('levelStart');
     this.sound.music('game');
@@ -215,6 +217,10 @@ export class Game {
 
   setPaused(p) {
     this.paused = p;
+    if (p) {
+      this.input.down = false;
+      this.releaseKeys();
+    }
     if (!p) this.last = now();
     this.emit(true);
   }
@@ -267,6 +273,21 @@ export class Game {
     this.input.down = false;
   }
 
+  // Tastatura (na računaru): A/D ili strelice levo-desno pomeraju junaka i dok je taster pritisnut junak puca;
+  // razmak (Space) = pucanje u mestu
+  setKey(name, down) {
+    if (name in this.keys) this.keys[name] = down;
+  }
+
+  releaseKeys() {
+    this.keys.left = this.keys.right = this.keys.fire = false;
+  }
+
+  // Da li igrač trenutno puca (drži prst ili taster)
+  isFiring() {
+    return this.input.down || this.keys.left || this.keys.right || this.keys.fire;
+  }
+
   // ======================= Petlja =======================
   loop() {
     if (!this.running) return;
@@ -310,6 +331,10 @@ export class Game {
     const playing = this.mode === 'play' && (this.phase === 'fight' || this.phase === 'boss' || this.phase === 'intro');
 
     // ---- Junak: levo-desno ----
+    if (this.mode === 'play' && this.phase !== 'lost' && this.phase !== 'won') {
+      const dir = (this.keys.right ? 1 : 0) - (this.keys.left ? 1 : 0);
+      if (dir) this.targetX = clamp(this.targetX + dir * KEY_SPEED * dt, -HERO_X_LIMIT, HERO_X_LIMIT);
+    }
     const prevX = hero.x;
     if (this.mode === 'play' && this.phase !== 'lost') {
       hero.x += (this.targetX - hero.x) * (1 - Math.exp(-dt * HERO_MOVE_LERP));
@@ -321,7 +346,7 @@ export class Game {
       this.run.time += dt;
       if (this.phase === 'intro') {
         this.phaseT += dt;
-        if (this.phaseT > 1.6) this.phase = 'fight';
+        if (this.phaseT > 1.0) this.phase = 'fight';
       }
       this.updateWaves(dt);
       this.updateFields(dt, t);
@@ -364,7 +389,7 @@ export class Game {
     }
 
     // ---- Ostalo ----
-    hero.update(dt, t, { firing: playing && this.input.down && this.run && this.run.ammo >= WEAPONS[this.run.weapon].ammoPerShot });
+    hero.update(dt, t, { firing: playing && this.isFiring() && this.run && this.run.ammo >= WEAPONS[this.run.weapon].ammoPerShot });
     this.world.update(dt, t, this.camera);
     this.updateAmbient(dt);
     this.effects.update(dt);
@@ -390,7 +415,7 @@ export class Game {
     const waveDone = this.spawnQueue.length === 0;
     if (this.waveIndex < lvl.waves.length - 1) {
       const since = t - this.waveStartT;
-      if (this.waveIndex < 0 || (waveDone && (alive <= 2 || since > 24))) {
+      if (this.waveIndex < 0 || (waveDone && (alive <= 3 || since > 16))) {
         this.waveGap -= dt;
         if (this.waveGap <= 0 || this.waveIndex < 0) this.startWave(this.waveIndex + 1);
       }
@@ -406,7 +431,7 @@ export class Game {
     const wave = lvl.waves[i];
     this.waveIndex = i;
     this.waveStartT = this.run.time;
-    this.waveGap = 1.6;
+    this.waveGap = 0.8;
     const queue = [];
     for (const g of wave.groups) {
       for (let k = 0; k < g.count; k++) {
@@ -525,7 +550,7 @@ export class Game {
           this.fields.push(f);
           if (it.type === 'ammo' && f.value > 0) this.lastAmmoRow = r.time;
         }
-        this.fieldTimer = this.phase === 'boss' ? rnd(6.5, 8) : rnd(5, 6.4);
+        this.fieldTimer = this.phase === 'boss' ? rnd(5, 6) : rnd(3.6, 4.6);
       }
     }
     const hero = this.hero;
@@ -634,7 +659,7 @@ export class Game {
     hero.aimYaw += (desiredYaw - hero.aimYaw) * Math.min(1, dt * 18);
     this.muzzleLight.intensity = Math.max(0, this.muzzleLight.intensity - dt * 400);
 
-    const firing = this.input.down && this.phase !== 'intro';
+    const firing = this.isFiring() && this.phase !== 'intro';
     const rate = w.rate * this.loadout.rateMul * (1 + r.rateBonus);
     if (w.spinUp) this.spin = firing ? Math.min(1, this.spin + dt / w.spinUp) : Math.max(0, this.spin - dt * 2);
     const effRate = w.spinUp ? rate * (0.3 + 0.7 * this.spin) : rate;
@@ -909,6 +934,7 @@ export class Game {
     this.phase = 'won';
     this.endT = 0;
     this.input.down = false;
+    this.releaseKeys();
     this.hero.setState('victory');
     this.effects.confetti(this.hero.x, -3, 100);
     this.sound.play('victory');
@@ -932,6 +958,7 @@ export class Game {
     this.phase = 'lost';
     this.endT = 0;
     this.input.down = false;
+    this.releaseKeys();
     this.hero.setState('dead');
     this.timeScale = 0.45;
     this.sound.play('defeat');
@@ -950,7 +977,7 @@ export class Game {
     if (this.phase === 'won' || this.phase === 'lost') {
       this.endT += dt / Math.max(0.01, this.timeScale);
       if (this.phase === 'lost' && this.endT > 1.2) this.timeScale = 1;
-      if (this.endT > 1.6 && !this.resultSent) {
+      if (this.endT > 1.2 && !this.resultSent) {
         this.resultSent = true;
         this.onEvent(this.phase, this.result);
       }
@@ -1013,7 +1040,7 @@ export class Game {
         look.set(hero.x, 0.5, -1.5);
       }
     }
-    const k = this.phase === 'intro' ? 1 - Math.exp(-dt * 2.4) : 1 - Math.exp(-dt * 5);
+    const k = this.phase === 'intro' ? 1 - Math.exp(-dt * 3.6) : 1 - Math.exp(-dt * 5);
     this.camPos.lerp(pos, this.mode === 'menu' ? 1 - Math.exp(-dt * 2) : k);
     this.camLook.lerp(look, k);
     this.camera.position.copy(this.camPos);
