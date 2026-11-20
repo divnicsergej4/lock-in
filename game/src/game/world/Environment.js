@@ -1,5 +1,6 @@
-// Nebo sa prelivom boja i tlo do horizonta. Boje zavise od okruženja nivoa.
+// Nebo sa prelivom boja, zvezde i mesec (noću) i tlo do horizonta. Sve zavisi od okruženja nivoa.
 import * as THREE from 'three';
+import { glowTexture } from '../fx/textures.js';
 
 function groundTexture(theme) {
   const size = 64;
@@ -32,10 +33,7 @@ export function createEnvironment(scene) {
     side: THREE.BackSide,
     depthWrite: false,
     fog: false,
-    uniforms: {
-      top: { value: new THREE.Color() },
-      horizon: { value: new THREE.Color() },
-    },
+    uniforms: { top: { value: new THREE.Color() }, horizon: { value: new THREE.Color() } },
     vertexShader: `
       varying vec3 vDir;
       void main() {
@@ -56,10 +54,32 @@ export function createEnvironment(scene) {
   sky.renderOrder = -10;
   scene.add(sky);
 
+  // Zvezde
+  const starCount = 260;
+  const starPos = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const e = 0.18 + Math.random() * 1.2;
+    starPos[i * 3] = Math.cos(a) * Math.cos(e) * 160;
+    starPos[i * 3 + 1] = Math.sin(e) * 160;
+    starPos[i * 3 + 2] = Math.sin(a) * Math.cos(e) * 160;
+  }
+  const starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xdfe8ff, size: 1.6, sizeAttenuation: false, fog: false, transparent: true, opacity: 0.8, depthWrite: false }));
+  stars.renderOrder = -9;
+  scene.add(stars);
+
+  // Mesec
+  const moon = new THREE.Mesh(new THREE.CircleGeometry(7, 32), new THREE.MeshBasicMaterial({ color: 0xe8efff, fog: false }));
+  const moonGlow = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshBasicMaterial({ map: glowTexture(), color: 0x6f8fc0, transparent: true, opacity: 0.55, fog: false, depthWrite: false, blending: THREE.AdditiveBlending }));
+  moon.renderOrder = moonGlow.renderOrder = -8;
+  scene.add(moon, moonGlow);
+
   const groundMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 300), groundMat);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), groundMat);
   ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -0.12;
+  ground.position.set(0, -0.06, -60);
   ground.receiveShadow = true;
   scene.add(ground);
 
@@ -67,15 +87,21 @@ export function createEnvironment(scene) {
     setTheme(theme) {
       skyMat.uniforms.top.value.set(theme.skyTop);
       skyMat.uniforms.horizon.value.set(theme.horizon);
+      stars.visible = theme.stars;
+      moon.visible = moonGlow.visible = theme.moon;
       if (groundMat.map) groundMat.map.dispose();
       groundMat.map = groundTexture(theme);
-      groundMat.map.repeat.set(260 / 5, 300 / 5);
+      groundMat.map.repeat.set(60, 60);
       groundMat.needsUpdate = true;
     },
-    update(t, camera, followZ) {
+    update(camera) {
       sky.position.copy(camera.position);
-      // Tlo ide sa vojskom, a šara ostaje na mestu (pomeramo i teksturu)
-      ground.position.z = Math.round((followZ - 90) / 5) * 5;
+      stars.position.copy(camera.position);
+      // Mesec stoji visoko levo, uvek okrenut ka kameri
+      moon.position.set(camera.position.x - 55, camera.position.y + 62, camera.position.z - 120);
+      moon.lookAt(camera.position);
+      moonGlow.position.copy(moon.position);
+      moonGlow.quaternion.copy(moon.quaternion);
     },
   };
 }

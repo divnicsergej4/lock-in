@@ -3,12 +3,14 @@
 // Sve se ponovo koristi (pooling) da bi igra radila glatko na telefonu.
 import * as THREE from 'three';
 import { ParticlePool } from './Particles.js';
-import { shadowTexture } from './textures.js';
+import { shadowTexture, splatTexture } from './textures.js';
 
 const MAX_DEBRIS = 400;
 const MAX_TRACERS = 120;
 const MAX_RINGS = 8;
 const MAX_SCORCH = 12;
+const MAX_CASINGS = 70;
+const MAX_SPLATS = 28;
 const GRAVITY = -16;
 const _m = new THREE.Matrix4();
 const _q = new THREE.Quaternion();
@@ -33,6 +35,11 @@ const C = {
   goo: new THREE.Color(0x6cc83a),
   plasma: new THREE.Color(0.3, 0.95, 1.0),
   gold: new THREE.Color(1.0, 0.8, 0.25),
+  acid: new THREE.Color(0.55, 1.0, 0.25),
+  ember: new THREE.Color(1.0, 0.5, 0.15),
+  firefly: new THREE.Color(0.75, 1.0, 0.35),
+  dustMote: new THREE.Color(1.0, 0.92, 0.75),
+  blood: new THREE.Color(0x5a0f0a),
 };
 
 export class Effects {
@@ -87,6 +94,27 @@ export class Effects {
       this.scorches.push({ mesh, age: 0, active: false });
     }
     this.scorchIndex = 0;
+
+    // Čaure koje izleću iz puške
+    this.casingMesh = new THREE.InstancedMesh(
+      new THREE.CylinderGeometry(0.018, 0.018, 0.07, 6),
+      new THREE.MeshLambertMaterial({ color: 0xd9a830, emissive: 0x2a1a00 }),
+      MAX_CASINGS,
+    );
+    this.prep(this.casingMesh);
+    this.casings = [];
+
+    // Fleke krvi na putu (ostaju neko vreme pa izblede)
+    this.splats = [];
+    const splatGeo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+    for (let i = 0; i < MAX_SPLATS; i++) {
+      const mesh = new THREE.Mesh(splatGeo, new THREE.MeshBasicMaterial({ map: splatTexture(), color: 0x4a0c08, transparent: true, opacity: 0, depthWrite: false }));
+      mesh.visible = false;
+      mesh.renderOrder = 0;
+      scene.add(mesh);
+      this.splats.push({ mesh, age: 0, active: false });
+    }
+    this.splatIndex = 0;
   }
 
   prep(mesh) {
@@ -242,6 +270,22 @@ export class Effects {
     this.shake = Math.max(this.shake, 0.18 + tier * 0.06);
   }
 
+  // Kupljeno polje napredovanja: bljesak, iskre koje lete uvis i prsten oko junaka
+  collect(x, z, color, epic = false) {
+    const c = new THREE.Color(color);
+    this.glow.spawn({ x, y: 1.2, z, life: 0.25, size: 2.2, endSize: 3.2, color: c.clone().lerp(C.flash, 0.4), alpha: 1.1, fadeIn: 0 });
+    const n = Math.round((epic ? 26 : 14) * this.quality.particles);
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * 6.28;
+      const sp = rnd(1, 3.2);
+      this.glow.spawn({
+        x: x + Math.cos(a) * 0.4, y: rnd(0.2, 1.6), z: z + Math.sin(a) * 0.4, vx: Math.cos(a) * sp, vy: rnd(2.5, 6), vz: Math.sin(a) * sp * 0.6,
+        life: rnd(0.5, 0.9), size: epic ? 0.22 : 0.16, endSize: 0.04, color: epic && i % 3 === 0 ? C.fireHot : c, alpha: 1.4, gravity: -6, drag: 1.5, fadeIn: 0,
+      });
+    }
+    this.ring(x, z, epic ? 4 : 2.6);
+  }
+
   smokePuff(x, y, z) {
     this.smoke.spawn({ x, y, z, vy: 0.3, life: 0.5, size: 0.3, endSize: 0.9, color: C.smokeLight, alpha: 0.5, fadeIn: 0 });
   }
@@ -267,6 +311,78 @@ export class Effects {
   sparkle(x, y, z, color = C.gold) {
     for (let i = 0; i < 5; i++) {
       this.glow.spawn({ x, y, z, vx: rnd(-2, 2), vy: rnd(1, 3.5), vz: rnd(-2, 2), life: 0.45, size: 0.18, endSize: 0.04, color, alpha: 1.4, gravity: -5, fadeIn: 0 });
+    }
+  }
+
+  // Veći ili manji bljesak cevi, zavisno od oružja
+  muzzleBig(x, y, z, scale = 1) {
+    this.glow.spawn({ x, y, z, life: 0.06, size: 0.55 * scale, endSize: 0.25 * scale, color: C.muzzle, alpha: 1.8, fadeIn: 0 });
+    this.glow.spawn({ x, y, z, life: 0.045, size: 0.3 * scale, endSize: 0.1, color: C.flash, alpha: 1.5, fadeIn: 0 });
+    if (Math.random() < 0.35) this.smoke.spawn({ x, y, z, vy: 0.4, life: 0.4, size: 0.12 * scale, endSize: 0.5 * scale, color: C.smokeLight, alpha: 0.3, fadeIn: 0 });
+  }
+
+  // Čaura izleti udesno i odskoči od zemlje
+  casing(x, y, z, yaw = 0) {
+    if (this.casings.length >= MAX_CASINGS) this.casings.shift();
+    const side = 1.8 + Math.random() * 1.2;
+    this.casings.push({
+      x, y, z,
+      vx: Math.cos(yaw) * side, vy: 2.2 + Math.random() * 1.4, vz: -Math.sin(yaw) * side + 0.6,
+      rx: Math.random() * 6, ry: Math.random() * 6, age: 0, life: 1.1,
+    });
+  }
+
+  // Krv i komadići pri pogotku zombija
+  blood(x, y, z, amount = 2) {
+    for (let i = 0; i < amount; i++) {
+      this.smoke.spawn({
+        x, y, z, vx: rnd(-1.4, 1.4), vy: rnd(0.4, 2.2), vz: rnd(-1.8, -0.2),
+        life: rnd(0.25, 0.45), size: 0.18, endSize: 0.42, color: C.blood, alpha: 0.9, gravity: -6, drag: 2, fadeIn: 0,
+      });
+    }
+  }
+
+  // Fleka na putu ispod mrtvog zombija
+  splat(x, z, size = 1.2, color = 0x4a0c08) {
+    const s = this.splats[this.splatIndex++ % MAX_SPLATS];
+    s.active = true;
+    s.age = 0;
+    s.mesh.position.set(x, 0.02 + Math.random() * 0.004, z);
+    s.mesh.rotation.y = Math.random() * 6;
+    s.mesh.scale.set(size, 1, size);
+    s.mesh.material.color.set(color);
+    s.mesh.visible = true;
+  }
+
+  // Otrovna eksplozija naduvenog zombija
+  toxicBlast(x, y, z, scale = 1) {
+    this.glow.spawn({ x, y: y + 0.4, z, life: 0.2, size: 2.4 * scale, endSize: 4 * scale, color: C.acid, alpha: 1.2, fadeIn: 0 });
+    for (let i = 0; i < Math.round(12 * this.quality.particles); i++) {
+      const a = Math.random() * 6.28;
+      const sp = rnd(1, 3.2) * scale;
+      this.smoke.spawn({
+        x, y: y + rnd(0.2, 1), z, vx: Math.cos(a) * sp, vy: rnd(0.5, 2), vz: Math.sin(a) * sp,
+        life: rnd(1, 1.8), size: rnd(0.8, 1.3) * scale, endSize: rnd(2.2, 3.2) * scale, color: C.acid, alpha: 0.55, drag: 1.8, gravity: 0.3, fadeIn: 0.1,
+      });
+    }
+    this.burst(x, y, z, 0x6faa2a, 10, 1.3, { size: 1.1 });
+    this.ring(x, z, 4 * scale);
+    this.splat(x, z, 3.2 * scale, 0x3f6a12);
+    this.shake = Math.max(this.shake, 0.3);
+  }
+
+  acidTrail(x, y, z) {
+    this.glow.spawn({ x, y, z, life: 0.25, size: 0.35, endSize: 0.1, color: C.acid, alpha: 1.1, fadeIn: 0 });
+  }
+
+  // Atmosfera: lebdeća prašina, žar od požara ili svici u šumi
+  ambientKind(kind, x, z) {
+    if (kind === 'embers') {
+      this.glow.spawn({ x: x + rnd(-10, 10), y: rnd(0.2, 2), z: z + rnd(-30, 4), vx: rnd(-0.3, 0.3), vy: rnd(0.4, 1.2), vz: rnd(-0.2, 0.4), life: rnd(2, 3.5), size: 0.08, endSize: 0.03, color: C.ember, alpha: 1, fadeIn: 0.1 });
+    } else if (kind === 'fireflies') {
+      this.glow.spawn({ x: x + rnd(-9, 9), y: rnd(0.4, 3), z: z + rnd(-26, 4), vx: rnd(-0.4, 0.4), vy: rnd(-0.15, 0.25), vz: rnd(-0.4, 0.4), life: rnd(2.5, 4.5), size: 0.11, endSize: 0.11, color: C.firefly, alpha: 0.9, fadeIn: 0.3 });
+    } else {
+      this.glow.spawn({ x: x + rnd(-10, 10), y: rnd(0.3, 4), z: z + rnd(-30, 4), vx: rnd(0.1, 0.5), vy: rnd(-0.05, 0.1), vz: rnd(-0.2, 0.2), life: rnd(3, 5), size: 0.05, endSize: 0.05, color: C.dustMote, alpha: 0.35, fadeIn: 0.3 });
     }
   }
 
@@ -364,6 +480,46 @@ export class Effects {
     this.tracerMesh.count = n;
     this.tracerMesh.instanceMatrix.needsUpdate = true;
 
+    // Čaure
+    n = 0;
+    const cAlive = [];
+    for (const c of this.casings) {
+      c.age += dt;
+      if (c.age >= c.life) continue;
+      c.vy += GRAVITY * dt;
+      c.x += c.vx * dt;
+      c.y += c.vy * dt;
+      c.z += c.vz * dt;
+      if (c.y < 0.03) {
+        c.y = 0.03;
+        c.vy *= -0.35;
+        c.vx *= 0.5;
+        c.vz *= 0.5;
+      }
+      c.rx += dt * 18;
+      c.ry += dt * 11;
+      _e.set(c.rx, c.ry, 0);
+      _q.setFromEuler(_e);
+      _m.compose(_p.set(c.x, c.y, c.z), _q, _s.setScalar(c.age > c.life - 0.2 ? (c.life - c.age) / 0.2 : 1));
+      this.casingMesh.setMatrixAt(n++, _m);
+      cAlive.push(c);
+    }
+    this.casings = cAlive;
+    this.casingMesh.count = n;
+    this.casingMesh.instanceMatrix.needsUpdate = true;
+
+    // Fleke krvi polako blede
+    for (const s of this.splats) {
+      if (!s.active) continue;
+      s.age += dt;
+      const o = s.age < 0.15 ? s.age / 0.15 : Math.max(0, 1 - (s.age - 7) / 3);
+      s.mesh.material.opacity = 0.75 * o;
+      if (s.age > 10) {
+        s.active = false;
+        s.mesh.visible = false;
+      }
+    }
+
     // Udarni talasi
     for (const r of this.rings) {
       if (!r.active) continue;
@@ -406,6 +562,12 @@ export class Effects {
     this.scorches.forEach((s) => {
       s.active = false;
       s.mesh.visible = false;
+    });
+    this.casings = [];
+    this.casingMesh.count = 0;
+    this.splats.forEach((sp) => {
+      sp.active = false;
+      sp.mesh.visible = false;
     });
     this.shake = 0;
   }

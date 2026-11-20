@@ -35,5 +35,5 @@ const out = {
   underlineThickness: 50,
   boundingBox: { yMin: r(font.tables.head.yMin), xMin: r(font.tables.head.xMin), yMax: r(font.tables.head.yMax), xMax: r(font.tables.head.xMax) },
 };
-writeFileSync('src/game/fonts/lilita.json', JSON.stringify(out));
+writeFileSync('src/game/gfx/fonts/lilita.json', JSON.stringify(out));
 console.log('glifova:', Object.keys(glyphs).length);

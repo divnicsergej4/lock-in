@@ -23,7 +23,8 @@
       "output": "single"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-audio"
     ]
   }
 }

@@ -496,3 +496,258 @@ export const dividerBlock = () =>
       { aoHeight: 0.6, aoStrength: 0.4 },
     ),
   );
+
+// ---------------- PREDMETI ZA ZOMBI APOKALIPSU ----------------
+
+// Kontejner za smeće
+export const dumpster = () =>
+  cached('dumpster', () =>
+    build(
+      [
+        part(box(1.9, 1.15, 1.1), 0x2f6b46, { pos: [0, 0.62, 0] }),
+        part(box(1.95, 0.08, 1.15), 0x24543a, { pos: [0, 1.22, 0.02], rot: [-0.15, 0, 0] }),
+        part(box(1.92, 0.12, 0.06), 0x1f3d2c, { pos: [0, 0.95, -0.56] }),
+        part(cyl(0.08, 0.08, 0.06, 8), 0x1a1a1a, { pos: [-0.8, 0.07, -0.45], rot: [0, 0, Math.PI / 2] }),
+        part(cyl(0.08, 0.08, 0.06, 8), 0x1a1a1a, { pos: [0.8, 0.07, -0.45], rot: [0, 0, Math.PI / 2] }),
+      ],
+      { aoHeight: 0.8, aoStrength: 0.4 },
+    ),
+  );
+
+// Kese sa smećem
+export const trashBags = () =>
+  cached('trash', () =>
+    build(
+      [
+        part(sph(0.35, 8, 6), 0x23262b, { pos: [0, 0.28, 0], scale: [1, 0.85, 0.9] }),
+        part(sph(0.3, 8, 6), 0x2c3036, { pos: [0.45, 0.24, 0.15], scale: [1, 0.8, 1] }),
+        part(sph(0.26, 8, 6), 0x1f2226, { pos: [0.15, 0.55, 0.05], scale: [1, 0.8, 1] }),
+        part(box(0.3, 0.02, 0.2), 0xd8d0b8, { pos: [-0.4, 0.02, 0.2], rot: [0, 0.6, 0] }),
+      ],
+      { aoHeight: 0.5, aoStrength: 0.35 },
+    ),
+  );
+
+// Saobraćajni čunj
+export const trafficCone = () =>
+  cached('cone', () =>
+    build([
+      part(box(0.42, 0.05, 0.42), 0xd8501f, { pos: [0, 0.025, 0] }),
+      part(new THREE.ConeGeometry(0.17, 0.6, 10), 0xff6a1f, { pos: [0, 0.33, 0] }),
+      part(cyl(0.115, 0.125, 0.09, 10), 0xf2f2f2, { pos: [0, 0.32, 0] }),
+    ]),
+  );
+
+// Gomila ruševina (beton, cigle, armatura)
+export const rubblePile = () =>
+  cached('rubble', () => {
+    const parts = [];
+    const cols = [0x8d8a85, 0x77736d, 0x9b6a52, 0x6a665f];
+    for (let i = 0; i < 9; i++) {
+      const a = (i / 9) * Math.PI * 2;
+      const r = 0.3 + (i % 3) * 0.35;
+      parts.push(part(box(0.5 + (i % 2) * 0.3, 0.25 + (i % 3) * 0.12, 0.45), cols[i % 4], {
+        pos: [Math.cos(a) * r, 0.12 + (i % 3) * 0.08, Math.sin(a) * r],
+        rot: [i * 0.4, i * 0.9, i * 0.3],
+      }));
+    }
+    parts.push(part(box(0.9, 0.5, 0.8), 0x7f7b75, { pos: [0, 0.3, 0], rot: [0.2, 0.5, 0.1] }));
+    parts.push(part(cyl(0.015, 0.015, 1.1, 4), 0x5a3a26, { pos: [0.2, 0.6, 0], rot: [0.6, 0, 0.4] }));
+    parts.push(part(cyl(0.015, 0.015, 0.9, 4), 0x5a3a26, { pos: [-0.25, 0.5, 0.1], rot: [-0.5, 0, -0.3] }));
+    return build(parts, { aoHeight: 0.6, aoStrength: 0.45 });
+  });
+
+// Hidrant
+export const hydrant = () =>
+  cached('hydrant', () =>
+    build([
+      part(cyl(0.13, 0.15, 0.55, 10), 0xc8322b, { pos: [0, 0.28, 0] }),
+      part(sph(0.14, 10, 6), 0xc8322b, { pos: [0, 0.56, 0] }),
+      part(cyl(0.06, 0.06, 0.38, 8), 0xa82a24, { pos: [0, 0.38, 0], rot: [0, 0, Math.PI / 2] }),
+    ]),
+  );
+
+// Automobil (bez rotacije); color = boja karoserije
+export const car = (color = 0x8a3a32, burnt = false) =>
+  cached('car-' + color + burnt, () => {
+    const body = burnt ? 0x2b2622 : color;
+    const top = burnt ? 0x1f1b18 : new THREE.Color(color).multiplyScalar(0.8).getHex();
+    return build(
+      [
+        part(box(1.75, 0.6, 4.1), body, { pos: [0, 0.55, 0] }),
+        part(box(1.55, 0.55, 2.1), top, { pos: [0, 1.1, 0.25] }),
+        part(box(1.45, 0.45, 0.06), burnt ? 0x0c0c0c : 0x26323e, { pos: [0, 1.12, -0.82], rot: [0.55, 0, 0] }),
+        part(box(1.45, 0.4, 0.06), burnt ? 0x0c0c0c : 0x26323e, { pos: [0, 1.1, 1.32], rot: [-0.5, 0, 0] }),
+        part(box(1.57, 0.36, 1.6), burnt ? 0x0c0c0c : 0x2a3540, { pos: [0, 1.1, 0.25] }),
+        ...[[-0.85, -1.3], [0.85, -1.3], [-0.85, 1.35], [0.85, 1.35]].map(([x, z]) =>
+          part(cyl(0.34, 0.34, 0.25, 12), 0x161616, { pos: [x, 0.34, z], rot: [0, 0, Math.PI / 2] }),
+        ),
+        part(box(0.36, 0.14, 0.05), burnt ? 0x222222 : 0xfff1c0, { pos: [-0.55, 0.62, -2.06] }),
+        part(box(0.36, 0.14, 0.05), burnt ? 0x222222 : 0xfff1c0, { pos: [0.55, 0.62, -2.06] }),
+        part(box(0.36, 0.12, 0.05), burnt ? 0x222222 : 0xb01818, { pos: [-0.6, 0.66, 2.06] }),
+        part(box(0.36, 0.12, 0.05), burnt ? 0x222222 : 0xb01818, { pos: [0.6, 0.66, 2.06] }),
+        part(box(1.8, 0.18, 0.12), 0x3a3a3a, { pos: [0, 0.4, -2.08] }),
+      ],
+      { aoHeight: 0.9, aoStrength: 0.45 },
+    );
+  });
+
+// Policijski auto (rotacija se dodaje posebno da bi mogla da trepće)
+export const policeCar = () =>
+  cached('police', () =>
+    build(
+      [
+        part(box(1.75, 0.6, 4.1), 0xf2f2f2, { pos: [0, 0.55, 0] }),
+        part(box(1.77, 0.25, 1.6), 0x1a2a4a, { pos: [0, 0.6, 0.2] }),
+        part(box(1.55, 0.55, 2.1), 0x1a2a4a, { pos: [0, 1.1, 0.25] }),
+        part(box(1.57, 0.36, 1.6), 0x26323e, { pos: [0, 1.1, 0.25] }),
+        ...[[-0.85, -1.3], [0.85, -1.3], [-0.85, 1.35], [0.85, 1.35]].map(([x, z]) =>
+          part(cyl(0.34, 0.34, 0.25, 12), 0x161616, { pos: [x, 0.34, z], rot: [0, 0, Math.PI / 2] }),
+        ),
+        part(box(0.9, 0.08, 0.3), 0x333333, { pos: [0, 1.4, 0.2] }),
+      ],
+      { aoHeight: 0.9, aoStrength: 0.45 },
+    ),
+  );
+
+// Panj/oboreno stablo
+export const log = () =>
+  cached('log', () =>
+    build(
+      [
+        part(cyl(0.28, 0.32, 3.2, 10), 0x5a3f2c, { pos: [0, 0.3, 0], rot: [0, 0, Math.PI / 2] }),
+        part(cyl(0.24, 0.24, 0.02, 10), 0xb08a5c, { pos: [1.61, 0.3, 0], rot: [0, 0, Math.PI / 2] }),
+        part(cyl(0.05, 0.03, 0.7, 5), 0x4a3324, { pos: [0.4, 0.62, 0.1], rot: [0.5, 0, 0.3] }),
+      ],
+      { aoHeight: 0.6, aoStrength: 0.35 },
+    ),
+  );
+
+// Tamni bor (šuma)
+export const darkPine = () =>
+  cached('darkpine', () =>
+    build(
+      [
+        part(cyl(0.12, 0.2, 1.4, 6), 0x3d2b1f, { pos: [0, 0.7, 0] }),
+        part(new THREE.ConeGeometry(1.5, 2.2, 8), 0x1e3d2a, { pos: [0, 2.1, 0] }),
+        part(new THREE.ConeGeometry(1.2, 2.0, 8), 0x234a31, { pos: [0, 3.2, 0] }),
+        part(new THREE.ConeGeometry(0.85, 1.8, 8), 0x285237, { pos: [0, 4.2, 0] }),
+        part(new THREE.ConeGeometry(0.45, 1.3, 8), 0x2d5a3c, { pos: [0, 5.1, 0] }),
+      ],
+      { aoHeight: 2.2, aoStrength: 0.45 },
+    ),
+  );
+
+// Žbun
+export const bush = () =>
+  cached('bush', () =>
+    build(
+      [
+        part(new THREE.IcosahedronGeometry(0.6, 1), 0x2f5a2a, { pos: [0, 0.4, 0], scale: [1.2, 0.8, 1.1] }),
+        part(new THREE.IcosahedronGeometry(0.45, 1), 0x386b31, { pos: [0.5, 0.35, 0.2] }),
+        part(new THREE.IcosahedronGeometry(0.4, 1), 0x264b23, { pos: [-0.45, 0.3, -0.15] }),
+      ],
+      { aoHeight: 0.6, aoStrength: 0.4 },
+    ),
+  );
+
+// Napuštena drvena koliba
+export const cabin = () =>
+  cached('cabin', () => {
+    const parts = [];
+    for (let i = 0; i < 7; i++) parts.push(part(cyl(0.16, 0.16, 4.4, 8), i % 2 ? 0x6b4a32 : 0x5e412c, { pos: [0, 0.18 + i * 0.32, -1.6], rot: [0, 0, Math.PI / 2] }));
+    for (let i = 0; i < 7; i++) parts.push(part(cyl(0.16, 0.16, 4.4, 8), i % 2 ? 0x6b4a32 : 0x5e412c, { pos: [0, 0.18 + i * 0.32, 1.6], rot: [0, 0, Math.PI / 2] }));
+    for (let i = 0; i < 7; i++) parts.push(part(cyl(0.16, 0.16, 3.4, 8), 0x654530, { pos: [-2.05, 0.18 + i * 0.32, 0], rot: [Math.PI / 2, 0, 0] }));
+    for (let i = 0; i < 7; i++) parts.push(part(cyl(0.16, 0.16, 3.4, 8), 0x654530, { pos: [2.05, 0.18 + i * 0.32, 0], rot: [Math.PI / 2, 0, 0] }));
+    parts.push(part(box(4.9, 0.12, 2.2), 0x3b2a20, { pos: [0, 2.85, -0.9], rot: [0.55, 0, 0] }));
+    parts.push(part(box(4.9, 0.12, 2.2), 0x3b2a20, { pos: [0, 2.85, 0.9], rot: [-0.55, 0, 0] }));
+    parts.push(part(box(0.9, 1.5, 0.08), 0x2a1d14, { pos: [0.6, 0.75, 1.78] }));
+    parts.push(part(box(0.7, 0.6, 0.08), 0xffb35a, { pos: [-1.1, 1.3, 1.78] }));
+    return build(parts, { aoHeight: 1.5, aoStrength: 0.35 });
+  });
+
+// Logorska vatra (kamenje i drva; plamen se dodaje efektima)
+export const campfire = () =>
+  cached('campfire', () => {
+    const parts = [];
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      parts.push(part(new THREE.DodecahedronGeometry(0.16, 0), 0x6f6a64, { pos: [Math.cos(a) * 0.55, 0.1, Math.sin(a) * 0.55] }));
+    }
+    parts.push(part(cyl(0.07, 0.07, 0.9, 6), 0x4a3324, { pos: [0, 0.15, 0], rot: [0, 0.5, Math.PI / 2] }));
+    parts.push(part(cyl(0.07, 0.07, 0.9, 6), 0x4a3324, { pos: [0, 0.2, 0], rot: [0, -0.7, Math.PI / 2] }));
+    parts.push(part(cyl(0.3, 0.35, 0.05, 10), 0x1a1210, { pos: [0, 0.03, 0] }));
+    return build(parts);
+  });
+
+// Drvena ograda (segment 2 m)
+export const fence = () =>
+  cached('fence', () =>
+    build([
+      part(box(0.1, 1.0, 0.1), 0x5e4532, { pos: [-0.95, 0.5, 0] }),
+      part(box(0.1, 1.0, 0.1), 0x5e4532, { pos: [0.95, 0.5, 0] }),
+      part(box(2.0, 0.12, 0.05), 0x6e5038, { pos: [0, 0.75, 0] }),
+      part(box(2.0, 0.12, 0.05), 0x6e5038, { pos: [0, 0.4, 0], rot: [0, 0, 0.08] }),
+    ]),
+  );
+
+// Reflektor na stubu (baza junaka)
+export const floodlight = () =>
+  cached('flood', () =>
+    build([
+      part(cyl(0.06, 0.09, 3.4, 6), 0x3a3f46, { pos: [0, 1.7, 0] }),
+      part(box(0.6, 0.45, 0.25), 0x2a2e33, { pos: [0, 3.45, 0], rot: [0.35, 0, 0] }),
+      part(box(0.5, 0.35, 0.03), 0xfff6d0, { pos: [0, 3.42, -0.14], rot: [0.35, 0, 0] }),
+    ]),
+  );
+
+// Vojni kamion (baza iza junaka)
+export const militaryTruck = () =>
+  cached('truck', () =>
+    build(
+      [
+        part(box(2.3, 1.0, 6.2), 0x4b5634, { pos: [0, 1.0, 0] }),
+        part(box(2.3, 1.3, 1.8), 0x56623c, { pos: [0, 1.95, -2.1] }),
+        part(box(2.1, 0.55, 0.06), 0x26323e, { pos: [0, 2.2, -3.0] }),
+        part(box(2.35, 1.6, 4.0), 0x5d6a40, { pos: [0, 2.3, 0.95] }),
+        ...[[-1.05, -2.1], [1.05, -2.1], [-1.05, 1.0], [1.05, 1.0], [-1.05, 2.3], [1.05, 2.3]].map(([x, z]) =>
+          part(cyl(0.5, 0.5, 0.35, 12), 0x161616, { pos: [x, 0.5, z], rot: [0, 0, Math.PI / 2] }),
+        ),
+        part(box(0.5, 0.5, 0.05), 0xffffff, { pos: [-0.8, 2.3, 2.96] }),
+      ],
+      { aoHeight: 1.2, aoStrength: 0.4 },
+    ),
+  );
+
+// Betonska prepreka (džersi)
+export const jersey = () =>
+  cached('jersey', () =>
+    build(
+      [
+        part(box(0.7, 0.35, 2.4), 0xa9adb3, { pos: [0, 0.175, 0] }),
+        part(box(0.42, 0.55, 2.4), 0xb8bcc2, { pos: [0, 0.6, 0] }),
+        part(box(0.44, 0.1, 0.6), 0xd94a2a, { pos: [0, 0.82, -0.7] }),
+        part(box(0.44, 0.1, 0.6), 0xf2f2f2, { pos: [0, 0.82, 0] }),
+        part(box(0.44, 0.1, 0.6), 0xd94a2a, { pos: [0, 0.82, 0.7] }),
+      ],
+      { aoHeight: 0.6, aoStrength: 0.4 },
+    ),
+  );
+
+// Strelica na putu (polja dolaze ovom trakom)
+export const chevron = () =>
+  cached('chevron', () => {
+    const s = new THREE.Shape();
+    s.moveTo(-0.9, -0.2);
+    s.lineTo(0, 0.45);
+    s.lineTo(0.9, -0.2);
+    s.lineTo(0.9, -0.55);
+    s.lineTo(0, 0.1);
+    s.lineTo(-0.9, -0.55);
+    s.lineTo(-0.9, -0.2);
+    const g = new THREE.ShapeGeometry(s);
+    g.rotateX(-Math.PI / 2);
+    g.rotateY(Math.PI);
+    g.userData.shared = true;
+    return g;
+  });
