@@ -245,6 +245,9 @@ mejlove.
 recenzente) oba „Published“. Google o tome nije poslao mejl. Sledeće: opt-in link iz Closed testing > Testers poslati
 testerima (pre toga ulaze u grupu https://groups.google.com/g/lockintrack-testers); 14 dana se broje od dana kad ih
 bude bar 12 prijavljenih.
+22. nov. 2026 (Andrija): 🗿 iza „Lock In“ na vrhu skinut (Home i svi tabovi, podešavanje na uvodu, slajdovi; iz
+prototipa). 🗿 kod Legendary plamena, u forama i na ikonici poruke na slajdu Roasts ostaje. Commit `592c800`, OTA na
+`production` `d32cac99` (iOS i Android). U ranijim sesijama nisam našao da je to bilo traženo.
 
 1. Pre zatvorenog testiranja (testeri i recenzenti se prijavljuju Google-om): `docs/ZASTITA.md` deo 6, bar tačke 3
    (probni nalozi i `manual_test`, osim ako još testiraš), 6 (Google OAuth **In production**), 8, 13. Tačke 1–2
