@@ -1,4 +1,4 @@
-// The "Lock In 🗿" header above every tab (prototype #hero0).
+// The "Lock In" header above every tab (prototype #hero0; the prototype's 🗿 after the name is gone, Andrija 22 Nov 2026).
 
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -8,7 +8,7 @@ export function Hero() {
   const { c } = useTheme();
   return (
     <View style={st.hero}>
-      <Text style={[st.h1, { color: c.hero }]}>Lock In 🗿</Text>
+      <Text style={[st.h1, { color: c.hero }]}>Lock In</Text>
       <Text style={[st.sub, { color: c.mute }]}>The money tracker that calls you out when you spend like cash grows on trees.</Text>
     </View>
   );

@@ -297,7 +297,7 @@ export function Slides({ onDone }: { onDone: () => void }) {
   return (
     <Enter kind="pop" style={{ flex: 1, backgroundColor: '#f4f8f5' }}>
       <View style={[s.ctop, { paddingTop: 14 + insets.top }]}>
-        <Text style={s.wm}>Lock In 🗿</Text>
+        <Text style={s.wm}>Lock In</Text>
         <Pressable accessibilityRole="button" onPress={onDone} style={[s.skip, i === 2 && { opacity: 0 }]} disabled={i === 2}>
           <Text style={s.skipT}>Skip</Text>
         </Pressable>

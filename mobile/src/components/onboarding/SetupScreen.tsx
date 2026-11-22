@@ -28,7 +28,7 @@ export function SetupScreen({ onStart }: { onStart: (input: SetupInput) => void 
   return (
     <ScrollView ref={kb.ref} onScroll={kb.onScroll} style={{ flex: 1, backgroundColor: '#f4f8f5' }} contentContainerStyle={{ paddingBottom: 14 + insets.bottom }} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
       <Enter kind="pop" delay={0} style={[st.hero, { paddingTop: 20 + insets.top }]}>
-        <Text style={st.h1}>Lock In 🗿</Text>
+        <Text style={st.h1}>Lock In</Text>
         <Text style={st.sub}>The money tracker that calls you out when you spend like cash grows on trees.</Text>
       </Enter>
       <Enter kind="pop" delay={90} style={st.card}>
