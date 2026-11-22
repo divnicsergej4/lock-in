@@ -240,6 +240,11 @@ posle promene taba, razmaknuta slova, tastatura posle upisa): versionCode 7, bui
 https://expo.dev/artifacts/eas/qSjbyqJ5h5zdPlZgE__P18mXJTsGJKVLvBrTGQIgtAs.aab (provereno u fajlu: `goog_` ključ i
 „Already have an account“ su u JS paketu). Testeri preko Google Group-e („Anyone can join“), da ne treba skupljati
 mejlove.
+**Zatvoreno testiranje (Closed testing - Alpha) je objavljeno**: Submission activity, 22. nov. 2026: slanje 1
+(19. nov., Closed testing - Alpha, Store Listing, App Content, Store settings) i slanje 2 (20. nov., nov nalog za
+recenzente) oba „Published“. Google o tome nije poslao mejl. Sledeće: opt-in link iz Closed testing > Testers poslati
+testerima (pre toga ulaze u grupu https://groups.google.com/g/lockintrack-testers); 14 dana se broje od dana kad ih
+bude bar 12 prijavljenih.
 
 1. Pre zatvorenog testiranja (testeri i recenzenti se prijavljuju Google-om): `docs/ZASTITA.md` deo 6, bar tačke 3
    (probni nalozi i `manual_test`, osim ako još testiraš), 6 (Google OAuth **In production**), 8, 13. Tačke 1–2
