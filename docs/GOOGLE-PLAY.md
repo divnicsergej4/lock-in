@@ -256,6 +256,12 @@ skraćuje rokove (godišnja se obnavlja na 30 min, mesečna na 5 min, proba 3 mi
 `sync-store-access` (`apply_store_event`) menjaju red samo ako je događaj noviji od `updated_at`, pa istek probne
 pretplate ne može da skrati pristup. Insert se pušta ponovo za one koji se kasnije prijave (ne smeta onima koji
 ga već imaju). Pred produkciju: `docs/ZASTITA.md` deo 6, tačka 3.
+23. nov. 2026: tačkice ispod holo prstena na Android-u se smenjuju samo na 2. i 3. (prva se ne upali kad se prsten
+vrati na krug; testeri, Andrijin snimak; u demu je kod njega radilo). Uzrok: worklet je čitao React ref
+`activeRef`, a worklet dobija zamrznutu kopiju iz trenutka prvog slanja na UI nit (obično 0), pa dolazak na prvi
+panel nije menjao tačkice (iOS tačkice prate drugim putem, ali ni tamo se animacije prvog panela nisu ponavljale).
+Provera je sad na JS strani (`land` u `HoloRing.tsx`). Commit `596fc7c`, OTA `7d0325c3` na `production`. Testovi
+prolaze; na telefonu nije provereno.
 
 1. Pre zatvorenog testiranja (testeri i recenzenti se prijavljuju Google-om): `docs/ZASTITA.md` deo 6, bar tačke 3
    (probni nalozi i `manual_test`, osim ako još testiraš), 6 (Google OAuth **In production**), 8, 13. Tačke 1–2
