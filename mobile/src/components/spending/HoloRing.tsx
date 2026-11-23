@@ -249,6 +249,16 @@ function FullRing({ panels, rows, scrolling }: RingProps) {
     setCur(i);
     setAct((a) => a.map((n, j) => (j === i ? n + 1 : n)));
   }, []);
+  // The ring landed on panel i (called from the UI thread): only a different panel lights up again. Checked here,
+  // not in the worklet: a worklet gets a frozen copy of activeRef from the moment it was first sent to the UI
+  // thread (usually 0, set as the tab opened), so landing on the first panel never moved the dots on Android
+  // (only the 2nd and 3rd took turns; testers, 23 Nov 2026).
+  const land = useCallback(
+    (i: number) => {
+      if (i !== activeRef.current) activate(i);
+    },
+    [activate],
+  );
 
   // Android: the dots and taps follow only once the ring has landed (activate). A React render while the finger
   // turns the ring was the second jump at the switch: its commit rewrote the panels' positions a frame late.
@@ -319,7 +329,7 @@ function FullRing({ panels, rows, scrolling }: RingProps) {
       // the panel's content lights up only once it has (almost) landed
       if (!landed.value && Math.abs(pp - to) < 0.03) {
         landed.value = true;
-        if (hm(to) !== activeRef.current) runOnJS(activate)(hm(to));
+        runOnJS(land)(hm(to));
       }
       if (settled(pp, vv, to) || springT.value >= SPRING_MAX_S) {
         pp = hm(to);
