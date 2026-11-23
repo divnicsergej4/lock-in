@@ -251,8 +251,11 @@ prototipa). 🗿 kod Legendary plamena, u forama i na ikonici poruke na slajdu R
 23. nov. 2026: testeri u License testing dobijaju puno mejlova „Test: Your Google Play Order Receipt“ i posle par sati
 opet zaključan ekran za plaćanje (bez ✕, jer nemaju pristup). Nije greška u aplikaciji: Google za probne kupovine
 skraćuje rokove (godišnja se obnavlja na 30 min, mesečna na 5 min, proba 3 min), šalje mejl na svaku obnovu i posle
-6 obnova pretplatu sam otkaže. Predlog: testerima pristup na serveru (prijava Google-om u aplikaciji + SQL sa
-`product = 'closed_test'`), pa ne moraju ponovo da „kupuju“; `closed_test` se briše pred produkciju kao `manual_test`.
+6 obnova pretplatu sam otkaže. Rešenje (Andrija, 23. nov.): 15 testera dobija pristup na serveru do 2027-01-31,
+`product = 'closed_test'`, posle prve prijave Google-om u aplikaciji. `updated_at` je namerno 2027-01-31: webhook i
+`sync-store-access` (`apply_store_event`) menjaju red samo ako je događaj noviji od `updated_at`, pa istek probne
+pretplate ne može da skrati pristup. Insert se pušta ponovo za one koji se kasnije prijave (ne smeta onima koji
+ga već imaju). Pred produkciju: `docs/ZASTITA.md` deo 6, tačka 3.
 
 1. Pre zatvorenog testiranja (testeri i recenzenti se prijavljuju Google-om): `docs/ZASTITA.md` deo 6, bar tačke 3
    (probni nalozi i `manual_test`, osim ako još testiraš), 6 (Google OAuth **In production**), 8, 13. Tačke 1–2

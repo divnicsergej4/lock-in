@@ -392,6 +392,9 @@ Sve ovo služi samo za probu (Expo Go, test nalozi). Pre slanja na App Store / G
 3. Supabase > Authentication > **Users**: obriši probne naloge (npr. onaj iz provere lozinke u delu 4).
    U SQL Editor-u obriši probne redove iz `public.subscriptions` koje si eventualno upisao ručno.
    **Ne briši** nalog za recenzente prodavnica ni njegov red `manual_review` (`docs/PRODAVNICE.md` deo 9).
+   Testeri zatvorenog testiranja na Google Play-u imaju redove `product = 'closed_test'` (do 2027-01-31,
+   `docs/GOOGLE-PLAY.md` deo 8): pre produkcije pitaj Andriju da li ih briše
+   (`delete from public.subscriptions where product = 'closed_test';`).
 4. Supabase > Authentication > Attack Protection: **CAPTCHA uključena** (Turnstile), ali tek kad je ugrađen u
    aplikaciju (3.2, korak 9); ako nije ugrađen, objava čeka na to.
 5. Supabase > Authentication > Sign In / Providers > Email: „Confirm email“ **uključeno** (vidi 3.2, korak 1).
