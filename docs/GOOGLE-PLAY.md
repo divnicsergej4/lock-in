@@ -248,6 +248,11 @@ bude bar 12 prijavljenih.
 22. nov. 2026 (Andrija): 🗿 iza „Lock In“ na vrhu skinut (Home i svi tabovi, podešavanje na uvodu, slajdovi; iz
 prototipa). 🗿 kod Legendary plamena, u forama i na ikonici poruke na slajdu Roasts ostaje. Commit `592c800`, OTA na
 `production` `d32cac99` (iOS i Android). U ranijim sesijama nisam našao da je to bilo traženo.
+23. nov. 2026: testeri u License testing dobijaju puno mejlova „Test: Your Google Play Order Receipt“ i posle par sati
+opet zaključan ekran za plaćanje (bez ✕, jer nemaju pristup). Nije greška u aplikaciji: Google za probne kupovine
+skraćuje rokove (godišnja se obnavlja na 30 min, mesečna na 5 min, proba 3 min), šalje mejl na svaku obnovu i posle
+6 obnova pretplatu sam otkaže. Predlog: testerima pristup na serveru (prijava Google-om u aplikaciji + SQL sa
+`product = 'closed_test'`), pa ne moraju ponovo da „kupuju“; `closed_test` se briše pred produkciju kao `manual_test`.
 
 1. Pre zatvorenog testiranja (testeri i recenzenti se prijavljuju Google-om): `docs/ZASTITA.md` deo 6, bar tačke 3
    (probni nalozi i `manual_test`, osim ako još testiraš), 6 (Google OAuth **In production**), 8, 13. Tačke 1–2
