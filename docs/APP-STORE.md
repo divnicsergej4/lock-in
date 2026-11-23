@@ -131,6 +131,9 @@ mu daš; prijava „Continue with Google“), napomena kao u PRODAVNICE.md deo 9
 20. nov. 2026: taj Gmail je preuzet, napravljen je nov nalog za recenzente (`docs/GOOGLE-PLAY.md` deo 5); novi mejl i
 lozinka upisani u Sign-In Information na stranici verzije 1.0 (polja se mogu menjati i dok čeka pregled; poruka
 Apple-u nije potrebna).
+23. nov. 2026: Apple mejl „Your trader contact information was verified“ (DSA): podaci trgovca su potvrđeni i
+vidljivi u App Store-u u EU, pa aplikacija sme da se prodaje i u EU. To nije pregled build-a; verzija 1.0 i dalje
+„Waiting for Review“ (poslato 19. nov. u 17:44).
 
 ## 8. Slanje na pregled ✅ poslato 15. nov. 2026 (čeka pregled)
 Poslato 15. nov. oko 14:22: „4 Items Submitted“ (iOS App 1.0 build 2, Lock In Monthly, Lock In Annual, grupa Lock In).
