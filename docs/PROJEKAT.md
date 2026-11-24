@@ -74,7 +74,7 @@ odmah znala šta je dogovoreno. Kad se nešto novo dogovori, dopiši ga ovde.
   za animacije, @shopify/react-native-skia za holo prsten i lika na uvodu, lokalno čuvanje podataka na telefonu.
 - **Lična potrošnja ostaje samo na telefonu.** Na serveru je samo ono što mora: nalozi, prijatelji, zajednički ciljevi, pretplata.
 - **Backend: Supabase.** Migracije su u `backend/supabase/migrations/` (`0001` nalozi, prijatelji, zajednički cilj;
-  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa; `0005` obaveštenja iz cilja; `0006` rok cilja, nudge, push za pinove; `0007` pin, otključan cilj i nudge bez čekanja od 10 min), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
+  `0002` limiti i kvote; `0003` bez lozinki; `0004` ko šta vidi i provere unosa; `0005` obaveštenja iz cilja; `0006` rok cilja, nudge, push za pinove; `0007` pin, otključan cilj i nudge bez čekanja od 10 min; `0008` lista za obaveštenje o izlasku sa sajta), serverske funkcije u `backend/supabase/functions/`, testovi u `backend/tests/`
   (`npm test` u folderu `backend`, radi i na Windows-u bez Postgres-a). Detalji u `backend/README.md`,
   zaštita i podešavanja po dashboard-ima u `docs/ZASTITA.md`.
 - **Prototip je specifikacija.** `index.html` na grani `razvoj` je tačan izgled i ponašanje svakog ekrana. Pri prenosu u
@@ -535,6 +535,15 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
    na dva telefona sa pravim nalozima (iPhone u Expo Go + Honor preview APK, 5. nov.): poziv, cilj, uplate, push
    za pin na Honoru (posle `0007` stiže odmah). Nudge dugme se vidi samo pored člana bez uplate te nedelje. Slike za App Store (1290×2796,
    bez DEMO i statusne trake) su u `docs/prodavnica/app-store/`.
+Lista za obaveštenje o izlasku (Andrija, 24. nov. 2026, link u Instagram bio): na `https://lockintracker.app/` polje
+„Get notified at launch“ (`web/index.html`, `web/waitlist.js`). Mejl ide u `app.waitlist` preko RPC-a
+`join_waitlist` (migracija `0008`): to je jedini RPC koji sme posetilac bez naloga (javni publishable ključ), listu
+niko ne čita preko API-ja, adresa se čuva jednom i ponovni upis izgleda isto, cela lista najviše 300 novih na sat i
+2.000 na dan, bot koji popuni skriveno polje dobija „uspeh“ bez upisa. Pri upisu se ništa ne šalje. `?from=instagram`
+u linku se čuva kao izvor. Privacy Policy dopunjen (deo 11, „Launch list“): jedan mejl na dan izlaska, lista se
+briše posle toga. Čitanje liste u SQL Editor-u: `select email, source, created_at from app.waitlist order by
+created_at;`. Testovi: `backend/tests/waitlist.test.mjs` (28 provera) i `privacy.test.mjs`. Andrija pokreće `0008`
+u SQL Editor-u; stranica se objavljuje sama posle push-a na `aplikacija` (Cloudflare Pages).
 Okvirno (4. nov.): ~75% posla do objave; kod ~95%, ostatak su nalozi, podešavanja po dashboard-ima i čekanje
 prodavnica. Troškovi do objave: Google $25 jednom + Apple $99 godišnje (domen već plaćen); Supabase, RevenueCat
 (besplatno do $2.500 mesečnog prihoda, pa 1% od celog iznosa tog meseca), Expo, Resend, Cloudflare, Firebase su

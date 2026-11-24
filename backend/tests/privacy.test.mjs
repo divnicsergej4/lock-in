@@ -90,8 +90,9 @@ ok(out === '0', 'a signed-out visitor can read nothing', out);
                        where p.pronamespace = 'public'::regnamespace and has_function_privilege('authenticated', p.oid, 'execute')`);
 ok(out === 'add_friend_to_goal claim_invite_email create_goal leave_goal my_access nudge nudge_alerts register_push_token respond_friend_request send_friend_request set_nudge_alerts unregister_push_token',
   'the app can call exactly these RPCs', out);
-[, out] = await psql(`select count(*) from pg_proc p where p.pronamespace = 'public'::regnamespace and has_function_privilege('anon', p.oid, 'execute')`);
-ok(out === '0', 'a signed-out visitor can call no RPC', out);
+[, out] = await psql(`select coalesce(string_agg(p.proname, ' ' order by p.proname), '') from pg_proc p
+                       where p.pronamespace = 'public'::regnamespace and has_function_privilege('anon', p.oid, 'execute')`);
+ok(out === 'join_waitlist', 'a signed-out visitor can call only join_waitlist (the website\'s launch list, 0008)', out);
 [, out] = await psql(`select coalesce(string_agg(p.proname, ' '), '') from pg_proc p where p.pronamespace = 'public'::regnamespace
                        and pg_get_function_result(p.oid) ilike '%email%' and p.proname <> 'claim_invite_email'`);
 ok(out === '', 'no RPC except claim_invite_email (your own invite) returns an email', out);
