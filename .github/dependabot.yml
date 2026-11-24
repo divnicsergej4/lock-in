@@ -1,0 +1,54 @@
+# Weekly dependency updates for the app (mobile/) and the backend (backend/). See docs/ZASTITA.md, part 7.
+# Security fixes come as separate pull requests as soon as an advisory appears (turn on "Dependabot security
+# updates" in GitHub: Settings > Code security).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /mobile
+    target-branch: aplikacija
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      mobile-patches:
+        update-types: [patch]
+    ignore:
+      # Expo decides these versions (one SDK = one set). Moving them by hand breaks the app; they move with
+      # "npx expo install expo@<next SDK> --fix", which is done on purpose, not by a bot.
+      - dependency-name: "expo"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "expo-*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@expo/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "jest-expo"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-native"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-native-*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@react-native-*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@react-native-async-storage/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@react-native-community/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@shopify/react-native-skia"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  - package-ecosystem: npm
+    directory: /backend
+    target-branch: aplikacija
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5

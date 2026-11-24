@@ -1,0 +1,32 @@
+1. SCREEN RECORDING
+Recorded on a physical iPhone with the submitted build (1.0.0, build 2): VIDEO_LINK
+It starts with launching the app and shows: onboarding, the subscription screen and the free week (sandbox), logging an expense and the app's reply, charts, envelopes, account creation and sign-in with a 6-digit email code, a shared goal, and account deletion (More > Settings > Danger zone > Delete account).
+
+2. PURPOSE AND AUDIENCE
+Lock In is a personal expense tracker for young adults (students and people early in their careers) who overspend and find budgeting apps boring. You log a purchase in a few taps and the app replies with a short, honest and sometimes harsh message; you choose how harsh: Gentle, Normal or No mercy. A daily streak, weekly challenges, envelopes, savings goals, charts and a monthly report help build the habit of tracking money. Shared goals let friends save together for one thing, for example a trip. There is no bank connection: amounts, notes and categories stay on the device.
+
+3. HOW TO ACCESS THE MAIN FEATURES
+- Without an account: on the plans screen tap "Start my free week" (7 days free in sandbox, then an auto-renewable monthly or yearly subscription). Then every feature is available: Home (log an expense or income), Spending (charts, all transactions, limits), Savings (envelopes, monthly plan), More (monthly report, settings).
+- Demo account (Sign-In Information above): on the plans screen tap "Already have an account? Sign in", then "Continue with Google". This account already has full access, no purchase needed.
+- Shared goals (Savings tab) need an account: sign in with Apple, Google or a 6-digit code sent by email. A new account is created at the first sign-in. Friends are added by email invite and must accept it.
+- "Look around the demo first" on the plans screen fills every screen with sample data (read only).
+- Delete account: More > Settings > Danger zone > Delete account (tap twice).
+
+4. EXTERNAL SERVICES
+- Supabase (EU): accounts, sign-in and the data of shared goals (friends, goals, contributions)
+- Sign in with Apple and Google Sign-In: sign-in
+- Resend: emails with the sign-in code and friend invites
+- Cloudflare Turnstile: bot protection on the sign-in screen
+- Cloudflare Pages: our website (privacy policy, terms, support)
+- App Store In-App Purchase and RevenueCat: subscriptions and the free trial
+- Expo (EAS): push notifications for shared goals and app updates
+No AI services, ads, analytics, or bank and financial data providers.
+
+5. REGIONS
+The app works the same in all regions. It is in English only. Prices follow the App Store's local pricing.
+
+6. REGULATED INDUSTRY
+Not applicable. Lock In is a personal budgeting tool: no bank connection, no payments or money transfers between users, no lending, investing or financial advice, and no protected third-party content.
+
+USER CONTENT
+Nothing is public. A shared goal (its name, contributions and their short notes) is visible only to friends the user invited by email and who accepted the invite. A user can leave any goal at any time, which removes their contributions, and can delete their account.

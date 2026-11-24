@@ -1,0 +1,173 @@
+// Ring panel 3: spending per day of a month. Greener = more spent; today is outlined. Tap a day for its
+// totals; ‹ › change the month. On arrival the days ripple in from the top-left (prototype cal + calWave).
+
+import { useEffect, useMemo, useState } from 'react';
+import { PixelRatio, Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+
+import { InlineIcon } from '@/components/CategoryIcon';
+import { Ghost } from '@/components/home/Section';
+import { calendar, calendarDay, WEEKDAYS_SHORT, type CalendarCell } from '@/logic/charts';
+import { useStore } from '@/store/StoreProvider';
+import { holo, inter, useTheme } from '@/theme';
+import { tourBus } from '@/tour/registry';
+
+import type { PanelProps } from './HoloRing';
+import { Arrive, Column, PanelHead, Spare, useNaturalHeight } from './PanelParts';
+
+const POP = [0.2, 0.9, 0.25, 1.15];
+const PR = PixelRatio.get();
+
+/** Today's cell sends out one green pulse after the ripple (box-shadow 0 → 12 px, fading). */
+function Pulse({ play }: { play: number }) {
+  const k = useSharedValue(1);
+  useEffect(() => {
+    if (!play) return;
+    k.value = 0;
+    k.value = withDelay(760, withTiming(1, { duration: 900, easing: Easing.out(Easing.quad) }));
+  }, [play, k]);
+  const anim = useAnimatedStyle(() => ({
+    opacity: 0.7 * (1 - k.value),
+    transform: [{ scaleX: 1 + (24 * k.value) / 38 }, { scaleY: 1 + (24 * k.value) / 46 }],
+  }));
+  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 10, backgroundColor: 'rgba(34,224,122,1)' }, anim]} />;
+}
+
+function Cell({ cell, row, col, wave, rowH, onPress }: { cell: CalendarCell; row: number; col: number; wave: number; rowH: number; onPress: () => void }) {
+  const { c, name } = useTheme();
+  const k = holo[name];
+  // arrival ripple: from transparent, 10 px lower and 70 % size, 420 ms with a little overshoot
+  const a = useSharedValue(1);
+  useEffect(() => {
+    if (!wave) return;
+    a.value = 0;
+    a.value = withDelay(60 + (row + col) * 26, withTiming(1, { duration: 420, easing: Easing.bezier(POP[0], POP[1], POP[2], POP[3]) }));
+  }, [wave, row, col, a]);
+  const box = useAnimatedStyle(() => ({
+    opacity: Math.min(1, Math.max(0, a.value)),
+    transform: [{ translateY: 10 * (1 - a.value) }, { scale: 0.7 + 0.3 * a.value }],
+  }));
+  // the numbers fade and rise with the box but are never scaled and move only in whole screen pixels:
+  // iOS moves text as an already drawn bitmap, so scaled or half-pixel text stays blurry until it stops
+  const nums = useAnimatedStyle(() => ({
+    opacity: Math.min(1, Math.max(0, a.value)),
+    transform: [{ translateY: Math.round(10 * (1 - a.value) * PR) / PR }],
+  }));
+  if (!cell.day) return <View style={{ flex: 1, height: rowH }} />;
+  return (
+    <View style={{ flex: 1, height: rowH }}>
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, box]}>
+        {cell.today && <Pulse play={wave} />}
+        <View style={[StyleSheet.absoluteFill, st.box, { backgroundColor: cell.alpha ? `rgba(34,224,122,${cell.alpha.toFixed(2)})` : k.cellBg, borderColor: k.cellBorder }]} />
+        {/* outline: 2px solid, outside the cell */}
+        {cell.today && <View style={[st.today, { borderColor: c.accent }]} />}
+      </Animated.View>
+      <Pressable accessibilityRole="button" accessibilityLabel={'Day ' + cell.day} onPress={onPress} style={[st.d, { height: rowH }]}>
+        <Animated.View style={[st.dIn, nums]}>
+          <Text style={[st.dn, { color: c.ink }]}>{cell.day}</Text>
+          <Text style={[st.da, { color: c.ink }]}>{cell.label}</Text>
+        </Animated.View>
+      </Pressable>
+    </View>
+  );
+}
+
+export function CalendarPanel({ activation, grow, onNatural, month, onMonth }: PanelProps & { month: { y: number; m: number }; onMonth: (d: number) => void }) {
+  const { state } = useStore();
+  const { c } = useTheme();
+  const cal = useMemo(() => calendar(state, month.y, month.m, Date.now()), [state, month]);
+  const [picked, setPicked] = useState<number | null>(null);
+  const nat = useNaturalHeight(onNatural, 0);
+  const rows: CalendarCell[][] = [];
+  for (let i = 0; i < cal.cells.length; i += 7) rows.push(cal.cells.slice(i, i + 7));
+  while (rows.length && rows[rows.length - 1].length < 7) rows[rows.length - 1].push({ day: 0, amount: 0, label: '', alpha: 0, today: false });
+  const rowH = 44 + grow;
+
+  // the ripple plays when the panel arrives and when the month changes
+  const [wave, setWave] = useState(0);
+  useEffect(() => {
+    if (activation) setWave((w) => w + 1);
+  }, [activation]);
+  const turn = (d: number) => {
+    setPicked(null);
+    onMonth(d);
+    setWave((w) => w + 1);
+  };
+
+  const day = picked ? calendarDay(state, month.y, month.m, picked) : null;
+  // the tour waits for a day to be tapped, and starts that step with none picked
+  useEffect(() => {
+    tourBus.calDay = day ? day.head + day.summary : '';
+  }, [day]);
+  useEffect(() => {
+    tourBus.clearCalDay = () => setPicked(null);
+    return () => {
+      tourBus.clearCalDay = null;
+    };
+  }, []);
+  return (
+    <Column onLayout={(h) => nat.onColumn(h - rows.length * grow)}>
+      <PanelHead title="Daily spending" />
+      <View style={st.calh}>
+        <Ghost title="‹" onPress={() => turn(-1)} style={st.nav} demoOk />
+        {/* one line: it does not grow with the phone's text size. Not adjustsFontSizeToFit: on Android that fits the
+            text again on every draw, and the old Samsung froze for seconds with it (4 Nov 2026) */}
+        <Text style={[st.title, { color: c.ink }]} numberOfLines={1} maxFontSizeMultiplier={1}>
+          {cal.title}
+        </Text>
+        <Ghost title="›" onPress={() => turn(1)} style={st.nav} demoOk />
+      </View>
+      <View style={st.grid}>
+        <View style={st.row}>
+          {WEEKDAYS_SHORT.map((d, i) => (
+            <Arrive key={d} play={wave} delay={i * 22} duration={280} from={{ opacity: 0 }} ease={[0.25, 0.1, 0.25, 1]} style={{ flex: 1 }}>
+              <Text style={[st.h, { color: c.mute }]}>{d}</Text>
+            </Arrive>
+          ))}
+        </View>
+        {rows.map((r, ri) => (
+          <View key={ri} style={st.row}>
+            {r.map((cell, ci) => (
+              <Cell key={ci} cell={cell} row={ri + 1} col={ci} wave={wave} rowH={rowH} onPress={() => setPicked(cell.day)} />
+            ))}
+          </View>
+        ))}
+      </View>
+      <View style={st.hcd}>
+        {day && (
+          <Text style={[st.small, { color: c.mute }]}>
+            <Text style={{ fontFamily: inter[700] }}>{day.head}</Text>
+            {day.summary}
+            {day.items.map((it, i) => (
+              <Text key={i}>
+                {'\n'}
+                <InlineIcon cat={it.cat} color={it.color} size={14.7} mix={c.iconMix} />
+                {it.text}
+              </Text>
+            ))}
+            {day.more ? '\n' + day.more : ''}
+          </Text>
+        )}
+      </View>
+      <Spare onLayout={nat.onSpare} />
+    </Column>
+  );
+}
+
+const st = StyleSheet.create({
+  calh: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+  nav: { width: 38, padding: 6 },
+  title: { flex: 1, marginHorizontal: 0, fontFamily: inter[700], fontSize: 16, lineHeight: 23.2 },
+  grid: { gap: 4 },
+  row: { flexDirection: 'row', gap: 4 },
+  h: { fontFamily: inter[400], fontSize: 10.4, lineHeight: 15.08, textAlign: 'center' },
+  // the cell's look (box) and its numbers (d, with the same 1 px border space) are separate layers
+  box: { borderRadius: 10, borderWidth: 1 },
+  d: { borderWidth: 1, borderColor: 'transparent', paddingVertical: 4, paddingHorizontal: 2 },
+  dIn: { flex: 1, justifyContent: 'space-between', alignItems: 'center' },
+  dn: { fontFamily: inter[400], fontSize: 9.92, lineHeight: 14.384 },
+  da: { fontFamily: inter[700], fontSize: 11.52, lineHeight: 16.7 },
+  today: { position: 'absolute', left: -2, right: -2, top: -2, bottom: -2, borderRadius: 12, borderWidth: 2 },
+  hcd: { marginTop: 8, minHeight: 18 },
+  small: { fontFamily: inter[400], fontSize: 12.8, lineHeight: 18.56 },
+});
