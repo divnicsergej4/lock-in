@@ -542,8 +542,9 @@ niko ne čita preko API-ja, adresa se čuva jednom i ponovni upis izgleda isto, 
 10.000 na dan (podignuto sa 300/2.000 jer reklama treba da dođe do 300.000+ ljudi), bot koji popuni skriveno polje dobija „uspeh“ bez upisa. Pri upisu se ništa ne šalje. `?from=instagram`
 u linku se čuva kao izvor. Privacy Policy dopunjen (deo 11, „Launch list“): jedan mejl na dan izlaska, lista se
 briše posle toga. Čitanje liste u SQL Editor-u: `select email, source, created_at from app.waitlist order by
-created_at;`. Testovi: `backend/tests/waitlist.test.mjs` (28 provera) i `privacy.test.mjs`. Andrija pokreće `0008`
-u SQL Editor-u; stranica se objavljuje sama posle push-a na `aplikacija` (Cloudflare Pages).
+created_at;`. Testovi: `backend/tests/waitlist.test.mjs` (28 provera) i `privacy.test.mjs`. 24. nov.: `0008` je na
+pravoj bazi (RPC odgovara „Enter a valid email address.“), sajt objavljen posle push-a na `aplikacija` (Cloudflare
+Pages, CSP sa `connect-src` za Supabase). Link za bio: `https://lockintracker.app/?from=instagram`.
 Okvirno (4. nov.): ~75% posla do objave; kod ~95%, ostatak su nalozi, podešavanja po dashboard-ima i čekanje
 prodavnica. Troškovi do objave: Google $25 jednom + Apple $99 godišnje (domen već plaćen); Supabase, RevenueCat
 (besplatno do $2.500 mesečnog prihoda, pa 1% od celog iznosa tog meseca), Expo, Resend, Cloudflare, Firebase su
