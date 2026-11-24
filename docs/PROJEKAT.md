@@ -538,8 +538,8 @@ Sledeće (stanje 4. nov. 2026; kostur, prenos svih ekrana, prijava, CAPTCHA, cil
 Lista za obaveštenje o izlasku (Andrija, 24. nov. 2026, link u Instagram bio): na `https://lockintracker.app/` polje
 „Get notified at launch“ (`web/index.html`, `web/waitlist.js`). Mejl ide u `app.waitlist` preko RPC-a
 `join_waitlist` (migracija `0008`): to je jedini RPC koji sme posetilac bez naloga (javni publishable ključ), listu
-niko ne čita preko API-ja, adresa se čuva jednom i ponovni upis izgleda isto, cela lista najviše 300 novih na sat i
-2.000 na dan, bot koji popuni skriveno polje dobija „uspeh“ bez upisa. Pri upisu se ništa ne šalje. `?from=instagram`
+niko ne čita preko API-ja, adresa se čuva jednom i ponovni upis izgleda isto, cela lista najviše 1.000 novih na sat i
+10.000 na dan (podignuto sa 300/2.000 jer reklama treba da dođe do 300.000+ ljudi), bot koji popuni skriveno polje dobija „uspeh“ bez upisa. Pri upisu se ništa ne šalje. `?from=instagram`
 u linku se čuva kao izvor. Privacy Policy dopunjen (deo 11, „Launch list“): jedan mejl na dan izlaska, lista se
 briše posle toga. Čitanje liste u SQL Editor-u: `select email, source, created_at from app.waitlist order by
 created_at;`. Testovi: `backend/tests/waitlist.test.mjs` (28 provera) i `privacy.test.mjs`. Andrija pokreće `0008`

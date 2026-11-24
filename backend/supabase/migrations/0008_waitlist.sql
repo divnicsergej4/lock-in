@@ -9,8 +9,9 @@
 --
 -- Against a script filling the list: an address is stored once (a repeat changes nothing and looks the same to the
 -- visitor, so the form never tells whether an address is already on the list), and the whole list takes at most
--- 300 new addresses an hour and 2,000 a day. Nothing is emailed on sign-up, so the form cannot be used to send mail
--- to strangers.
+-- 1,000 new addresses an hour and 10,000 a day (Andrija's ad is meant to reach over 300,000 people; real sign-ups
+-- stay far below this, a script that fills the list stops here). Nothing is emailed on sign-up, so the form cannot
+-- be used to send mail to strangers.
 --
 -- Apply after 0007: Supabase dashboard -> SQL editor -> paste this whole file -> Run.
 
@@ -38,8 +39,8 @@ begin
   -- one sign-up at a time, so parallel calls cannot slip past the limits together
   perform pg_advisory_xact_lock(hashtextextended('waitlist', 0));
   if exists (select 1 from app.waitlist w where w.email = e) then return; end if;
-  if (select count(*) from app.waitlist w where w.created_at > now() - interval '1 hour') >= 300
-     or (select count(*) from app.waitlist w where w.created_at > now() - interval '1 day') >= 2000 then
+  if (select count(*) from app.waitlist w where w.created_at > now() - interval '1 hour') >= 1000
+     or (select count(*) from app.waitlist w where w.created_at > now() - interval '1 day') >= 10000 then
     raise exception 'Too many sign-ups right now. Try again in a little while.' using errcode = 'P0001', hint = 'rate_limited';
   end if;
   insert into app.waitlist (email, source) values (e, s);
