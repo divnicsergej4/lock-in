@@ -134,9 +134,10 @@ Apple-u nije potrebna).
 23. nov. 2026: Apple mejl „Your trader contact information was verified“ (DSA): podaci trgovca su potvrđeni i
 vidljivi u App Store-u u EU, pa aplikacija sme da se prodaje i u EU. To nije pregled build-a; verzija 1.0 i dalje
 „Waiting for Review“ (poslato 19. nov. u 17:44).
-25. nov. 2026: i dalje „Waiting for Review“; Andrija je Apple-u poslao upit o statusu pregleda (Contact Us > App
-Review status), bez traženja ubrzanog pregleda, jer aplikacija ionako izlazi tek sa Google Play-om (~11 dana,
-posle zatvorenog testiranja).
+25. nov. 2026: i dalje „Waiting for Review“. Contact Us > App Review > App Review Status nema formular za upit, samo
+objašnjenje (aplikacije bez istorije pregleda čekaju duže) i „Request an expedited review“ / „Get more help“.
+Andrija ne traži ubrzanje, jer aplikacija ionako izlazi tek sa Google Play-om (~11 dana, posle zatvorenog
+testiranja). Ako i oko 30. nov. bude „Waiting for Review“: „Get more help“.
 
 ## 8. Slanje na pregled ✅ poslato 15. nov. 2026 (čeka pregled)
 Poslato 15. nov. oko 14:22: „4 Items Submitted“ (iOS App 1.0 build 2, Lock In Monthly, Lock In Annual, grupa Lock In).
