@@ -545,6 +545,12 @@ briše posle toga. Čitanje liste u SQL Editor-u: `select email, source, created
 created_at;`. Testovi: `backend/tests/waitlist.test.mjs` (28 provera) i `privacy.test.mjs`. 24. nov.: `0008` je na
 pravoj bazi (RPC odgovara „Enter a valid email address.“), sajt objavljen posle push-a na `aplikacija` (Cloudflare
 Pages, CSP sa `connect-src` za Supabase). Link za bio: `https://lockintracker.app/?from=instagram`.
+Reklama na Instagramu (25. nov., $50 na 6 dana, SAD/Kanada/UK, 18–30, Personal finance / Budget / Saving, link
+`?from=ig_ad`, video sa krajem „Join the waitlist“). Posle prvog dana 5 poseta i 0 upisa, pa je početna stranica
+(26. nov.) prepravljena u izgled reklame: tamna sa zelenim sjajem i mrežom, naslov „Log it. Get roasted.“, polje za
+mejl odmah na vrhu, slika fore (No mercy), tri ekrana aplikacije (`web/img/`, isečci slika za App Store), spisak sa
+ekrana za plaćanje i „Lock in or stay broke.“ na dnu. `web/landing.css` (ostale stranice i dalje `style.css`), font
+Bricolage Grotesque 800 sa sajta (`web/fonts/`), bez spoljnih fajlova. Forma ista (`waitlist.js`).
 Okvirno (4. nov.): ~75% posla do objave; kod ~95%, ostatak su nalozi, podešavanja po dashboard-ima i čekanje
 prodavnica. Troškovi do objave: Google $25 jednom + Apple $99 godišnje (domen već plaćen); Supabase, RevenueCat
 (besplatno do $2.500 mesečnog prihoda, pa 1% od celog iznosa tog meseca), Expo, Resend, Cloudflare, Firebase su
